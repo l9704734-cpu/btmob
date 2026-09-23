@@ -33,9 +33,12 @@ def safe_filename(filename):
     return f"{safe_name}_{uuid.uuid4().hex[:8]}{ext}"
 
 
-def save_upload(file_storage, asset_type='image'):
-    """Save an uploaded file to disk and create a MediaAsset record.
+def _cloudinary_enabled():
+    return bool(os.environ.get('CLOUDINARY_URL'))
 
+
+def save_upload(file_storage, asset_type='image'):
+    """Save an uploaded file — to Cloudinary if configured, otherwise to disk.
     Returns (MediaAsset, error_str). On error returns (None, error_str).
     """
     if file_storage is None or file_storage.filename == '':
@@ -43,7 +46,6 @@ def save_upload(file_storage, asset_type='image'):
 
     filename = file_storage.filename
     mime = file_storage.mimetype or ''
-    upload_dir = current_app.config['UPLOAD_DIR']
 
     if asset_type == 'image':
         if not allowed_image_file(filename, mime):
@@ -55,9 +57,43 @@ def save_upload(file_storage, asset_type='image'):
         return None, 'Unknown asset type.'
 
     safe_name = safe_filename(filename)
+
+    # --- Cloudinary path ---
+    if _cloudinary_enabled():
+        import cloudinary.uploader
+        try:
+            result = cloudinary.uploader.upload(
+                file_storage,
+                public_id=os.path.splitext(safe_name)[0],
+                resource_mode='auto',
+                unique_filename=False,
+                overwrite=False,
+            )
+            c_url = result.get('secure_url', result.get('url', ''))
+            file_size = result.get('bytes', 0)
+            width = result.get('width')
+            height = result.get('height')
+            asset = MediaAsset(
+                filename=safe_name,
+                original_filename=filename,
+                mime_type=mime,
+                file_size=file_size,
+                width=width,
+                height=height,
+                asset_type=asset_type,
+                cloudinary_url=c_url,
+            )
+            db.session.add(asset)
+            db.session.commit()
+            ActivityLog.log('upload', 'media', asset.id, f'Uploaded {filename} to Cloudinary')
+            return asset, None
+        except Exception as e:
+            return None, f'Cloudinary upload failed: {e}'
+
+    # --- Local disk path ---
+    upload_dir = current_app.config['UPLOAD_DIR']
     dest = os.path.join(upload_dir, safe_name)
 
-    # Write file and compute hash
     hasher = hashlib.sha256()
     with open(dest, 'wb') as out:
         chunk = file_storage.read(4096)

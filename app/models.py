@@ -218,10 +218,13 @@ class MediaAsset(db.Model):
     height = db.Column(db.Integer, nullable=True)
     alt_text = db.Column(db.String(300), default='')
     asset_type = db.Column(db.String(20), default='image')  # image, apk
+    cloudinary_url = db.Column(db.String(1000), default='')  # full URL when stored on Cloudinary
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     @property
     def url(self):
+        if self.cloudinary_url:
+            return self.cloudinary_url
         return f'/media/{self.filename}'
 
 

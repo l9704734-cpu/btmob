@@ -55,6 +55,11 @@ def download(slug):
     asset = db.session.get(MediaAsset, listing.apk_asset_id)
     if not asset:
         abort(404)
+
+    # If the APK is on Cloudinary, redirect there for the download
+    if asset.cloudinary_url:
+        return redirect(asset.cloudinary_url)
+
     upload_dir = current_app.config['UPLOAD_DIR']
     filepath = os.path.join(upload_dir, asset.filename)
     if not os.path.exists(filepath):

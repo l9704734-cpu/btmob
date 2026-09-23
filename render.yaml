@@ -15,3 +15,7 @@ services:
         value: /opt/render/project/src/uploads
       - key: MAX_UPLOAD_SIZE
         value: "104857600"
+      - key: DATABASE_URL
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
