@@ -370,21 +370,24 @@ def save_app_form(listing):
     listing.status = status
     listing.is_published = (status == 'published')
 
-    # Branding — asset takes priority over URL
+    # Branding — asset takes priority over URL; if neither, clear old value
     if icon_asset:
         listing.icon_asset_id = icon_asset.id
         listing.icon_url = ''
-    elif icon_url:
+    else:
+        listing.icon_asset_id = None if not icon_url else listing.icon_asset_id
         listing.icon_url = icon_url
     if hero_asset:
         listing.hero_asset_id = hero_asset.id
         listing.hero_url = ''
-    elif hero_url:
+    else:
+        listing.hero_asset_id = None if not hero_url else listing.hero_asset_id
         listing.hero_url = hero_url
     if favicon_asset:
         listing.favicon_asset_id = favicon_asset.id
         listing.favicon_url = ''
-    elif favicon_url:
+    else:
+        listing.favicon_asset_id = None if not favicon_url else listing.favicon_asset_id
         listing.favicon_url = favicon_url
 
     listing.primary_color = primary_color or ''
@@ -392,31 +395,34 @@ def save_app_form(listing):
     listing.bg_color = bg_color or ''
     listing.text_color = text_color or ''
 
-    # Download
+    # Download — clear old values when field is emptied
     if apk_asset:
         listing.apk_asset_id = apk_asset.id
         listing.use_uploaded_file = True
-    elif apk_url:
-        listing.apk_url = apk_url
+    else:
+        listing.apk_asset_id = None if not apk_url else listing.apk_asset_id
+    listing.apk_url = apk_url
     listing.download_filename = download_filename
     listing.download_button_label = download_button_label
     if button_icon_asset:
         listing.download_button_icon_asset_id = button_icon_asset.id
         listing.download_button_icon_url = ''
-    elif download_button_icon_url:
+    else:
+        listing.download_button_icon_asset_id = None if not download_button_icon_url else listing.download_button_icon_asset_id
         listing.download_button_icon_url = download_button_icon_url
     listing.download_button_icon_position = download_button_icon_position
     listing.use_uploaded_file = use_uploaded_file or bool(apk_asset)
     listing.apk_checksum = apk_checksum
 
-    # SEO
+    # SEO — clear old values when field is emptied
     listing.seo_title = seo_title
     listing.meta_description = meta_description
     listing.canonical_url = canonical_url
     if social_asset:
         listing.social_image_asset_id = social_asset.id
         listing.social_image_url = ''
-    elif social_image_url:
+    else:
+        listing.social_image_asset_id = None if not social_image_url else listing.social_image_asset_id
         listing.social_image_url = social_image_url
     listing.custom_browser_title = custom_browser_title
     listing.no_index = no_index
@@ -860,7 +866,7 @@ def store_settings():
         settings.default_seo_description = _get_field('default_seo_description')
         settings.default_download_button_label = _get_field('default_download_button_label', 'Install')
 
-        # Store icon upload
+        # Store icon upload — clear old value when field is emptied
         icon_file = request.files.get('store_icon_file')
         if icon_file and icon_file.filename:
             asset, err = save_upload(icon_file)
@@ -870,11 +876,13 @@ def store_settings():
             elif err:
                 flash(f'Store icon error: {err}', 'error')
         icon_url = _get_field('store_icon_url')
+        settings.store_icon_url = icon_url
         if icon_url:
-            settings.store_icon_url = icon_url
+            settings.store_icon_asset_id = None
+        elif not icon_file or not icon_file.filename:
             settings.store_icon_asset_id = None
 
-        # Favicon upload
+        # Favicon upload — clear old value when field is emptied
         fav_file = request.files.get('favicon_file')
         if fav_file and fav_file.filename:
             asset, err = save_upload(fav_file)
@@ -884,8 +892,10 @@ def store_settings():
             elif err:
                 flash(f'Favicon error: {err}', 'error')
         fav_url = _get_field('favicon_url')
+        settings.favicon_url = fav_url
         if fav_url:
-            settings.favicon_url = fav_url
+            settings.favicon_asset_id = None
+        elif not fav_file or not fav_file.filename:
             settings.favicon_asset_id = None
 
         db.session.commit()
