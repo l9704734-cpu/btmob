@@ -110,13 +110,16 @@ def save_upload(file_storage, asset_type='image'):
                 tus_endpoint = f'https://{project_ref}.supabase.co/storage/v1/upload/resumable'
 
                 # Step 1: Create the upload session
+                import base64 as _b64
+                _b64encode = lambda s: _b64.b64encode(s.encode()).decode() if isinstance(s, str) else _b64.b64encode(s).decode()
                 create_resp = _requests.post(
                     tus_endpoint,
                     headers={
                         'Authorization': f'Bearer {sb_key}',
                         'Tus-Resumable': '1.0.0',
-                        'Upload-Metadata': f'bucketName {sb_bucket},objectName {safe_name}',
+                        'Upload-Metadata': f'bucketName {_b64encode(sb_bucket)},objectName {_b64encode(safe_name)},contentType {_b64encode(mime or "application/octet-stream")}',
                         'Upload-Length': str(file_size),
+                        'x-upsert': 'true',
                         'Content-Type': 'application/offset+octet-stream',
                     },
                     data=b'',
