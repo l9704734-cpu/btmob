@@ -213,12 +213,24 @@ def create_app(config_overrides=None):
         }
         try:
             with app.app_context():
-                from app.models import AppListing, StoreSettings
-                info['table_count'] = len(db.engine.table_names())
+                from app.models import AppListing, StoreSettings, AdminUser
+                from sqlalchemy import inspect
+                inspector = inspect(db.engine)
+                info['tables'] = inspector.get_table_names()
                 info['listing_count'] = AppListing.query.count()
                 info['settings_count'] = StoreSettings.query.count()
+                info['admin_count'] = AdminUser.query.count()
         except Exception as e:
             info['query_error'] = str(e)
         return jsonify(info)
+
+    @app.errorhandler(500)
+    def handle_500(e):
+        import traceback
+        from flask import jsonify
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc(),
+        }), 500
 
     return app
