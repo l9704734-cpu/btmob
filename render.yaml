@@ -3,11 +3,13 @@ services:
     name: playstore-cms
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn run:app --host 0.0.0.0 --port $PORT
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT
     envVars:
       - key: FLASK_SECRET_KEY
         generateValue: true
       - key: FLASK_COOKIE_SECURE
         value: "true"
+      - key: PYTHON_VERSION
+        value: "3.13.0"
       - key: UPLOAD_DIR
         value: /opt/data/uploads
