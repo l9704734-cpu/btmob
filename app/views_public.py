@@ -4,10 +4,12 @@ Public storefront blueprint — listing pages and downloads.
 import os
 import re
 from flask import (Blueprint, render_template, request, redirect,
-                    url_for, abort, send_from_directory, current_app)
+                    url_for, session, abort, send_from_directory, current_app,
+                    send_file)
 from app import db
 from app.models import AppListing, StoreSettings, MediaAsset
 from app.utils import get_store_settings
+import os
 
 public_bp = Blueprint('public', __name__)
 
@@ -43,24 +45,28 @@ def listing_detail(slug):
 
 @public_bp.route('/download/<slug>')
 def download(slug):
-    """Serve the APK file for a published listing."""
+    """Serve the APK file for a published listing with tight headers."""
     listing = AppListing.query.filter_by(slug=slug, status='published').first_or_404()
     if not listing.use_uploaded_file or not listing.apk_asset_id:
         if listing.apk_url:
             return redirect(listing.apk_url)
         abort(404)
 
-    from app.models import MediaAsset
     asset = db.session.get(MediaAsset, listing.apk_asset_id)
     if not asset:
         abort(404)
     upload_dir = current_app.config['UPLOAD_DIR']
+    filepath = os.path.join(upload_dir, asset.filename)
+    if not os.path.exists(filepath):
+        abort(404)
     filename = listing.download_filename or asset.original_filename or 'app.apk'
-    # Use the correct MIME type for APK files — this helps browsers
-    # recognize it as an Android package rather than a generic blob
-    return send_from_directory(upload_dir, asset.filename, as_attachment=True,
-                                download_name=filename,
-                                mimetype='application/vnd.android.package-archive')
+    # Send with the correct APK MIME type and tight security headers
+    response = send_file(filepath, as_attachment=True, download_name=filename,
+                         mimetype='application/vnd.android.package-archive')
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Download-Options'] = 'noopen'
+    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
 
 
 @public_bp.route('/media/<path:filename>')
