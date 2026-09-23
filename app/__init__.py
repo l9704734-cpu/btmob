@@ -36,7 +36,6 @@ def create_app(config_overrides=None):
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             'pool_pre_ping': True,
             'pool_recycle': 300,
-            'connect_args': {'prepare_threshold': 0},
         }
     app.config['UPLOAD_DIR'] = UPLOAD_DIR
     app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
