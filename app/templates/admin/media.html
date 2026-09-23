@@ -1,0 +1,87 @@
+{% extends 'admin/base.html' %}
+{% block title %}Media Library{% endblock %}
+{% block page_title %}Media Library{% endblock %}
+{% block content %}
+<div class="search-bar">
+    <form method="GET" action="{{ url_for('admin.media_library') }}" style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search files..." class="form-control" style="max-width:240px;">
+        <select name="type" class="form-control" style="max-width:120px;">
+            <option value="">All types</option>
+            <option value="image" {{ 'selected' if type_filter == 'image' }}>Images</option>
+            <option value="apk" {{ 'selected' if type_filter == 'apk' }}>APKs</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Upload New Files</h3>
+    </div>
+    <form method="POST" action="{{ url_for('admin.upload_media') }}" enctype="multipart/form-data" id="uploadForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="file" name="files" multiple accept="image/*,.apk" id="bulkUpload">
+        <button type="submit" class="btn btn-primary btn-sm" style="margin-left:8px;">Upload</button>
+    </form>
+    <div id="uploadResult"></div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3 class="card-title">All Assets ({{ assets|length }})</h3></div>
+    {% if assets %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;">
+        {% for asset in assets %}
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;text-align:center;">
+            {% if asset.asset_type == 'image' %}
+            <img src="{{ asset.url }}" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:8px;">
+            {% else %}
+            <div style="width:100%;height:100px;background:var(--surface-alt);border-radius:var(--radius-sm);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:28px;">APK</div>
+            {% endif %}
+            <div style="font-size:12px;font-weight:600;word-break:break-all;">{{ asset.original_filename[:30] }}</div>
+            <div style="font-size:11px;color:var(--text-secondary);">{{ asset.file_size|filesizeformat }}</div>
+            {% if asset.width %}<div style="font-size:11px;color:var(--text-secondary);">{{ asset.width }}x{{ asset.height }}</div>{% endif %}
+            <div style="font-size:11px;color:var(--text-secondary);">{{ asset.created_at|date }}</div>
+            <div style="margin-top:6px;display:flex;gap:4px;justify-content:center;">
+                <button onclick="copyUrl('{{ asset.url }}')" class="btn btn-ghost btn-sm">Copy URL</button>
+                <form method="POST" action="{{ url_for('admin.delete_media', asset_id=asset.id) }}" style="display:inline;" onsubmit="return confirm('Delete this asset?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No media files yet</h3>
+        <p>Upload images or APK files to use across your store.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyUrl(url) {
+    navigator.clipboard.write(window.location.origin + url).then(() => {
+        alert('URL copied: ' + window.location.origin + url);
+    });
+}
+
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        const resp = await fetch(e.target.action, { method: 'POST', body: formData });
+        const result = await resp.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            document.getElementById('uploadResult').innerHTML = '<div class="flash flash-error">' + (result.errors || []).join(', ') + '</div>';
+        }
+    } catch (err) {
+        document.getElementById('uploadResult').innerHTML = '<div class="flash flash-error">Upload failed: ' + err.message + '</div>';
+    }
+});
+</script>
+{% endblock %}

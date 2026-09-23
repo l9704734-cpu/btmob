@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ listing.app_name }} — {{ settings.store_name }}</title>
+    {% if listing.seo_title %}<meta name="description" content="{{ listing.meta_description }}">{% elif settings.default_seo_description %}<meta name="description" content="{{ settings.default_seo_description }}">{% endif %}
+    {% if listing.no_index %}<meta name="robots" content="noindex">{% endif %}
+    {% if listing.favicon %}<link rel="icon" href="{{ listing.favicon.url }}">
+    {% elif listing.favicon_url %}<link rel="icon" href="{{ listing.favicon_url }}">
+    {% elif settings.favicon %}<link rel="icon" href="{{ settings.favicon.url }}">
+    {% elif settings.favicon_url %}<link rel="icon" href="{{ settings.favicon_url }}">{% endif %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: {{ listing.primary_color or settings.default_primary_color }};
+            --secondary: {{ listing.secondary_color or settings.default_secondary_color }};
+            --bg: {{ listing.bg_color or settings.default_bg_color }};
+            --text: {{ listing.text_color or settings.default_text_color }};
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: linear-gradient(135deg, var(--bg) 0%, #f1f5f9 100%); color: var(--text); line-height: 1.6; }
+        .header { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 14px 24px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; }
+        .store-icon { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+        .store-name { font-size: 18px; font-weight: 700; text-decoration: none; color: var(--text); }
+        .container { max-width: 680px; margin: 0 auto; padding: 32px 24px; }
+        .app-header { display: flex; gap: 20px; margin-bottom: 24px; align-items: flex-start; }
+        .app-icon { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .app-icon-fallback { width: 120px; height: 120px; border-radius: 24px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 40px; font-weight: 700; flex-shrink: 0; }
+        h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+        .dev { color: var(--primary); font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+        .stats { font-size: 13px; color: #64748b; }
+        .install-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; text-align: center; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; margin-bottom: 24px; border: none; cursor: pointer; }
+        .install-btn:hover { opacity: 0.9; }
+        .install-btn img { width: 18px; height: 18px; }
+        .section { margin-top: 28px; padding-top: 28px; border-top: 1px solid #e2e8f0; }
+        .section h2 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+        .section p { color: #64748b; font-size: 14px; line-height: 1.7; }
+        .screenshots-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; }
+        .screenshot { flex: 0 0 140px; height: 280px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.2s; }
+        .screenshot:hover { border-color: var(--primary); transform: scale(1.03); }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+        .feature-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+        .feature-card img { width: 32px; height: 32px; margin-bottom: 8px; }
+        .feature-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .feature-card p { font-size: 13px; color: #64748b; }
+        .review { display: flex; gap: 12px; margin-bottom: 16px; padding: 16px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 14px; }
+        .review h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .review .stars { color: #f9ab00; font-size: 13px; }
+        .review p { font-size: 13px; color: #64748b; }
+        .perm-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .perm { padding: 10px; background: rgba(15,157,88,0.05); border-radius: 8px; font-size: 13px; border: 1px solid rgba(15,157,88,0.1); }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        .related-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center; text-decoration: none; color: inherit; }
+        .related-card img { width: 48px; height: 48px; border-radius: 12px; margin-bottom: 8px; }
+        .related-card h4 { font-size: 14px; font-weight: 600; }
+        .related-card p { font-size: 12px; color: #64748b; }
+        .preview-banner { background: #f9ab00; color: #fff; padding: 8px 24px; text-align: center; font-size: 13px; font-weight: 600; }
+        @media (max-width: 600px) { .app-header { gap: 12px; } .app-icon, .app-icon-fallback { width: 80px; height: 80px; border-radius: 18px; } h1 { font-size: 20px; } .perm-list { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    {% if preview %}<div class="preview-banner">PREVIEW MODE — This listing is not yet published</div>{% endif %}
+    <div class="header">
+        {% if settings.store_icon %}<img src="{{ settings.store_icon.url }}" class="store-icon" alt="{{ settings.store_name }}">
+        {% elif settings.store_icon_url %}<img src="{{ settings.store_icon_url }}" class="store-icon" alt="{{ settings.store_name }}">{% endif %}
+        <a href="{{ url_for('public.index') }}" class="store-name">{{ settings.store_name }}</a>
+    </div>
+    <div class="container">
+        <div class="app-header">
+            {% if listing.icon %}<img src="{{ listing.icon.url }}" class="app-icon" alt="{{ listing.app_name }}">
+            {% elif listing.icon_url %}<img src="{{ listing.icon_url }}" class="app-icon" alt="{{ listing.app_name }}">
+            {% else %}<div class="app-icon-fallback">{{ listing.app_name[:1] }}</div>{% endif %}
+            <div>
+                <h1>{{ listing.app_name }}</h1>
+                <div class="dev">{{ listing.developer_name }} {% if listing.verified_label %}&bull; {{ listing.verified_label_text }} &#10003;{% endif %}</div>
+                <div class="stats">
+                    {% if listing.rating_value > 0 %}&starf; {{ listing.rating_value }} ({{ listing.review_count }} reviews) &middot; {% endif %}{{ listing.download_count }} downloads
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:#64748b;">{{ listing.tagline }}</div>
+            </div>
+        </div>
+
+        <a href="{{ url_for('public.download', slug=listing.slug) }}" class="install-btn">
+            {% if listing.download_button_icon and listing.download_button_icon_position != 'hidden' %}
+                {% if listing.download_button_icon_position == 'left' %}<img src="{{ listing.download_button_icon.url }}" alt="">{% endif %}
+            {% elif listing.download_button_icon_url and listing.download_button_icon_position != 'hidden' %}
+                {% if listing.download_button_icon_position == 'left' %}<img src="{{ listing.download_button_icon_url }}" alt="">{% endif %}
+            {% endif %}
+            {{ listing.download_button_label or settings.default_download_button_label or 'Install' }}
+            {% if listing.download_button_icon and listing.download_button_icon_position == 'right' %}<img src="{{ listing.download_button_icon.url }}" alt="">{% elif listing.download_button_icon_url and listing.download_button_icon_position == 'right' %}<img src="{{ listing.download_button_icon_url }}" alt="">{% endif %}
+        </a>
+
+        {% if listing.screenshots|selectattr('enabled')|list %}
+        <div class="section">
+            <h2>Screenshots</h2>
+            <div class="screenshots-scroll">
+                {% for s in listing.screenshots|sort(attribute='sort_order') if s.enabled %}
+                <img src="{{ s.url if s.url else (s.asset.url if s.asset else '') }}" alt="{{ s.alt_text or s.caption or 'Screenshot ' ~ loop.index }}" class="screenshot">
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if listing.description %}
+        <div class="section">
+            <h2>About this app</h2>
+            <p>{{ listing.description }}</p>
+        </div>
+        {% endif %}
+
+        {% if listing.features|selectattr('enabled')|list %}
+        <div class="section">
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                {% for f in listing.features|sort(attribute='sort_order') if f.enabled %}
+                <div class="feature-card">
+                    {% if f.asset %}<img src="{{ f.asset.url }}" alt="{{ f.title }}">
+                    {% elif f.icon_url %}<img src="{{ f.icon_url }}" alt="{{ f.title }}">{% endif %}
+                    <h4>{{ f.title }}</h4>
+                    <p>{{ f.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if listing.reviews|selectattr('enabled')|list %}
+        <div class="section">
+            <h2>User Reviews</h2>
+            {% for r in listing.reviews|sort(attribute='sort_order') if r.enabled %}
+            <div class="review">
+                {% if r.avatar %}<img src="{{ r.avatar.url }}" class="avatar" alt="{{ r.reviewer_name }}">
+                {% elif r.avatar_url %}<img src="{{ r.avatar_url }}" class="avatar" alt="{{ r.reviewer_name }}">
+                {% else %}<div class="avatar">{{ r.reviewer_name[:1] }}</div>{% endif %}
+                <div>
+                    <h4>{{ r.reviewer_name }} <span class="stars">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</span></h4>
+                    <p>{{ r.review_text }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if listing.permissions|selectattr('enabled')|list %}
+        <div class="section">
+            <h2>Permissions</h2>
+            <div class="perm-list">
+                {% for p in listing.permissions|sort(attribute='sort_order') if p.enabled %}
+                <div class="perm"><strong>{{ p.name }}</strong>{% if p.explanation %}<br>{{ p.explanation }}{% endif %}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if related %}
+        <div class="section">
+            <h2>More Apps</h2>
+            <div class="related-grid">
+                {% for r in related %}
+                {% if r.manual is defined %}
+                <a href="{{ r.manual_link or '#' }}" class="related-card">
+                    {% if r.manual_icon_url %}<img src="{{ r.manual_icon_url }}" alt="{{ r.manual_name }}">{% endif %}
+                    <h4>{{ r.manual_name }}</h4>
+                </a>
+                {% else %}
+                <a href="{{ url_for('public.listing_detail', slug=r.slug) }}" class="related-card">
+                    {% if r.icon %}<img src="{{ r.icon.url }}" alt="{{ r.app_name }}">
+                    {% elif r.icon_url %}<img src="{{ r.icon_url }}" alt="{{ r.app_name }}">{% endif %}
+                    <h4>{{ r.app_name }}</h4>
+                    <p>{{ r.developer_name }}</p>
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% for c in listing.content_sections|sort(attribute='sort_order') if c.enabled %}
+        <div class="section">
+            <h2>{{ c.heading }}</h2>
+            {% if c.image_url %}<img src="{{ c.image_url }}" alt="" style="width:100%;border-radius:12px;margin-bottom:12px;">{% endif %}
+            <p>{{ c.body }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

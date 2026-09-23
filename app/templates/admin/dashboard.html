@@ -1,0 +1,71 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total APKs</div>
+        <div class="stat-value">{{ total }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Published</div>
+        <div class="stat-value">{{ published }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Drafts</div>
+        <div class="stat-value">{{ drafts }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Archived</div>
+        <div class="stat-value">{{ archived }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Recently Updated</h3>
+        <a href="{{ url_for('admin.list_apps') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    {% if recently_updated %}
+    <table class="table">
+        <thead><tr><th>Name</th><th>Status</th><th>Updated</th></tr></thead>
+        <tbody>
+            {% for a in recently_updated %}
+            <tr class="table-row">
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        {% if a.icon_url %}<img src="{{ a.icon_url }}" class="app-icon-sm" alt="">{% elif a.icon %}<img src="{{ a.icon.url }}" class="app-icon-sm" alt="">{% else %}<div class="app-icon-placeholder">App</div>{% endif %}
+                        <a href="{{ url_for('admin.edit_app', listing_id=a.id) }}">{{ a.app_name }}</a>
+                    </div>
+                </td>
+                <td><span class="badge badge-{{ a.status }}">{{ a.status|capitalize }}</span></td>
+                <td>{{ a.updated_at|datetime }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h3>No APKs yet</h3>
+        <p>Get started by creating your first listing.</p>
+        <a href="{{ url_for('admin.new_app') }}" class="btn btn-primary">Create New APK</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
+    {% if recent_activity %}
+    <table class="table">
+        <thead><tr><th>Action</th><th>Message</th><th>Time</th></tr></thead>
+        <tbody>
+            {% for log in recent_activity %}
+            <tr><td>{{ log.action }}</td><td>{{ log.message }}</td><td>{{ log.created_at|datetime }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:var(--text-secondary);">No activity yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

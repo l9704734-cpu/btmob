@@ -1,0 +1,36 @@
+{% extends 'admin/base.html' %}
+{% block title %}Account & Security{% endblock %}
+{% block page_title %}Account & Security{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3 class="card-title">Account</h3></div>
+    <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" value="{{ admin.username }}" disabled>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Account Created</label>
+        <input type="text" value="{{ admin.created_at|datetime }}" disabled>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h3 class="card-title">Change Password</h3></div>
+    <form method="POST" action="{{ url_for('auth.change_password') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" name="current_password" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">New Password (min 8 characters)</label>
+            <input type="password" name="new_password" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Change Password</button>
+    </form>
+</div>
+{% endblock %}

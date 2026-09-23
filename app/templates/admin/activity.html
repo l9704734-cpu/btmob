@@ -1,0 +1,25 @@
+{% extends 'admin/base.html' %}
+{% block title %}Activity Log{% endblock %}
+{% block page_title %}Activity Log{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
+    {% if logs %}
+    <table class="table">
+        <thead><tr><th>Action</th><th>Entity</th><th>Message</th><th>Time</th></tr></thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td><span class="badge badge-draft">{{ log.action }}</span></td>
+                <td>{{ log.entity_type }}</td>
+                <td>{{ log.message }}</td>
+                <td>{{ log.created_at|datetime }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><h3>No activity yet</h3><p>Actions you take will appear here.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: playstore-cms
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FLASK_COOKIE_SECURE
+        value: "true"
+      - key: UPLOAD_DIR
+        value: /opt/data/uploads

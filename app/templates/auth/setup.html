@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px; width: 100%; max-width: 440px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+        input:focus { outline: none; border-color: #0f9d58; box-shadow: 0 0 0 3px rgba(15,157,88,0.1); }
+        .btn { width: 100%; padding: 12px; background: #0f9d58; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn:hover { background: #0d652b; }
+        .error { background: rgba(234,67,53,0.1); border: 1px solid rgba(234,67,53,0.2); color: #c5221f; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+        .info { background: rgba(66,133,244,0.1); border: 1px solid rgba(66,133,244,0.2); color: #1e40af; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Create Admin Account</h1>
+        <p class="subtitle">No admin account exists yet. Create one to get started.</p>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        <div class="info">Choose a strong password (minimum 8 characters).</div>
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label>Admin Username</label>
+                <input type="text" name="setup_username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Password (min 8 characters)</label>
+                <input type="password" name="setup_password" required>
+            </div>
+            <button type="submit" class="btn">Create Account & Login</button>
+        </form>
+    </div>
+</body>
+</html>

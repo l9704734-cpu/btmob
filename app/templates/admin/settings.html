@@ -1,0 +1,74 @@
+{% extends 'admin/base.html' %}
+{% block title %}Store Settings{% endblock %}
+{% block page_title %}Store Settings{% endblock %}
+{% block content %}
+<form method="POST" action="{{ url_for('admin.store_settings') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="card">
+        <div class="card-header"><h3 class="card-title">Store Branding</h3></div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Store Name</label>
+                <input type="text" name="store_name" value="{{ settings.store_name }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Store Tagline</label>
+                <input type="text" name="store_tagline" value="{{ settings.store_tagline }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Store Description</label>
+            <textarea name="store_description" rows="3">{{ settings.store_description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Store Icon URL (optional)</label>
+            <input type="url" name="store_icon_url" value="{{ settings.store_icon_url }}" placeholder="https://...">
+            {% if settings.store_icon %}<img src="{{ settings.store_icon.url }}" class="img-preview" alt="">{% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Upload Store Icon</label>
+            <input type="file" name="store_icon_file" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Favicon URL (optional)</label>
+            <input type="url" name="favicon_url" value="{{ settings.favicon_url }}" placeholder="https://...">
+            {% if settings.favicon %}<img src="{{ settings.favicon.url }}" class="img-preview img-preview-sm" alt="">{% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Upload Favicon</label>
+            <input type="file" name="favicon_file" accept="image/*">
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3 class="card-title">Default Colors</h3></div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">These are store-wide defaults. Individual listings can override them.</p>
+        <div class="form-grid-3">
+            <div class="form-group"><label class="form-label">Primary Color</label><input type="text" name="default_primary_color" value="{{ settings.default_primary_color }}"></div>
+            <div class="form-group"><label class="form-label">Secondary Color</label><input type="text" name="default_secondary_color" value="{{ settings.default_secondary_color }}"></div>
+            <div class="form-group"><label class="form-label">Background Color</label><input type="text" name="default_bg_color" value="{{ settings.default_bg_color }}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Text Color</label><input type="text" name="default_text_color" value="{{ settings.default_text_color }}"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3 class="card-title">Contact & Footer</h3></div>
+        <div class="form-grid">
+            <div class="form-group"><label class="form-label">Contact Email</label><input type="email" name="contact_email" value="{{ settings.contact_email }}"></div>
+            <div class="form-group"><label class="form-label">Contact Website</label><input type="url" name="contact_website" value="{{ settings.contact_website }}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Footer Text</label><textarea name="footer_text" rows="2">{{ settings.footer_text }}</textarea></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3 class="card-title">Default SEO</h3></div>
+        <div class="form-group"><label class="form-label">Default SEO Title</label><input type="text" name="default_seo_title" value="{{ settings.default_seo_title }}"></div>
+        <div class="form-group"><label class="form-label">Default SEO Description</label><textarea name="default_seo_description" rows="2">{{ settings.default_seo_description }}</textarea></div>
+        <div class="form-group"><label class="form-label">Default Download Button Label</label><input type="text" name="default_download_button_label" value="{{ settings.default_download_button_label }}"></div>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button type="submit" class="btn btn-primary btn-lg">Save Settings</button>
+    </div>
+</form>
+{% endblock %}

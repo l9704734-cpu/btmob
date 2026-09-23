@@ -1,0 +1,107 @@
+{% extends 'admin/base.html' %}
+{% block title %}All APKs{% endblock %}
+{% block page_title %}All APKs{% endblock %}
+{% block content %}
+<div class="search-bar">
+    <form method="GET" action="{{ url_for('admin.list_apps') }}" style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="text" name="q" value="{{ search }}" placeholder="Search by name or slug..." class="form-control" style="max-width:240px;">
+        <select name="status" class="form-control" style="max-width:140px;">
+            <option value="">All statuses</option>
+            <option value="published" {{ 'selected' if status_filter == 'published' }}>Published</option>
+            <option value="draft" {{ 'selected' if status_filter == 'draft' }}>Draft</option>
+            <option value="archived" {{ 'selected' if status_filter == 'archived' }}>Archived</option>
+        </select>
+        <select name="sort" class="form-control" style="max-width:140px;">
+            <option value="updated" {{ 'selected' if sort == 'updated' }}>Sort: Updated</option>
+            <option value="name" {{ 'selected' if sort == 'name' }}>Sort: Name</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        <a href="{{ url_for('admin.list_apps') }}" class="btn btn-ghost btn-sm">Reset</a>
+    </form>
+    <div style="flex:1;"></div>
+    <a href="{{ url_for('admin.new_app') }}" class="btn btn-primary btn-sm">+ Add New</a>
+</div>
+
+<div class="card">
+    {% if listings %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>App</th>
+                <th class="hide-mobile">Slug</th>
+                <th class="hide-mobile">Version</th>
+                <th>Status</th>
+                <th class="hide-mobile">Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in listings %}
+            <tr class="table-row">
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        {% if a.icon_url %}<img src="{{ a.icon_url }}" class="app-icon-sm" alt="">{% elif a.icon %}<img src="{{ a.icon.url }}" class="app-icon-sm" alt="">{% else %}<div class="app-icon-placeholder">{{ a.app_name[:1] }}</div>{% endif %}
+                        <div>
+                            <div style="font-weight:600;">{{ a.app_name }}</div>
+                            <div style="font-size:12px;color:var(--text-secondary);">{{ a.developer_name }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="hide-mobile"><code>{{ a.slug }}</code></td>
+                <td class="hide-mobile">{{ a.version }}</td>
+                <td><span class="badge badge-{{ a.status }}">{{ a.status|capitalize }}</span></td>
+                <td class="hide-mobile">{{ a.updated_at|date }}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('admin.edit_app', listing_id=a.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                    <a href="{{ url_for('admin.preview_app', listing_id=a.id) }}" class="btn btn-ghost btn-sm" target="_blank">Preview</a>
+                    <form method="POST" action="{{ url_for('admin.duplicate_app', listing_id=a.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Duplicate</button>
+                    </form>
+                    {% if a.status == 'published' %}
+                    <form method="POST" action="{{ url_for('admin.unpublish_app', listing_id=a.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Unpublish</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('admin.publish_app', listing_id=a.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Publish</button>
+                    </form>
+                    {% endif %}
+                    {% if a.status == 'archived' %}
+                    <form method="POST" action="{{ url_for('admin.restore_app', listing_id=a.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Restore</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('admin.archive_app', listing_id=a.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Archive</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin.delete_app', listing_id=a.id) }}" style="display:inline;" onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}<a href="{{ url_for('admin.list_apps', page=page-1, q=search, status=status_filter, sort=sort) }}" class="btn btn-secondary btn-sm">&laquo; Prev</a>{% endif %}
+        <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}<a href="{{ url_for('admin.list_apps', page=page+1, q=search, status=status_filter, sort=sort) }}" class="btn btn-secondary btn-sm">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <h3>No APKs found</h3>
+        <p>{{ 'No results match your search.' if search else 'Start by creating your first APK listing.' }}</p>
+        <a href="{{ url_for('admin.new_app') }}" class="btn btn-primary">Create New APK</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

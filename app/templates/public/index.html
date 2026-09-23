@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ settings.store_name }} — {{ settings.store_tagline }}</title>
+    {% if settings.favicon %}<link rel="icon" href="{{ settings.favicon.url }}">{% elif settings.favicon_url %}<link rel="icon" href="{{ settings.favicon_url }}">{% endif %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: {{ settings.default_primary_color }};
+            --secondary: {{ settings.default_secondary_color }};
+            --bg: {{ settings.default_bg_color }};
+            --text: {{ settings.default_text_color }};
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: linear-gradient(135deg, var(--bg) 0%, #f1f5f9 100%); color: var(--text); line-height: 1.6; }
+        .header { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 14px 24px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; }
+        .store-icon { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+        .store-name { font-size: 18px; font-weight: 700; }
+        .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .app-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; text-decoration: none; color: inherit; transition: all 0.2s ease; }
+        .app-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .app-icon { width: 72px; height: 72px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; }
+        .app-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .app-card .dev { font-size: 13px; color: var(--primary); font-weight: 500; margin-bottom: 4px; }
+        .app-card .desc { font-size: 13px; color: #64748b; line-height: 1.5; }
+        .app-card .stats { margin-top: 8px; font-size: 12px; color: #64748b; }
+        .empty { text-align: center; padding: 60px 20px; color: #64748b; }
+        .footer { text-align: center; padding: 24px; color: #64748b; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        {% if settings.store_icon %}<img src="{{ settings.store_icon.url }}" class="store-icon" alt="{{ settings.store_name }}">
+        {% elif settings.store_icon_url %}<img src="{{ settings.store_icon_url }}" class="store-icon" alt="{{ settings.store_name }}">
+        {% endif %}
+        <span class="store-name">{{ settings.store_name }}</span>
+    </div>
+    <div class="container">
+        <h1 style="font-size: 24px; margin-bottom: 24px;">{{ settings.store_name }} — {{ settings.store_tagline }}</h1>
+        {% if listings %}
+        <div class="grid">
+            {% for a in listings %}
+            <a href="{{ url_for('public.listing_detail', slug=a.slug) }}" class="app-card">
+                {% if a.icon %}<img src="{{ a.icon.url }}" class="app-icon" alt="{{ a.app_name }}">
+                {% elif a.icon_url %}<img src="{{ a.icon_url }}" class="app-icon" alt="{{ a.app_name }}">
+                {% else %}<div class="app-icon" style="background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;">{{ a.app_name[:1] }}</div>{% endif %}
+                <h3>{{ a.app_name }}</h3>
+                <div class="dev">{{ a.developer_name }}</div>
+                <div class="desc">{{ a.tagline }}</div>
+                <div class="stats">{{ a.rating_value }} stars · {{ a.download_count }} downloads</div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">
+            <h2>No apps available</h2>
+            <p>Check back soon for new listings.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% if settings.footer_text %}<div class="footer">{{ settings.footer_text }}</div>{% endif %}
+</body>
+</html>

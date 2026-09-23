@@ -1,0 +1,585 @@
+{% extends 'admin/base.html' %}
+{% block title %}{% if listing %}Edit {{ listing.app_name }}{% else %}New APK{% endif %}{% endblock %}
+{% block page_title %}{% if listing %}Edit: {{ listing.app_name }}{% else %}New APK Listing{% endif %}{% endblock %}
+{% block content %}
+{% if form_errors %}
+<div class="flash flash-error" style="margin-bottom:16px;">
+    <div>
+        <strong>Validation errors:</strong>
+        <ul style="margin:4px 0 0 16px;">{% for e in form_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('admin.edit_app', listing_id=listing.id) if listing else url_for('admin.new_app') }}" enctype="multipart/form-data" id="editorForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button type="button" class="tab-link active" data-tab="basic">Basic Info</button>
+        <button type="button" class="tab-link" data-tab="download">Download</button>
+        <button type="button" class="tab-link" data-tab="branding">Branding</button>
+        <button type="button" class="tab-link" data-tab="screenshots">Screenshots</button>
+        <button type="button" class="tab-link" data-tab="features">Features</button>
+        <button type="button" class="tab-link" data-tab="reviews">Reviews</button>
+        <button type="button" class="tab-link" data-tab="permissions">Permissions</button>
+        <button type="button" class="tab-link" data-tab="related">Related Apps</button>
+        <button type="button" class="tab-link" data-tab="custom">Custom Sections</button>
+        <button type="button" class="tab-link" data-tab="seo">SEO & Advanced</button>
+    </div>
+
+    <!-- Tab: Basic Info -->
+    <div class="tab-pane active" id="tab-basic">
+        <div class="card">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">App Name <span class="req">*</span></label>
+                    <input type="text" name="app_name" value="{{ listing.app_name if listing else '' }}" placeholder="e.g. Google Meet" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Short Name</label>
+                    <input type="text" name="short_name" value="{{ listing.short_name if listing else '' }}" placeholder="e.g. Meet">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Slug <span class="req">*</span></label>
+                    <input type="text" name="slug" value="{{ listing.slug if listing else '' }}" placeholder="auto-generated from name" required>
+                    <div class="form-hint">Unique URL identifier. Letters, numbers, hyphens only.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <input type="text" name="category" value="{{ listing.category if listing else '' }}" placeholder="e.g. Communication">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Developer Name</label>
+                    <input type="text" name="developer_name" value="{{ listing.developer_name if listing else '' }}" placeholder="e.g. Google LLC">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Developer Website</label>
+                    <input type="url" name="developer_website" value="{{ listing.developer_website if listing else '' }}" placeholder="https://...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tagline</label>
+                <input type="text" name="tagline" value="{{ listing.tagline if listing else '' }}" placeholder="Short one-line description">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Full Description</label>
+                <textarea name="description" rows="5">{{ listing.description if listing else '' }}</textarea>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Package Name</label>
+                    <input type="text" name="package_name" value="{{ listing.package_name if listing else '' }}" placeholder="com.example.app">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Version</label>
+                    <input type="text" name="version" value="{{ listing.version if listing else '' }}" placeholder="1.0.0">
+                </div>
+            </div>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label class="form-label">File Size</label>
+                    <input type="text" name="file_size" value="{{ listing.file_size if listing else '' }}" placeholder="120MB">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Release Date</label>
+                    <input type="date" name="release_date" value="{{ listing.release_date|date if listing and listing.release_date else '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age Rating</label>
+                    <select name="age_rating">
+                        {% for r in ['Everyone', 'Everyone 10+', 'Teen', 'Mature 17+', 'Adult'] %}
+                        <option value="{{ r }}" {{ 'selected' if listing and listing.age_rating == r }}>{{ r }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label class="form-label">Language</label>
+                    <input type="text" name="language" value="{{ listing.language if listing else 'English' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rating Value (0-5)</label>
+                    <input type="number" name="rating_value" step="0.1" min="0" max="5" value="{{ listing.rating_value if listing else 0 }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Review Count</label>
+                    <input type="number" name="review_count" value="{{ listing.review_count if listing else 0 }}">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Download Count (display text)</label>
+                    <input type="text" name="download_count" value="{{ listing.download_count if listing else '' }}" placeholder="1B+">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select name="status">
+                        <option value="draft" {{ 'selected' if not listing or listing.status == 'draft' }}>Draft</option>
+                        <option value="published" {{ 'selected' if listing and listing.status == 'published' }}>Published</option>
+                        <option value="archived" {{ 'selected' if listing and listing.status == 'archived' }}>Archived</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" name="verified_label" value="true" {{ 'checked' if listing and listing.verified_label }}> Verified Label</label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Verified Label Text</label>
+                <input type="text" name="verified_label_text" value="{{ listing.verified_label_text if listing else 'Verified' }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Download -->
+    <div class="tab-pane" id="tab-download">
+        <div class="card">
+            <div class="form-group">
+                <label><input type="checkbox" name="use_uploaded_file" value="true" {{ 'checked' if listing and listing.use_uploaded_file }}> Use uploaded APK file instead of external URL</label>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">External APK Download URL</label>
+                    <input type="url" name="apk_url" value="{{ listing.apk_url if listing else '' }}" placeholder="https://...">
+                    <div class="form-hint">Used when "Use uploaded file" is off.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Download Filename</label>
+                    <input type="text" name="download_filename" value="{{ listing.download_filename if listing else '' }}" placeholder="App_v1.0.apk">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Upload APK File</label>
+                <input type="file" name="apk_file" accept=".apk">
+                {% if listing and listing.apk_file %}<div class="form-hint">Current: {{ listing.apk_file.original_filename }}</div>{% endif %}
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">APK Checksum / Hash</label>
+                    <input type="text" name="apk_checksum" value="{{ listing.apk_checksum if listing else '' }}" placeholder="SHA256...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Download Button Label</label>
+                    <input type="text" name="download_button_label" value="{{ listing.download_button_label if listing else 'Install' }}">
+                </div>
+            </div>
+            <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;">Download Button Icon</h4>
+            <div class="form-group">
+                <label class="form-label">Icon URL (optional)</label>
+                <input type="url" name="download_button_icon_url" value="{{ listing.download_button_icon_url if listing else '' }}" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Upload Icon</label>
+                <input type="file" name="download_button_icon_file" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Icon Position</label>
+                <select name="download_button_icon_position">
+                    <option value="left" {{ 'selected' if not listing or listing.download_button_icon_position == 'left' }}>Left</option>
+                    <option value="right" {{ 'selected' if listing and listing.download_button_icon_position == 'right' }}>Right</option>
+                    <option value="hidden" {{ 'selected' if listing and listing.download_button_icon_position == 'hidden' }}>Hidden</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Branding -->
+    <div class="tab-pane" id="tab-branding">
+        <div class="card">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">App Icon URL</label>
+                    <input type="url" name="icon_url" value="{{ listing.icon_url if listing else '' }}" placeholder="https://...">
+                    {% if listing and listing.icon %}<img src="{{ listing.icon.url }}" class="img-preview" alt="">{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload App Icon</label>
+                    <input type="file" name="icon_file" accept="image/*">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Hero / Banner Image URL</label>
+                    <input type="url" name="hero_url" value="{{ listing.hero_url if listing else '' }}" placeholder="https://...">
+                    {% if listing and listing.hero %}<img src="{{ listing.hero.url }}" class="img-preview" alt="">{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload Hero Image</label>
+                    <input type="file" name="hero_file" accept="image/*">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Favicon URL</label>
+                    <input type="url" name="favicon_url" value="{{ listing.favicon_url if listing else '' }}" placeholder="https://...">
+                    {% if listing and listing.favicon %}<img src="{{ listing.favicon.url }}" class="img-preview img-preview-sm" alt="">{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload Favicon</label>
+                    <input type="file" name="favicon_file" accept="image/*">
+                </div>
+            </div>
+            <div class="form-grid-3">
+                <div class="form-group"><label class="form-label">Primary Color</label><input type="text" name="primary_color" value="{{ listing.primary_color if listing else '' }}" placeholder="#0f9d58"></div>
+                <div class="form-group"><label class="form-label">Secondary Color</label><input type="text" name="secondary_color" value="{{ listing.secondary_color if listing else '' }}" placeholder="#34a853"></div>
+                <div class="form-group"><label class="form-label">Background Color</label><input type="text" name="bg_color" value="{{ listing.bg_color if listing else '' }}" placeholder="#f8fafc"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Text Color</label><input type="text" name="text_color" value="{{ listing.text_color if listing else '' }}" placeholder="#0f172a"></div>
+            <div class="form-hint">Leave colors blank to inherit from Store Settings defaults.</div>
+        </div>
+    </div>
+
+    <!-- Tab: Screenshots -->
+    <div class="tab-pane" id="tab-screenshots">
+        <div class="card">
+            <div id="screenshots-container">
+                {% if listing and listing.screenshots %}
+                    {% for s in listing.screenshots|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="screenshot">
+                        <div class="item-header">
+                            <span class="item-index">Screenshot #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="s_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if s.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="s_id[]" value="{{ s.id }}">
+                        <input type="hidden" name="s_order[]" value="{{ s.sort_order }}">
+                        <div class="form-grid">
+                            <div class="form-group"><label class="form-label">Image URL</label><input type="url" name="s_url[]" value="{{ s.url }}" placeholder="https://..."></div>
+                            <div class="form-group"><label class="form-label">Upload Image</label><input type="file" name="s_file_{{ loop.index }}" accept="image/*"></div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group"><label class="form-label">Caption</label><input type="text" name="s_caption[]" value="{{ s.caption }}"></div>
+                            <div class="form-group"><label class="form-label">Alt Text</label><input type="text" name="s_alt[]" value="{{ s.alt_text }}"></div>
+                        </div>
+                        {% if s.url %}<img src="{{ s.url }}" class="img-preview img-preview-wide" alt="">{% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addScreenshot()">+ Add Screenshot</button>
+        </div>
+    </div>
+
+    <!-- Tab: Features -->
+    <div class="tab-pane" id="tab-features">
+        <div class="card">
+            <div id="features-container">
+                {% if listing and listing.features %}
+                    {% for f in listing.features|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="feature">
+                        <div class="item-header">
+                            <span class="item-index">Feature #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="f_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if f.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="f_id[]" value="{{ f.id }}">
+                        <input type="hidden" name="f_order[]" value="{{ f.sort_order }}">
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Title</label><input type="text" name="f_title[]" value="{{ f.title }}"></div>
+                        <div class="form-group"><label class="form-label">Description</label><input type="text" name="f_desc[]" value="{{ f.description }}"></div></div>
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Icon URL</label><input type="url" name="f_icon_url[]" value="{{ f.icon_url }}"></div>
+                        <div class="form-group"><label class="form-label">Upload Icon</label><input type="file" name="f_icon_file_{{ loop.index0 }}" accept="image/*"></div></div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addFeature()">+ Add Feature</button>
+        </div>
+    </div>
+
+    <!-- Tab: Reviews -->
+    <div class="tab-pane" id="tab-reviews">
+        <div class="card">
+            <div id="reviews-container">
+                {% if listing and listing.reviews %}
+                    {% for r in listing.reviews|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="review">
+                        <div class="item-header">
+                            <span class="item-index">Review #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="r_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if r.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="r_id[]" value="{{ r.id }}">
+                        <input type="hidden" name="r_order[]" value="{{ r.sort_order }}">
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Reviewer Name</label><input type="text" name="r_name[]" value="{{ r.reviewer_name }}"></div>
+                        <div class="form-group"><label class="form-label">Rating (1-5)</label><select name="r_rating[]">{% for i in range(1, 6) %}<option value="{{ i }}" {{ 'selected' if r.rating == i }}>{{ i }} stars</option>{% endfor %}</select></div></div>
+                        <div class="form-group"><label class="form-label">Review Text</label><textarea name="r_text[]" rows="3">{{ r.review_text }}</textarea></div>
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Date</label><input type="date" name="r_date[]" value="{{ r.review_date|date if r.review_date else '' }}"></div>
+                        <div class="form-group"><label class="form-label">Avatar URL</label><input type="url" name="r_avatar_url[]" value="{{ r.avatar_url }}"></div></div>
+                        <div class="form-group"><label class="form-label">Upload Avatar</label><input type="file" name="r_avatar_file_{{ loop.index0 }}" accept="image/*"></div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addReview()">+ Add Review</button>
+        </div>
+    </div>
+
+    <!-- Tab: Permissions -->
+    <div class="tab-pane" id="tab-permissions">
+        <div class="card">
+            <div id="permissions-container">
+                {% if listing and listing.permissions %}
+                    {% for p in listing.permissions|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="permission">
+                        <div class="item-header">
+                            <span class="item-index">Permission #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="p_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if p.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="p_id[]" value="{{ p.id }}">
+                        <input type="hidden" name="p_order[]" value="{{ p.sort_order }}">
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Permission Name</label><input type="text" name="p_name[]" value="{{ p.name }}"></div>
+                        <div class="form-group"><label class="form-label">Icon</label><select name="p_icon[]">{% for ic in ['lock', 'camera', 'microphone', 'location', 'phone', 'wifi'] %}<option value="{{ ic }}" {{ 'selected' if p.icon == ic }}>{{ ic }}</option>{% endfor %}</select></div></div>
+                        <div class="form-group"><label class="form-label">Explanation</label><input type="text" name="p_explanation[]" value="{{ p.explanation }}"></div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addPermission()">+ Add Permission</button>
+        </div>
+    </div>
+
+    <!-- Tab: Related Apps -->
+    <div class="tab-pane" id="tab-related">
+        <div class="card">
+            <div id="related-container">
+                {% if listing and listing.related_apps %}
+                    {% for ra in listing.related_apps|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="related">
+                        <div class="item-header">
+                            <span class="item-index">Related App #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="ra_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if ra.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="ra_id[]" value="{{ ra.id }}">
+                        <input type="hidden" name="ra_order[]" value="{{ ra.sort_order }}">
+                        <div class="form-group">
+                            <label class="form-label">Link to existing listing (optional)</label>
+                            <select name="ra_related_id[]">
+                                <option value="">— Manual entry —</option>
+                                {% for al in all_listings %}
+                                <option value="{{ al.id }}" {{ 'selected' if ra.related_listing_id == al.id }}>{{ al.app_name }} ({{ al.slug }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-hint">Or fill in manual details below (used when no listing is selected):</div>
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Manual Name</label><input type="text" name="ra_manual_name[]" value="{{ ra.manual_name }}"></div>
+                        <div class="form-group"><label class="form-label">Manual Icon URL</label><input type="url" name="ra_manual_icon_url[]" value="{{ ra.manual_icon_url }}"></div></div>
+                        <div class="form-group"><label class="form-label">Manual Link</label><input type="url" name="ra_manual_link[]" value="{{ ra.manual_link }}" placeholder="https://play.google.com/..."></div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addRelated()">+ Add Related App</button>
+        </div>
+    </div>
+
+    <!-- Tab: Custom Sections -->
+    <div class="tab-pane" id="tab-custom">
+        <div class="card">
+            <div id="custom-container">
+                {% if listing and listing.content_sections %}
+                    {% for c in listing.content_sections|sort(attribute='sort_order') %}
+                    <div class="repeatable-item" data-type="custom">
+                        <div class="item-header">
+                            <span class="item-index">Section #{{ loop.index }}</span>
+                            <div>
+                                <label style="font-size:12px;"><input type="checkbox" name="c_enabled[]" value="{{ loop.index0 }}" {{ 'checked' if c.enabled }}> Enabled</label>
+                                <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="c_id[]" value="{{ c.id }}">
+                        <input type="hidden" name="c_order[]" value="{{ c.sort_order }}">
+                        <div class="form-group"><label class="form-label">Heading</label><input type="text" name="c_heading[]" value="{{ c.heading }}"></div>
+                        <div class="form-group"><label class="form-label">Body (text/markdown)</label><textarea name="c_body[]" rows="4">{{ c.body }}</textarea></div>
+                        <div class="form-grid"><div class="form-group"><label class="form-label">Image URL</label><input type="url" name="c_image_url[]" value="{{ c.image_url }}"></div>
+                        <div class="form-group"><label class="form-label">Upload Image</label><input type="file" name="c_image_file_{{ loop.index }}" accept="image/*"></div></div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button type="button" class="add-item-btn" onclick="addCustom()">+ Add Section</button>
+        </div>
+    </div>
+
+    <!-- Tab: SEO -->
+    <div class="tab-pane" id="tab-seo">
+        <div class="card">
+            <div class="form-grid">
+                <div class="form-group"><label class="form-label">SEO Title</label><input type="text" name="seo_title" value="{{ listing.seo_title if listing else '' }}"></div>
+                <div class="form-group"><label class="form-label">Custom Browser Title</label><input type="text" name="custom_browser_title" value="{{ listing.custom_browser_title if listing else '' }}"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Meta Description</label><textarea name="meta_description" rows="2">{{ listing.meta_description if listing else '' }}</textarea></div>
+            <div class="form-grid">
+                <div class="form-group"><label class="form-label">Canonical URL</label><input type="url" name="canonical_url" value="{{ listing.canonical_url if listing else '' }}"></div>
+                <div class="form-group"><label class="form-label">Social Sharing Image URL</label><input type="url" name="social_image_url" value="{{ listing.social_image_url if listing else '' }}"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Upload Social Image</label><input type="file" name="social_image_file" accept="image/*"></div>
+            <div class="form-group"><label><input type="checkbox" name="no_index" value="true" {{ 'checked' if listing and listing.no_index }}> No-index (hide from search engines)</label></div>
+        </div>
+    </div>
+
+    <!-- Sticky action bar -->
+    <div class="editor-actions">
+        <a href="{{ url_for('admin.list_apps') }}" class="btn btn-ghost">Cancel</a>
+        <div style="display:flex;gap:8px;">
+            <button type="submit" name="action" value="preview" class="btn btn-secondary" formtarget="_blank">Preview</button>
+            <button type="submit" name="action" value="save_draft" class="btn btn-secondary">Save Draft</button>
+            <button type="submit" name="action" value="publish" class="btn btn-primary">Save & Publish</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Tab switching
+document.querySelectorAll('.tab-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
+
+// Dynamic add functions
+function getRowCount(container) {
+    return container.querySelectorAll('.repeatable-item').length;
+}
+
+function addScreenshot() {
+    const container = document.getElementById('screenshots-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Screenshot</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="s_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="s_id[]" value="">
+        <input type="hidden" name="s_order[]" value="${idx}">
+        <div class="form-grid"><div class="form-group"><label class="form-label">Image URL</label><input type="url" name="s_url[]" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Upload Image</label><input type="file" name="s_file_${idx}" accept="image/*"></div></div>
+        <div class="form-grid"><div class="form-group"><label class="form-label">Caption</label><input type="text" name="s_caption[]"></div>
+        <div class="form-group"><label class="form-label">Alt Text</label><input type="text" name="s_alt[]"></div></div>
+    `;
+    container.appendChild(div);
+}
+
+function addFeature() {
+    const container = document.getElementById('features-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Feature</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="f_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="f_id[]" value=""><input type="hidden" name="f_order[]" value="${idx}">
+        <div class="form-grid"><div class="form-group"><label class="form-label">Title</label><input type="text" name="f_title[]"></div>
+        <div class="form-group"><label class="form-label">Description</label><input type="text" name="f_desc[]"></div></div>
+        <div class="form-grid"><div class="form-group"><label class="form-label">Icon URL</label><input type="url" name="f_icon_url[]"></div>
+        <div class="form-group"><label class="form-label">Upload Icon</label><input type="file" name="f_icon_file_${idx}" accept="image/*"></div></div>
+    `;
+    container.appendChild(div);
+}
+
+function addReview() {
+    const container = document.getElementById('reviews-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Review</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="r_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="r_id[]" value=""><input type="hidden" name="r_order[]" value="${idx}">
+        <div class="form-grid"><div class="form-group"><label class="form-label">Reviewer Name</label><input type="text" name="r_name[]"></div>
+        <div class="form-group"><label class="form-label">Rating</label><select name="r_rating[]">{% for i in range(1, 6) %}<option value="{{ i }}">{{ i }} stars</option>{% endfor %}</select></div></div>
+        <div class="form-group"><label class="form-label">Review Text</label><textarea name="r_text[]" rows="3"></textarea></div>
+        <div class="form-grid"><div class="form-group"><label class="form-label">Date</label><input type="date" name="r_date[]"></div>
+        <div class="form-group"><label class="form-label">Avatar URL</label><input type="url" name="r_avatar_url[]"></div></div>
+        <div class="form-group"><label class="form-label">Upload Avatar</label><input type="file" name="r_avatar_file_${idx}" accept="image/*"></div>
+    `;
+    container.appendChild(div);
+}
+
+function addPermission() {
+    const container = document.getElementById('permissions-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Permission</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="p_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="p_id[]" value=""><input type="hidden" name="p_order[]" value="${idx}">
+        <div class="form-grid"><div class="form-group"><label class="form-label">Permission Name</label><input type="text" name="p_name[]"></div>
+        <div class="form-group"><label class="form-label">Icon</label><select name="p_icon[]">{% for ic in ['lock','camera','microphone','location','phone','wifi'] %}<option value="{{ ic }}">{{ ic }}</option>{% endfor %}</select></div></div>
+        <div class="form-group"><label class="form-label">Explanation</label><input type="text" name="p_explanation[]"></div>
+    `;
+    container.appendChild(div);
+}
+
+function addRelated() {
+    const container = document.getElementById('related-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    const options = `{% for al in all_listings %}<option value="{{ al.id }}">{{ al.app_name }} ({{ al.slug }})</option>{% endfor %}`;
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Related App</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="ra_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="ra_id[]" value=""><input type="hidden" name="ra_order[]" value="${idx}">
+        <div class="form-group"><label class="form-label">Link to existing listing</label><select name="ra_related_id[]"><option value="">— Manual entry —</option>${options}</select></div>
+        <div class="form-grid"><div class="form-group"><label class="form-label">Manual Name</label><input type="text" name="ra_manual_name[]"></div>
+        <div class="form-group"><label class="form-label">Manual Icon URL</label><input type="url" name="ra_manual_icon_url[]"></div></div>
+        <div class="form-group"><label class="form-label">Manual Link</label><input type="url" name="ra_manual_link[]" placeholder="https://play.google.com/..."></div>
+    `;
+    container.appendChild(div);
+}
+
+function addCustom() {
+    const container = document.getElementById('custom-container');
+    const idx = getRowCount(container);
+    const div = document.createElement('div');
+    div.className = 'repeatable-item';
+    div.innerHTML = `
+        <div class="item-header"><span class="item-index">New Section</span><div>
+        <label style="font-size:12px;"><input type="checkbox" name="c_enabled[]" value="${idx}" checked> Enabled</label>
+        <button type="button" class="btn-remove" onclick="this.closest('.repeatable-item').remove()">Remove</button></div></div>
+        <input type="hidden" name="c_id[]" value=""><input type="hidden" name="c_order[]" value="${idx}">
+        <div class="form-group"><label class="form-label">Heading</label><input type="text" name="c_heading[]"></div>
+        <div class="form-group"><label class="form-label">Body</label><textarea name="c_body[]" rows="4"></textarea></div>
+        <div class="form-grid"><div class="form-group"><label class="form-label">Image URL</label><input type="url" name="c_image_url[]"></div>
+        <div class="form-group"><label class="form-label">Upload Image</label><input type="file" name="c_image_file_${idx}" accept="image/*"></div></div>
+    `;
+    container.appendChild(div);
+}
+
+// Unsaved changes warning
+let formChanged = false;
+document.getElementById('editorForm').addEventListener('change', () => formChanged = true);
+document.getElementById('editorForm').addEventListener('submit', () => formChanged = false);
+window.addEventListener('beforeunload', (e) => {
+    if (formChanged) { e.preventDefault(); e.returnValue = ''; }
+});
+</script>
+{% endblock %}
