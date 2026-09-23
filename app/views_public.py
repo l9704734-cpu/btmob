@@ -47,31 +47,31 @@ def listing_detail(slug):
 def download(slug):
     """Serve the APK file for a published listing with tight headers."""
     listing = AppListing.query.filter_by(slug=slug, status='published').first_or_404()
-    if not listing.use_uploaded_file or not listing.apk_asset_id:
-        if listing.apk_url:
-            return redirect(listing.apk_url)
-        abort(404)
 
-    asset = db.session.get(MediaAsset, listing.apk_asset_id)
-    if not asset:
-        abort(404)
+    # If using uploaded file and we have an asset, serve it
+    if listing.use_uploaded_file and listing.apk_asset_id:
+        asset = db.session.get(MediaAsset, listing.apk_asset_id)
+        if asset:
+            # If the APK is on Supabase/Cloudinary, redirect there for the download
+            if asset.cloudinary_url:
+                return redirect(asset.cloudinary_url)
+            # Otherwise serve from local disk
+            upload_dir = current_app.config['UPLOAD_DIR']
+            filepath = os.path.join(upload_dir, asset.filename)
+            if os.path.exists(filepath):
+                filename = listing.download_filename or asset.original_filename or 'app.apk'
+                response = send_file(filepath, as_attachment=True, download_name=filename,
+                                     mimetype='application/vnd.android.package-archive')
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                response.headers['X-Download-Options'] = 'noopen'
+                response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+                return response
 
-    # If the APK is on Cloudinary, redirect there for the download
-    if asset.cloudinary_url:
-        return redirect(asset.cloudinary_url)
+    # Fall back to external URL
+    if listing.apk_url:
+        return redirect(listing.apk_url)
 
-    upload_dir = current_app.config['UPLOAD_DIR']
-    filepath = os.path.join(upload_dir, asset.filename)
-    if not os.path.exists(filepath):
-        abort(404)
-    filename = listing.download_filename or asset.original_filename or 'app.apk'
-    # Send with the correct APK MIME type and tight security headers
-    response = send_file(filepath, as_attachment=True, download_name=filename,
-                         mimetype='application/vnd.android.package-archive')
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Download-Options'] = 'noopen'
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
+    abort(404)
 
 
 @public_bp.route('/media/<path:filename>')

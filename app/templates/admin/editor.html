@@ -140,7 +140,7 @@
     <div class="tab-pane" id="tab-download">
         <div class="card">
             <div class="form-group">
-                <label><input type="checkbox" name="use_uploaded_file" value="true" {{ 'checked' if listing and listing.use_uploaded_file }}> Use uploaded APK file instead of external URL</label>
+                <label><input type="checkbox" name="use_uploaded_file" value="true" {{ 'checked' if listing and (listing.use_uploaded_file or listing.apk_asset_id) }}> Use uploaded APK file instead of external URL</label>
             </div>
             <div class="form-grid">
                 <div class="form-group">
@@ -156,7 +156,14 @@
             <div class="form-group">
                 <label class="form-label">Upload APK File</label>
                 <input type="file" name="apk_file" accept=".apk">
-                {% if listing and listing.apk_file %}<div class="form-hint">Current: {{ listing.apk_file.original_filename }}</div>{% endif %}
+                {% if listing and listing.apk_asset_id %}
+                    {% set apk = listing.apk_file %}
+                    {% if apk %}
+                    <div class="form-hint">Current APK: {{ apk.original_filename or apk.filename }}
+                    {% if apk.cloudinary_url %}<br><a href="{{ apk.cloudinary_url }}" target="_blank">View file</a>{% endif %}
+                    </div>
+                    {% endif %}
+                {% endif %}
             </div>
             <div class="form-grid">
                 <div class="form-group">
