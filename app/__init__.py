@@ -209,19 +209,34 @@ def create_app(config_overrides=None):
             'database_url_prefix': os.environ.get('DATABASE_URL', '')[:30] + '...' if os.environ.get('DATABASE_URL') else 'not set',
             'supabase_url_set': bool(os.environ.get('SUPABASE_URL')),
             'supabase_key_set': bool(os.environ.get('SUPABASE_KEY')),
+            'supabase_bucket': os.environ.get('SUPABASE_BUCKET', 'uploads'),
             'db_init_error': app.config.get('DB_INIT_ERROR', 'none'),
         }
         try:
             with app.app_context():
-                from app.models import AppListing, StoreSettings, AdminUser
+                from app.models import AppListing, StoreSettings, AdminUser, MediaAsset
                 from sqlalchemy import inspect
                 inspector = inspect(db.engine)
                 info['tables'] = inspector.get_table_names()
                 info['listing_count'] = AppListing.query.count()
                 info['settings_count'] = StoreSettings.query.count()
                 info['admin_count'] = AdminUser.query.count()
+                info['media_count'] = MediaAsset.query.count()
         except Exception as e:
             info['query_error'] = str(e)
+
+        # Test Supabase Storage connection
+        if os.environ.get('SUPABASE_URL') and os.environ.get('SUPABASE_KEY'):
+            try:
+                from supabase import create_client
+                client = create_client(os.environ['SUPABASE_URL'], os.environ['SUPABASE_KEY'])
+                bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
+                # Try to list files in the bucket
+                files = client.storage.from_(bucket).list()
+                info['supabase_storage'] = f'OK ({len(files)} files in {bucket})'
+            except Exception as e:
+                info['supabase_storage_error'] = str(e)
+
         return jsonify(info)
 
     @app.errorhandler(500)

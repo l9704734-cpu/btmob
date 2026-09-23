@@ -76,11 +76,18 @@ def save_upload(file_storage, asset_type='image'):
             file_storage.seek(0)
 
             # Upload to Supabase Storage
-            result = client.storage.from_(sb_bucket).upload(
+            upload_result = client.storage.from_(sb_bucket).upload(
                 path=safe_name,
                 file=file_data,
                 file_options={'content-type': mime or 'application/octet-stream'}
             )
+
+            # Check if upload succeeded — supabase-py returns a response or raises
+            # Some versions return a dict with error info
+            if hasattr(upload_result, 'error') and upload_result.error:
+                return None, f'Supabase upload error: {upload_result.error}'
+            if isinstance(upload_result, dict) and upload_result.get('error'):
+                return None, f'Supabase upload error: {upload_result["error"]}'
 
             # Get public URL
             public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
@@ -111,6 +118,8 @@ def save_upload(file_storage, asset_type='image'):
             ActivityLog.log('upload', 'media', asset.id, f'Uploaded {filename} to Supabase')
             return asset, None
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return None, f'Supabase upload failed: {e}'
 
     # --- Cloudinary path ---
