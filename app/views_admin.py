@@ -316,12 +316,14 @@ def save_app_form(listing):
         errors.append('Rating must be between 0 and 5.')
 
     # Handle file uploads (icon, hero, favicon, button icon, social, apk)
+    # Upload errors are non-fatal — we save the form data and skip the failed upload
+    upload_errors = []
     def _upload_or_none(field_name, asset_type='image'):
         f = request.files.get(field_name)
         if f and f.filename:
             asset, err = save_upload(f, asset_type=asset_type)
             if err:
-                errors.append(f'Upload error ({field_name}): {err}')
+                upload_errors.append(f'Upload error ({field_name}): {err}')
                 return None
             return asset
         return None
@@ -430,14 +432,23 @@ def save_app_form(listing):
     db.session.flush()
 
     # --- Repeatable children: screenshots ---
-    _save_screenshots(listing)
-    _save_features(listing)
-    _save_reviews(listing)
-    _save_permissions(listing)
-    _save_related_apps(listing)
-    _save_content_sections(listing)
+    try:
+        _save_screenshots(listing)
+        _save_features(listing)
+        _save_reviews(listing)
+        _save_permissions(listing)
+        _save_related_apps(listing)
+        _save_content_sections(listing)
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error saving some sections: {e}', 'error')
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Database error: {e}', 'error')
+        return redirect(url_for('admin.edit_app', listing_id=listing.id)) if not is_new else redirect(url_for('admin.list_apps'))
     log_activity('save' if is_new else 'update', 'listing', listing.id,
                  f'{"Created" if is_new else "Updated"} {app_name}')
 
@@ -447,6 +458,10 @@ def save_app_form(listing):
         flash('Listing archived.', 'success')
     else:
         flash('Listing saved.', 'success')
+
+    # Show any upload errors as warnings (non-fatal)
+    for ue in upload_errors:
+        flash(ue, 'error')
 
     if request.form.get('action') == 'preview':
         return redirect(url_for('admin.preview_app', listing_id=listing.id))
