@@ -107,17 +107,28 @@ def save_upload(file_storage, asset_type='image'):
                 # TUS resumable upload for large files (>50MB)
                 # Extract project ref from URL: https://ggfijevthqgzxgahrszc.supabase.co
                 project_ref = sb_url.replace('https://', '').replace('http://', '').split('.')[0]
-                tus_endpoint = f'https://{project_ref}.supabase.co/storage/v1/upload/resumable'
+                # TUS endpoint uses the same project URL
+                tus_endpoint = f'{sb_url}/storage/v1/upload/resumable'
 
                 # Step 1: Create the upload session
+                # TUS spec: Upload-Metadata is comma-separated key/value pairs
+                # where value is base64-encoded WITHOUT padding
                 import base64 as _b64
-                _b64encode = lambda s: _b64.b64encode(s.encode()).decode() if isinstance(s, str) else _b64.b64encode(s).decode()
+                def _b64enc(s):
+                    return _b64.b64encode(s.encode()).decode().rstrip('=')
+
+                metadata_parts = [
+                    f'bucketName {_b64enc(sb_bucket)}',
+                    f'objectName {_b64enc(safe_name)}',
+                    f'contentType {_b64enc(mime or "application/octet-stream")}',
+                    f'cacheControl {_b64enc("3600")}',
+                ]
                 create_resp = _requests.post(
                     tus_endpoint,
                     headers={
                         'Authorization': f'Bearer {sb_key}',
                         'Tus-Resumable': '1.0.0',
-                        'Upload-Metadata': f'bucketName {_b64encode(sb_bucket)},objectName {_b64encode(safe_name)},contentType {_b64encode(mime or "application/octet-stream")}',
+                        'Upload-Metadata': ','.join(metadata_parts),
                         'Upload-Length': str(file_size),
                         'x-upsert': 'true',
                         'Content-Type': 'application/offset+octet-stream',
