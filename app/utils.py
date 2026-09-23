@@ -58,6 +58,34 @@ def save_upload(file_storage, asset_type='image'):
     elif asset_type == 'apk':
         if not allowed_apk_file(filename, mime):
             return None, 'Invalid APK file.'
+        # APK files: always store locally on Render disk
+        # (Supabase free tier has 50MB limit which is too small for most APKs)
+        upload_dir = current_app.config['UPLOAD_DIR']
+        safe_name = safe_filename(filename)
+        dest = os.path.join(upload_dir, safe_name)
+        file_size = 0
+        with open(dest, 'wb') as out:
+            chunk = file_storage.read(65536)
+            while chunk:
+                out.write(chunk)
+                file_size += len(chunk)
+                chunk = file_storage.read(65536)
+        file_storage.seek(0)
+
+        asset = MediaAsset(
+            filename=safe_name,
+            original_filename=filename,
+            mime_type=mime or 'application/vnd.android.package-archive',
+            file_size=file_size,
+            width=None,
+            height=None,
+            asset_type=asset_type,
+            cloudinary_url=None,
+        )
+        db.session.add(asset)
+        db.session.commit()
+        ActivityLog.log('upload', 'media', asset.id, f'Uploaded APK {filename} ({file_size} bytes) to local disk')
+        return asset, None
     else:
         return None, 'Unknown asset type.'
 
