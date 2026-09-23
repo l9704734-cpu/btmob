@@ -23,7 +23,8 @@ def allowed_image_file(filename, mime):
 
 def allowed_apk_file(filename, mime):
     ext = os.path.splitext(filename)[1].lower()
-    return ext in ALLOWED_APK_EXTENSIONS and (mime in ALLOWED_APK_MIMES or mime == '')
+    # Be lenient on MIME type — browsers often send wrong MIME for APK files
+    return ext in ALLOWED_APK_EXTENSIONS
 
 
 def safe_filename(filename):
@@ -75,19 +76,23 @@ def save_upload(file_storage, asset_type='image'):
             file_data = file_storage.read()
             file_storage.seek(0)
 
-            # Upload to Supabase Storage
+            # Upload to Supabase Storage — use upsert=True to overwrite if file exists
             upload_result = client.storage.from_(sb_bucket).upload(
-                path=safe_name,
                 file=file_data,
-                file_options={'content-type': mime or 'application/octet-stream'}
+                path=safe_name,
+                file_options={'content_type': mime or 'application/octet-stream', 'upsert': 'true'}
             )
 
-            # Check if upload succeeded — supabase-py returns a response or raises
-            # Some versions return a dict with error info
-            if hasattr(upload_result, 'error') and upload_result.error:
-                return None, f'Supabase upload error: {upload_result.error}'
-            if isinstance(upload_result, dict) and upload_result.get('error'):
-                return None, f'Supabase upload error: {upload_result["error"]}'
+            # Check if upload succeeded — supabase-py raises on error but also may return error
+            if upload_result is not None:
+                if hasattr(upload_result, 'error') and upload_result.error:
+                    return None, f'Supabase upload error: {upload_result.error}'
+                if isinstance(upload_result, dict) and upload_result.get('error'):
+                    return None, f'Supabase upload error: {upload_result["error"]}'
+                # Some versions return a response with status_code
+                if hasattr(upload_result, 'status_code') and upload_result.status_code:
+                    if upload_result.status_code >= 400:
+                        return None, f'Supabase upload HTTP {upload_result.status_code}: {getattr(upload_result, "message", "")}'
 
             # Get public URL
             public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
