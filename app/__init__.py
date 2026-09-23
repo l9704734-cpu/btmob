@@ -20,7 +20,16 @@ def create_app(config_overrides=None):
 
     # --- Config -----------------------------------------------------------
     app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-please-change')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'store.db'))
+    db_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'store.db'))
+    # Fix Supabase/Neon Postgres connection strings:
+    # 1. Add sslmode=require if it's a Postgres URL and missing
+    # 2. Handle legacy postgres:// scheme -> postgresql://
+    if db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+    if db_url.startswith('postgresql://') and 'sslmode' not in db_url:
+        sep = '&' if '?' in db_url else '?'
+        db_url = db_url + sep + 'sslmode=require'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_DIR'] = UPLOAD_DIR
     app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
