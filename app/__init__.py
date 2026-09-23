@@ -177,6 +177,8 @@ def create_app(config_overrides=None):
             import traceback
             traceback.print_exc()
             print(f'DB init warning: {e}')
+            # Store the error so we can show it
+            app.config['DB_INIT_ERROR'] = str(e)
 
     # Register blueprints
     from .views_public import public_bp
@@ -197,5 +199,26 @@ def create_app(config_overrides=None):
         if value is None:
             return ''
         return value.strftime(fmt)
+
+    @app.route('/debug')
+    def debug_info():
+        import os
+        from flask import jsonify
+        info = {
+            'database_url_set': bool(os.environ.get('DATABASE_URL')),
+            'database_url_prefix': os.environ.get('DATABASE_URL', '')[:30] + '...' if os.environ.get('DATABASE_URL') else 'not set',
+            'supabase_url_set': bool(os.environ.get('SUPABASE_URL')),
+            'supabase_key_set': bool(os.environ.get('SUPABASE_KEY')),
+            'db_init_error': app.config.get('DB_INIT_ERROR', 'none'),
+        }
+        try:
+            with app.app_context():
+                from app.models import AppListing, StoreSettings
+                info['table_count'] = len(db.engine.table_names())
+                info['listing_count'] = AppListing.query.count()
+                info['settings_count'] = StoreSettings.query.count()
+        except Exception as e:
+            info['query_error'] = str(e)
+        return jsonify(info)
 
     return app
