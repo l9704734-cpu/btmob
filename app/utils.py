@@ -66,41 +66,95 @@ def save_upload(file_storage, asset_type='image'):
     # --- Supabase Storage path ---
     if _supabase_enabled():
         try:
-            from supabase import create_client
-            sb_url = os.environ['SUPABASE_URL']
+            import requests as _requests
+            sb_url = os.environ['SUPABASE_URL'].rstrip('/')
             sb_key = os.environ['SUPABASE_KEY']
             sb_bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
-            client = create_client(sb_url, sb_key)
 
             # Stream file to disk first (avoid OOM on large files)
             upload_dir = current_app.config['UPLOAD_DIR']
             dest = os.path.join(upload_dir, safe_name)
             file_size = 0
             with open(dest, 'wb') as out:
-                chunk = file_storage.read(65536)  # 64KB chunks
+                chunk = file_storage.read(65536)
                 while chunk:
                     out.write(chunk)
                     file_size += len(chunk)
                     chunk = file_storage.read(65536)
             file_storage.seek(0)
 
-            # Upload to Supabase from the file on disk
-            with open(dest, 'rb') as f:
-                upload_result = client.storage.from_(sb_bucket).upload(
-                    file=f,
-                    path=safe_name,
-                    file_options={'content_type': mime or 'application/octet-stream', 'upsert': 'true'}
+            # Determine upload method based on file size
+            # Supabase free tier: 50MB limit for standard upload, TUS for larger
+            SUPABASE_MAX_STANDARD = 50 * 1024 * 1024  # 50MB
+
+            if file_size <= SUPABASE_MAX_STANDARD:
+                # Standard upload via Supabase SDK
+                from supabase import create_client
+                client = create_client(sb_url, sb_key)
+                with open(dest, 'rb') as f:
+                    upload_result = client.storage.from_(sb_bucket).upload(
+                        file=f,
+                        path=safe_name,
+                        file_options={'content_type': mime or 'application/octet-stream', 'upsert': 'true'}
+                    )
+                if upload_result is not None:
+                    if hasattr(upload_result, 'error') and upload_result.error:
+                        return None, f'Supabase upload error: {upload_result.error}'
+                    if isinstance(upload_result, dict) and upload_result.get('error'):
+                        return None, f'Supabase upload error: {upload_result["error"]}'
+                public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
+            else:
+                # TUS resumable upload for large files (>50MB)
+                # Extract project ref from URL: https://ggfijevthqgzxgahrszc.supabase.co
+                project_ref = sb_url.replace('https://', '').replace('http://', '').split('.')[0]
+                tus_endpoint = f'https://{project_ref}.supabase.co/storage/v1/upload/resumable'
+
+                # Step 1: Create the upload session
+                create_resp = _requests.post(
+                    tus_endpoint,
+                    headers={
+                        'Authorization': f'Bearer {sb_key}',
+                        'Tus-Resumable': '1.0.0',
+                        'Upload-Metadata': f'bucketName {sb_bucket},objectName {safe_name}',
+                        'Upload-Length': str(file_size),
+                        'Content-Type': 'application/offset+octet-stream',
+                    },
+                    data=b'',
+                    timeout=30,
                 )
+                if create_resp.status_code not in (200, 201):
+                    return None, f'TUS create failed: HTTP {create_resp.status_code} {create_resp.text[:200]}'
 
-            # Check for errors
-            if upload_result is not None:
-                if hasattr(upload_result, 'error') and upload_result.error:
-                    return None, f'Supabase upload error: {upload_result.error}'
-                if isinstance(upload_result, dict) and upload_result.get('error'):
-                    return None, f'Supabase upload error: {upload_result["error"]}'
+                upload_url = create_resp.json().get('Location') or create_resp.headers.get('Location')
+                if not upload_url:
+                    return None, 'TUS create succeeded but no Location header'
 
-            # Get public URL
-            public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
+                # Step 2: Upload in 6MB chunks (TUS requires exactly 6MB)
+                chunk_size = 6 * 1024 * 1024
+                offset = 0
+                with open(dest, 'rb') as f:
+                    while offset < file_size:
+                        f.seek(offset)
+                        chunk = f.read(chunk_size)
+                        if not chunk:
+                            break
+                        patch_resp = _requests.patch(
+                            upload_url,
+                            headers={
+                                'Authorization': f'Bearer {sb_key}',
+                                'Tus-Resumable': '1.0.0',
+                                'Upload-Offset': str(offset),
+                                'Content-Type': 'application/offset+octet-stream',
+                            },
+                            data=chunk,
+                            timeout=120,
+                        )
+                        if patch_resp.status_code not in (200, 204):
+                            return None, f'TUS upload failed at offset {offset}: HTTP {patch_resp.status_code} {patch_resp.text[:200]}'
+                        offset += len(chunk)
+
+                # Public URL for TUS-uploaded files
+                public_url = f'https://{project_ref}.supabase.co/storage/v1/object/public/{sb_bucket}/{safe_name}'
 
             # Get image dimensions if applicable
             width = height = None
@@ -123,7 +177,7 @@ def save_upload(file_storage, asset_type='image'):
             )
             db.session.add(asset)
             db.session.commit()
-            ActivityLog.log('upload', 'media', asset.id, f'Uploaded {filename} to Supabase')
+            ActivityLog.log('upload', 'media', asset.id, f'Uploaded {filename} to Supabase ({file_size} bytes)')
             return asset, None
         except Exception as e:
             import traceback
