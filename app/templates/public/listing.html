@@ -59,18 +59,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .back-btn {
-            font-size: 20px;
-            color: var(--text);
-            text-decoration: none;
-            flex-shrink: 0;
-            padding: 4px 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-        }
-        .back-btn:active { background: rgba(0,0,0,0.05); }
-        .container {
+        .store-name {
             max-width: 680px;
             margin: 0 auto;
             padding: 24px 16px 48px;
@@ -277,7 +266,6 @@
 <body>
     {% if preview %}<div class="preview-banner">PREVIEW MODE — This listing is not yet published</div>{% endif %}
     <div class="header">
-        <a href="{{ url_for('public.index') }}" class="back-btn">&larr;</a>
         {% if settings.store_icon %}
             <img src="{{ settings.store_icon.url }}" class="store-icon" alt="{{ settings.store_name }}">
         {% elif settings.store_icon_url %}
@@ -291,7 +279,7 @@
                 <rect x="9.5" y="7" width="5" height="3" rx="1.5" fill="#0f9d58"/>
             </svg>
         {% endif %}
-        <a href="{{ url_for('public.index') }}" class="store-name">{{ settings.store_name }}</a>
+        <span class="store-name">{{ settings.store_name }}</span>
     </div>
     <div class="container">
         <div class="app-header">

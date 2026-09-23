@@ -12,4 +12,6 @@ services:
       - key: PYTHON_VERSION
         value: "3.13.0"
       - key: UPLOAD_DIR
-        value: /opt/data/uploads
+        value: /opt/render/project/src/uploads
+      - key: MAX_UPLOAD_SIZE
+        value: "104857600"
