@@ -72,38 +72,41 @@ def save_upload(file_storage, asset_type='image'):
             sb_bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
             client = create_client(sb_url, sb_key)
 
-            # Read file data
-            file_data = file_storage.read()
+            # Stream file to disk first (avoid OOM on large files)
+            upload_dir = current_app.config['UPLOAD_DIR']
+            dest = os.path.join(upload_dir, safe_name)
+            file_size = 0
+            with open(dest, 'wb') as out:
+                chunk = file_storage.read(65536)  # 64KB chunks
+                while chunk:
+                    out.write(chunk)
+                    file_size += len(chunk)
+                    chunk = file_storage.read(65536)
             file_storage.seek(0)
 
-            # Upload to Supabase Storage — use upsert=True to overwrite if file exists
-            upload_result = client.storage.from_(sb_bucket).upload(
-                file=file_data,
-                path=safe_name,
-                file_options={'content_type': mime or 'application/octet-stream', 'upsert': 'true'}
-            )
+            # Upload to Supabase from the file on disk
+            with open(dest, 'rb') as f:
+                upload_result = client.storage.from_(sb_bucket).upload(
+                    file=f,
+                    path=safe_name,
+                    file_options={'content_type': mime or 'application/octet-stream', 'upsert': 'true'}
+                )
 
-            # Check if upload succeeded — supabase-py raises on error but also may return error
+            # Check for errors
             if upload_result is not None:
                 if hasattr(upload_result, 'error') and upload_result.error:
                     return None, f'Supabase upload error: {upload_result.error}'
                 if isinstance(upload_result, dict) and upload_result.get('error'):
                     return None, f'Supabase upload error: {upload_result["error"]}'
-                # Some versions return a response with status_code
-                if hasattr(upload_result, 'status_code') and upload_result.status_code:
-                    if upload_result.status_code >= 400:
-                        return None, f'Supabase upload HTTP {upload_result.status_code}: {getattr(upload_result, "message", "")}'
 
             # Get public URL
             public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
 
-            # Get file size
-            file_size = len(file_data)
+            # Get image dimensions if applicable
             width = height = None
             if asset_type == 'image':
                 try:
-                    import io as _io
-                    with Image.open(_io.BytesIO(file_data)) as img:
+                    with Image.open(dest) as img:
                         width, height = img.size
                 except Exception:
                     pass
