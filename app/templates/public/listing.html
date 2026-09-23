@@ -49,193 +49,79 @@
         }
         .store-icon { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
         .store-icon-svg { width: 32px; height: 32px; flex-shrink: 0; }
-        .store-name {
-            font-size: 17px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--text);
-            letter-spacing: -0.3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Hero banner */
+        .hero-wrapper { width: 100%; overflow: hidden; position: relative; }
+        .hero-banner { width: 100%; max-height: 280px; object-fit: cover; display: block; }
+        .hero-wrapper::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 60px; background: linear-gradient(to bottom, transparent, var(--bg));
+            pointer-events: none;
         }
-        .store-name {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 24px 16px 48px;
-            width: 100%;
-        }
-        .app-header {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 20px;
-            align-items: flex-start;
-        }
-        .app-icon {
-            width: 100px;
-            height: 100px;
-            border-radius: 22px;
-            object-fit: cover;
-            flex-shrink: 0;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        }
+        .container { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; width: 100%; }
+        .app-header { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+        .app-icon { width: 100px; height: 100px; border-radius: 22px; object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
         .app-icon-fallback {
-            width: 100px;
-            height: 100px;
-            border-radius: 22px;
+            width: 100px; height: 100px; border-radius: 22px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 36px;
-            font-weight: 700;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 36px; font-weight: 700; flex-shrink: 0;
             box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
         .app-info { flex: 1; min-width: 0; }
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: -0.3px;
-            word-wrap: break-word;
-        }
-        .dev {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; word-wrap: break-word; }
+        .dev { color: var(--primary); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
         .stats { font-size: 12px; color: #64748b; }
         .tagline { margin-top: 6px; font-size: 13px; color: #64748b; }
         .install-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 24px;
-            border: none;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity 0.2s;
+            color: #fff; text-align: center; text-decoration: none;
+            border-radius: 12px; font-weight: 600; font-size: 15px;
+            margin-bottom: 24px; border: none; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; transition: opacity 0.2s;
         }
         .install-btn:hover { opacity: 0.9; }
         .install-btn:active { transform: scale(0.98); }
         .install-btn img { width: 18px; height: 18px; }
-        .section {
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
-        }
+        .section { margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
         .section h2 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
         .section p { color: #64748b; font-size: 14px; line-height: 1.7; }
         .screenshots-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: thin;
         }
         .screenshot {
-            flex: 0 0 140px;
-            height: 260px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 2px solid transparent;
-            transition: all 0.2s;
+            flex: 0 0 140px; height: 260px; border-radius: 12px; object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.2s;
         }
         .screenshot:hover { border-color: var(--primary); transform: scale(1.03); }
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-        }
-        .feature-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 14px;
-        }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .feature-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; }
         .feature-card img { width: 28px; height: 28px; margin-bottom: 8px; }
         .feature-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
         .feature-card p { font-size: 12px; color: #64748b; }
         .review {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding: 14px;
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            display: flex; gap: 12px; margin-bottom: 12px; padding: 14px;
+            background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
         }
         .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 600;
-            font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 600; font-size: 13px;
         }
         .review h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
         .review .stars { color: #f9ab00; font-size: 12px; }
         .review p { font-size: 13px; color: #64748b; }
         .perm-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .perm {
-            padding: 10px;
-            background: rgba(15,157,88,0.05);
-            border-radius: 8px;
-            font-size: 12px;
-            border: 1px solid rgba(15,157,88,0.1);
-        }
-        .related-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-        }
-        .related-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-        }
-        .related-card img {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            object-fit: cover;
-        }
+        .perm { padding: 10px; background: rgba(15,157,88,0.05); border-radius: 8px; font-size: 12px; border: 1px solid rgba(15,157,88,0.1); }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .related-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: inherit; }
+        .related-card img { width: 44px; height: 44px; border-radius: 10px; margin-bottom: 8px; object-fit: cover; }
         .related-card h4 { font-size: 13px; font-weight: 600; }
         .related-card p { font-size: 11px; color: #64748b; }
-        .preview-banner {
-            background: #f9ab00;
-            color: #fff;
-            padding: 8px 16px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        .preview-banner { background: #f9ab00; color: #fff; padding: 8px 16px; text-align: center; font-size: 13px; font-weight: 600; }
         @media (max-width: 480px) {
             .container { padding: 16px 12px 40px; }
             .app-header { gap: 12px; }
@@ -248,6 +134,7 @@
             .install-btn { padding: 12px; font-size: 14px; }
             .section h2 { font-size: 16px; }
             .section { margin-top: 20px; padding-top: 20px; }
+            .hero-banner { max-height: 200px; }
         }
         @media (max-width: 360px) {
             .app-header { flex-direction: column; gap: 10px; }
@@ -265,6 +152,13 @@
 </head>
 <body>
     {% if preview %}<div class="preview-banner">PREVIEW MODE — This listing is not yet published</div>{% endif %}
+
+    {% if listing.hero %}
+        <div class="hero-wrapper"><img src="{{ listing.hero.url }}" class="hero-banner" alt="{{ listing.app_name }}"></div>
+    {% elif listing.hero_url %}
+        <div class="hero-wrapper"><img src="{{ listing.hero_url }}" class="hero-banner" alt="{{ listing.app_name }}"></div>
+    {% endif %}
+
     <div class="header">
         {% if settings.store_icon %}
             <img src="{{ settings.store_icon.url }}" class="store-icon" alt="{{ settings.store_name }}">
