@@ -64,6 +64,100 @@ def create_app(config_overrides=None):
             ))
             db.session.commit()
 
+        # Seed Google Meet listing if no listings exist yet
+        if AppListing.query.count() == 0:
+            from datetime import date as _date
+            listing = AppListing(
+                app_name='Google Meet',
+                short_name='Meet',
+                slug='google-meet',
+                developer_name='Google LLC',
+                developer_website='https://meet.google.com',
+                category='Communication',
+                tagline='Secure video meetings for everyone',
+                description='Google Meet is a high-quality, secure video meetings app for everyone. '
+                            "It's designed for reliable online meetings that are easy to use and accessible "
+                            'from any device.',
+                package_name='com.google.android.apps.meetings',
+                version='2025.01.01',
+                file_size='120MB',
+                release_date=_date.today(),
+                language='English',
+                age_rating='Everyone',
+                rating_value=4.5,
+                review_count=125000,
+                download_count='1B+',
+                verified_label=True,
+                verified_label_text='Verified',
+                status='published',
+                is_published=True,
+                download_button_label='Install',
+            )
+            db.session.add(listing)
+            db.session.flush()
+
+            # Screenshots
+            for i in range(1, 6):
+                db.session.add(Screenshot(
+                    listing_id=listing.id,
+                    url=f'https://play-lh.googleusercontent.com/meet_screenshot_{i}',
+                    sort_order=i, enabled=True,
+                    caption=f'Screenshot {i}',
+                    alt_text=f'Google Meet screenshot {i}',
+                ))
+
+            # Features
+            feature_map = [
+                ('Multi-Device Support', 'Works on iOS, Android, Windows, Mac, and web'),
+                ('HD Video Calls', 'Up to 24 hours of group meetings with crystal clear video'),
+                ('End-to-End Encryption', 'Your calls are encrypted for maximum privacy'),
+                ('Noise Cancellation', 'Advanced AI noise cancellation for crystal clear audio'),
+                ('Screen Sharing', 'Share your entire screen or specific windows instantly'),
+                ('Recording & Storage', 'Record meetings directly to Google Drive'),
+            ]
+            for idx, (title, desc) in enumerate(feature_map):
+                db.session.add(Feature(
+                    listing_id=listing.id, title=title, description=desc,
+                    sort_order=idx, enabled=True,
+                ))
+
+            # Reviews
+            review_map = [
+                ('John Doe', 5, "Works perfectly! Crystal clear audio and video. The noise cancellation is amazing - finally can take calls in busy environments. Best app for remote work. Highly recommend!"),
+                ('Alice Smith', 4, "Very reliable and feature-rich. Sometimes the screen sharing lags a bit on slower connections but overall excellent. Love the integration with Google Calendar!"),
+                ('Mark Johnson', 5, "Switched from Zoom and never looked back. The UI is clean, performance is smooth, and it's perfect for business meetings. Security is top-notch!"),
+            ]
+            for idx, (name, rating, text) in enumerate(review_map):
+                db.session.add(Review(
+                    listing_id=listing.id, reviewer_name=name,
+                    rating=rating, review_text=text, review_date=_date.today(),
+                    sort_order=idx, enabled=True,
+                ))
+
+            # Permissions
+            perm_list = ['Record audio', 'Record video', 'Access camera', 'Access microphone',
+                         'Wi-Fi information', 'Phone calls']
+            for idx, p in enumerate(perm_list):
+                db.session.add(Permission(
+                    listing_id=listing.id, name=p,
+                    explanation=f'{p} permission required',
+                    icon='lock', sort_order=idx, enabled=True,
+                ))
+
+            # Related apps
+            related_map = [
+                ('Gmail', 'Fast, secure email with powerful search', 'https://play.google.com/store/apps/details?id=com.google.android.gm'),
+                ('YouTube', 'Watch, share & upload videos', 'https://play.google.com/store/apps/details?id=com.google.android.youtube'),
+                ('Google Drive', 'Store, sync & share files safely', 'https://play.google.com/store/apps/details?id=com.google.android.apps.docs'),
+            ]
+            for idx, (name, desc, link) in enumerate(related_map):
+                db.session.add(RelatedApp(
+                    listing_id=listing.id, manual_name=name,
+                    manual_link=link, sort_order=idx, enabled=True,
+                ))
+
+            db.session.commit()
+
     # Register blueprints
     from .views_public import public_bp
     from .views_admin import admin_bp
