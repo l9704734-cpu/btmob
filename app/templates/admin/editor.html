@@ -140,20 +140,6 @@
     <div class="tab-pane" id="tab-download">
         <div class="card">
             <div class="form-group">
-                <label><input type="checkbox" name="use_uploaded_file" value="true" {{ 'checked' if listing and (listing.use_uploaded_file or listing.apk_asset_id) }}> Use uploaded APK file instead of external URL</label>
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">External APK Download URL</label>
-                    <input type="url" name="apk_url" value="{{ listing.apk_url if listing else '' }}" placeholder="https://...">
-                    <div class="form-hint">Used when "Use uploaded file" is off.</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Download Filename</label>
-                    <input type="text" name="download_filename" value="{{ listing.download_filename if listing else '' }}" placeholder="App_v1.0.apk">
-                </div>
-            </div>
-            <div class="form-group">
                 <label class="form-label">Upload APK File</label>
                 <input type="file" name="apk_file" accept=".apk">
                 {% if listing and listing.apk_asset_id %}
@@ -167,13 +153,17 @@
             </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">APK Checksum / Hash</label>
-                    <input type="text" name="apk_checksum" value="{{ listing.apk_checksum if listing else '' }}" placeholder="SHA256...">
+                    <label class="form-label">Download Filename</label>
+                    <input type="text" name="download_filename" value="{{ listing.download_filename if listing else '' }}" placeholder="App_v1.0.apk">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Download Button Label</label>
                     <input type="text" name="download_button_label" value="{{ listing.download_button_label if listing else 'Install' }}">
                 </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">APK Checksum / Hash</label>
+                <input type="text" name="apk_checksum" value="{{ listing.apk_checksum if listing else '' }}" placeholder="SHA256...">
             </div>
             <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;">Download Button Icon</h4>
             <div class="form-group">

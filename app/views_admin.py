@@ -397,15 +397,11 @@ def save_app_form(listing):
     listing.bg_color = bg_color or ''
     listing.text_color = text_color or ''
 
-    # Download — clear old values when field is emptied
+    # Download — APK file upload only (no external URL)
     if apk_asset:
         listing.apk_asset_id = apk_asset.id
         listing.use_uploaded_file = True
-    else:
-        # Only clear the asset_id if the URL field is also empty AND use_uploaded_file is off
-        if not apk_url and not use_uploaded_file:
-            listing.apk_asset_id = None
-    listing.apk_url = apk_url
+    listing.apk_url = ''
     listing.download_filename = download_filename
     listing.download_button_label = download_button_label
     if button_icon_asset:
@@ -416,7 +412,7 @@ def save_app_form(listing):
         listing.download_button_icon_url = download_button_icon_url
     listing.download_button_icon_position = download_button_icon_position
     # If we just uploaded an APK, force use_uploaded_file=True
-    listing.use_uploaded_file = use_uploaded_file or bool(apk_asset)
+    listing.use_uploaded_file = bool(apk_asset) or listing.use_uploaded_file
     listing.apk_checksum = apk_checksum
 
     # SEO — clear old values when field is emptied
