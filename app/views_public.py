@@ -55,8 +55,12 @@ def download(slug):
     if not asset:
         abort(404)
     upload_dir = current_app.config['UPLOAD_DIR']
+    filename = listing.download_filename or asset.original_filename or 'app.apk'
+    # Use the correct MIME type for APK files — this helps browsers
+    # recognize it as an Android package rather than a generic blob
     return send_from_directory(upload_dir, asset.filename, as_attachment=True,
-                                download_name=listing.download_filename or asset.original_filename or 'app.apk')
+                                download_name=filename,
+                                mimetype='application/vnd.android.package-archive')
 
 
 @public_bp.route('/media/<path:filename>')
