@@ -115,7 +115,8 @@
         .review .stars { color: #f9ab00; font-size: 12px; }
         .review p { font-size: 13px; color: #64748b; }
         .perm-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .perm { padding: 10px; background: rgba(15,157,88,0.05); border-radius: 8px; font-size: 12px; border: 1px solid rgba(15,157,88,0.1); }
+        .perm { padding: 10px; background: rgba(15,157,88,0.05); border-radius: 8px; font-size: 12px; border: 1px solid rgba(15,157,88,0.1); display: flex; gap: 8px; align-items: flex-start; }
+        .perm-icon { font-size: 18px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
         .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
         .related-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: inherit; }
         .related-card img { width: 44px; height: 44px; border-radius: 10px; margin-bottom: 8px; object-fit: cover; }
@@ -255,7 +256,22 @@
             <h2>Permissions</h2>
             <div class="perm-list">
                 {% for p in listing.permissions|sort(attribute='sort_order') if p.enabled %}
-                <div class="perm"><strong>{{ p.name }}</strong>{% if p.explanation %}<br>{{ p.explanation }}{% endif %}</div>
+                <div class="perm">
+                    <span class="perm-icon">
+                        {% if p.icon == 'camera' %}&#128247;
+                        {% elif p.icon == 'microphone' %}&#127908;
+                        {% elif p.icon == 'location' %}&#128205;
+                        {% elif p.icon == 'phone' %}&#128241;
+                        {% elif p.icon == 'wifi' %}&#128246;
+                        {% elif p.icon == 'storage' %}&#128190;
+                        {% elif p.icon == 'contacts' %}&#128100;
+                        {% elif p.icon == 'calendar' %}&#128197;
+                        {% elif p.icon == 'sms' %}&#128172;
+                        {% elif p.icon == 'bluetooth' %}&#128374;
+                        {% else %}&#128274;{% endif %}
+                    </span>
+                    <div><strong>{{ p.name }}</strong>{% if p.explanation %}<br>{{ p.explanation }}{% endif %}</div>
+                </div>
                 {% endfor %}
             </div>
         </div>
