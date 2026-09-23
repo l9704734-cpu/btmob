@@ -19,3 +19,9 @@ services:
         sync: false
       - key: CLOUDINARY_URL
         sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: uploads

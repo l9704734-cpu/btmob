@@ -37,8 +37,12 @@ def _cloudinary_enabled():
     return bool(os.environ.get('CLOUDINARY_URL'))
 
 
+def _supabase_enabled():
+    return bool(os.environ.get('SUPABASE_URL') and os.environ.get('SUPABASE_KEY'))
+
+
 def save_upload(file_storage, asset_type='image'):
-    """Save an uploaded file — to Cloudinary if configured, otherwise to disk.
+    """Save an uploaded file — to Supabase Storage, Cloudinary, or local disk.
     Returns (MediaAsset, error_str). On error returns (None, error_str).
     """
     if file_storage is None or file_storage.filename == '':
@@ -57,6 +61,57 @@ def save_upload(file_storage, asset_type='image'):
         return None, 'Unknown asset type.'
 
     safe_name = safe_filename(filename)
+
+    # --- Supabase Storage path ---
+    if _supabase_enabled():
+        try:
+            from supabase import create_client
+            sb_url = os.environ['SUPABASE_URL']
+            sb_key = os.environ['SUPABASE_KEY']
+            sb_bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
+            client = create_client(sb_url, sb_key)
+
+            # Read file data
+            file_data = file_storage.read()
+            file_storage.seek(0)
+
+            # Upload to Supabase Storage
+            result = client.storage.from_(sb_bucket).upload(
+                path=safe_name,
+                file=file_data,
+                file_options={'content-type': mime or 'application/octet-stream'}
+            )
+
+            # Get public URL
+            public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
+
+            # Get file size
+            file_size = len(file_data)
+            width = height = None
+            if asset_type == 'image':
+                try:
+                    import io as _io
+                    with Image.open(_io.BytesIO(file_data)) as img:
+                        width, height = img.size
+                except Exception:
+                    pass
+
+            asset = MediaAsset(
+                filename=safe_name,
+                original_filename=filename,
+                mime_type=mime,
+                file_size=file_size,
+                width=width,
+                height=height,
+                asset_type=asset_type,
+                cloudinary_url=public_url,
+            )
+            db.session.add(asset)
+            db.session.commit()
+            ActivityLog.log('upload', 'media', asset.id, f'Uploaded {filename} to Supabase')
+            return asset, None
+        except Exception as e:
+            return None, f'Supabase upload failed: {e}'
 
     # --- Cloudinary path ---
     if _cloudinary_enabled():
