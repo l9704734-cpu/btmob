@@ -1003,7 +1003,11 @@ def keepalive_status():
     uptime_duration = None
     if stats.get('started_at'):
         from datetime import datetime as _dt, timezone as _tz
-        uptime_duration = _dt.now(_tz.utc) - stats['started_at']
+        started = stats['started_at']
+        # Make timezone-aware if it's naive (happens with some DB drivers)
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=_tz.utc)
+        uptime_duration = _dt.now(_tz.utc) - started
     recent_pings = KeepaliveLog.query.order_by(KeepaliveLog.created_at.desc()).limit(50).all()
     settings = get_store_settings()
     return render_template('admin/keepalive.html', stats=stats, uptime_duration=uptime_duration,
