@@ -54,6 +54,7 @@
                 <td class="actions-cell">
                     <a href="{{ url_for('admin.edit_app', listing_id=a.id) }}" class="btn btn-secondary btn-sm">Edit</a>
                     <a href="{{ url_for('admin.preview_app', listing_id=a.id) }}" class="btn btn-ghost btn-sm" target="_blank">Preview</a>
+                    <button class="btn btn-ghost btn-sm copy-link-btn" data-url="{{ request.url_root }}app/{{ a.slug }}" onclick="copyLink(this)">Copy Link</button>
                     <form method="POST" action="{{ url_for('admin.duplicate_app', listing_id=a.id) }}" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button class="btn btn-ghost btn-sm" type="submit">Duplicate</button>
@@ -104,4 +105,34 @@
     </div>
     {% endif %}
 </div>
+<script>
+function copyLink(btn) {
+    const url = btn.dataset.url;
+    navigator.clipboard.writeText(url).then(function() {
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.color = '#22c55e';
+        btn.style.fontWeight = '600';
+        setTimeout(function() {
+            btn.textContent = originalText;
+            btn.style.color = '';
+            btn.style.fontWeight = '';
+        }, 2000);
+    }).catch(function() {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        btn.textContent = 'Copied!';
+        btn.style.color = '#22c55e';
+        setTimeout(function() {
+            btn.textContent = 'Copy Link';
+            btn.style.color = '';
+        }, 2000);
+    });
+}
+</script>
 {% endblock %}
