@@ -58,10 +58,13 @@ def save_upload(file_storage, asset_type='image'):
     elif asset_type == 'apk':
         if not allowed_apk_file(filename, mime):
             return None, 'Invalid APK file.'
-        # APK files: always store locally on Render disk
-        # (Supabase free tier has 50MB limit which is too small for most APKs)
-        upload_dir = current_app.config['UPLOAD_DIR']
+        # APK files: upload to Supabase Storage so they survive Render redeploys.
+        # Supabase free tier supports files up to 50MB via standard upload,
+        # and larger files via TUS resumable upload.
         safe_name = safe_filename(filename)
+
+        # Stream to local temp first (avoid OOM on large files)
+        upload_dir = current_app.config['UPLOAD_DIR']
         dest = os.path.join(upload_dir, safe_name)
         file_size = 0
         with open(dest, 'wb') as out:
@@ -72,6 +75,95 @@ def save_upload(file_storage, asset_type='image'):
                 chunk = file_storage.read(65536)
         file_storage.seek(0)
 
+        public_url = None
+
+        # Try Supabase Storage upload
+        if _supabase_enabled():
+            try:
+                import requests as _requests
+                sb_url = os.environ['SUPABASE_URL'].rstrip('/')
+                sb_key = os.environ['SUPABASE_KEY']
+                sb_bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
+
+                SUPABASE_MAX_STANDARD = 50 * 1024 * 1024  # 50MB
+
+                if file_size <= SUPABASE_MAX_STANDARD:
+                    # Standard upload via Supabase SDK
+                    from supabase import create_client
+                    client = create_client(sb_url, sb_key)
+                    with open(dest, 'rb') as f:
+                        upload_result = client.storage.from_(sb_bucket).upload(
+                            file=f,
+                            path=safe_name,
+                            file_options={'content_type': mime or 'application/vnd.android.package-archive', 'upsert': 'true'}
+                        )
+                    if upload_result is not None:
+                        if hasattr(upload_result, 'error') and upload_result.error:
+                            raise Exception(f'Supabase upload error: {upload_result.error}')
+                        if isinstance(upload_result, dict) and upload_result.get('error'):
+                            raise Exception(f'Supabase upload error: {upload_result["error"]}')
+                    public_url = client.storage.from_(sb_bucket).get_public_url(safe_name)
+                else:
+                    # TUS resumable upload for large files (>50MB)
+                    project_ref = sb_url.replace('https://', '').replace('http://', '').split('.')[0]
+                    tus_endpoint = f'{sb_url}/storage/v1/upload/resumable'
+
+                    import base64 as _b64
+                    def _b64enc(s):
+                        return _b64.b64encode(s.encode()).decode()
+
+                    create_resp = _requests.post(
+                        tus_endpoint,
+                        headers={
+                            'Authorization': f'Bearer {sb_key}',
+                            'Tus-Resumable': '1.0.0',
+                            'Upload-Metadata': f'bucketName {_b64enc(sb_bucket)},objectName {_b64enc(safe_name)}',
+                            'Upload-Length': str(file_size),
+                            'x-upsert': 'true',
+                            'Content-Type': 'application/offset+octet-stream',
+                        },
+                        data=b'',
+                        timeout=30,
+                    )
+                    if create_resp.status_code not in (200, 201):
+                        raise Exception(f'TUS create failed: HTTP {create_resp.status_code} {create_resp.text[:200]}')
+
+                    upload_url = create_resp.json().get('Location') or create_resp.headers.get('Location')
+                    if not upload_url:
+                        raise Exception('TUS create succeeded but no Location header')
+
+                    chunk_size = 6 * 1024 * 1024
+                    offset = 0
+                    with open(dest, 'rb') as f:
+                        while offset < file_size:
+                            f.seek(offset)
+                            chunk = f.read(chunk_size)
+                            if not chunk:
+                                break
+                            patch_resp = _requests.patch(
+                                upload_url,
+                                headers={
+                                    'Authorization': f'Bearer {sb_key}',
+                                    'Tus-Resumable': '1.0.0',
+                                    'Upload-Offset': str(offset),
+                                    'Content-Type': 'application/offset+octet-stream',
+                                },
+                                data=chunk,
+                                timeout=120,
+                            )
+                            if patch_resp.status_code not in (200, 204):
+                                raise Exception(f'TUS upload failed at offset {offset}: HTTP {patch_resp.status_code} {patch_resp.text[:200]}')
+                            offset += len(chunk)
+
+                    public_url = f'https://{project_ref}.supabase.co/storage/v1/object/public/{sb_bucket}/{safe_name}'
+
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                # Fall back to local disk if Supabase fails
+                print(f'WARNING: Supabase APK upload failed, falling back to local disk: {e}')
+                public_url = None
+
         asset = MediaAsset(
             filename=safe_name,
             original_filename=filename,
@@ -80,11 +172,11 @@ def save_upload(file_storage, asset_type='image'):
             width=None,
             height=None,
             asset_type=asset_type,
-            cloudinary_url=None,
+            cloudinary_url=public_url,
         )
         db.session.add(asset)
         db.session.commit()
-        ActivityLog.log('upload', 'media', asset.id, f'Uploaded APK {filename} ({file_size} bytes) to local disk')
+        ActivityLog.log('upload', 'media', asset.id, f'Uploaded APK {filename} ({file_size} bytes) to {"Supabase" if public_url else "local disk"}')
         return asset, None
     else:
         return None, 'Unknown asset type.'
