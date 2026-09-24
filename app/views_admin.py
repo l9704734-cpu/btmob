@@ -9,7 +9,7 @@ from flask import (Blueprint, render_template, request, redirect, url_for,
 from app import db
 from app.models import (
     AppListing, StoreSettings, AdminUser, Screenshot, Feature, Review,
-    Permission, RelatedApp, ContentSection, MediaAsset, ActivityLog
+    Permission, RelatedApp, ContentSection, MediaAsset, ActivityLog, KeepaliveLog
 )
 from app.utils import (
     save_upload, generate_slug, slug_is_unique, hex_color,
@@ -990,3 +990,21 @@ def account():
     admin = db.session.get(AdminUser, session['admin_user_id'])
     settings = get_store_settings()
     return render_template('admin/account.html', admin=admin, settings=settings)
+
+
+# --- Keepalive Status -------------------------------------------------------
+
+@admin_bp.route('/keepalive')
+@login_required
+def keepalive_status():
+    """Admin page showing keepalive cron status, uptime stats, and ping history."""
+    stats = KeepaliveLog.get_uptime_stats()
+    # Calculate uptime duration since first ping
+    uptime_duration = None
+    if stats.get('started_at'):
+        from datetime import datetime as _dt, timezone as _tz
+        uptime_duration = _dt.now(_tz.utc) - stats['started_at']
+    recent_pings = KeepaliveLog.query.order_by(KeepaliveLog.created_at.desc()).limit(50).all()
+    settings = get_store_settings()
+    return render_template('admin/keepalive.html', stats=stats, uptime_duration=uptime_duration,
+                           recent_pings=recent_pings, settings=settings)

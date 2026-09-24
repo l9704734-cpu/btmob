@@ -228,6 +228,43 @@ class MediaAsset(db.Model):
         return f'/media/{self.filename}'
 
 
+class KeepaliveLog(db.Model):
+    __tablename__ = 'keepalive_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    status_code = db.Column(db.Integer, default=200)
+    response_time_ms = db.Column(db.Integer, default=0)  # milliseconds
+    source = db.Column(db.String(100), default='cron')  # cron, manual, admin
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+    @staticmethod
+    def log(status_code=200, response_time_ms=0, source='cron'):
+        try:
+            entry = KeepaliveLog(status_code=status_code, response_time_ms=response_time_ms, source=source)
+            db.session.add(entry)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    @staticmethod
+    def get_uptime_stats():
+        """Return uptime stats: first ping time, total pings, successful pings, uptime %."""
+        try:
+            total = KeepaliveLog.query.count()
+            if total == 0:
+                return {'started_at': None, 'total_pings': 0, 'successful': 0, 'uptime_pct': 0}
+            first = KeepaliveLog.query.order_by(KeepaliveLog.created_at.asc()).first()
+            successful = KeepaliveLog.query.filter(KeepaliveLog.status_code.in_([200, 302])).count()
+            pct = round((successful / total) * 100, 1) if total else 0
+            return {
+                'started_at': first.created_at,
+                'total_pings': total,
+                'successful': successful,
+                'uptime_pct': pct,
+            }
+        except Exception:
+            return {'started_at': None, 'total_pings': 0, 'successful': 0, 'uptime_pct': 0}
+
+
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'
     id = db.Column(db.Integer, primary_key=True)

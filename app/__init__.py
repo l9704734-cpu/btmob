@@ -55,7 +55,8 @@ def create_app(config_overrides=None):
 
     from .models import (
         StoreSettings, AdminUser, AppListing, Screenshot, Feature,
-        Review, Permission, RelatedApp, ContentSection, MediaAsset, ActivityLog
+        Review, Permission, RelatedApp, ContentSection, MediaAsset, ActivityLog,
+        KeepaliveLog
     )
 
     with app.app_context():
@@ -238,6 +239,33 @@ def create_app(config_overrides=None):
                 info['supabase_storage_error'] = str(e)
 
         return jsonify(info)
+
+    @app.route('/keepalive-ping')
+    def keepalive_ping():
+        """Public endpoint hit by the keepalive cron job.
+        Logs the ping and returns a simple OK response.
+        Query param ?source=cron|manual|admin (default: cron)."""
+        import time
+        from flask import jsonify, request
+        from app.models import KeepaliveLog
+        start = time.time()
+        # Do a lightweight DB query to verify the app is truly alive
+        try:
+            AppListing.query.count()
+            db_ok = True
+        except Exception:
+            db_ok = False
+        elapsed_ms = int((time.time() - start) * 1000)
+        source = request.args.get('source', 'cron')
+        status_code = 200 if db_ok else 500
+        KeepaliveLog.log(status_code=status_code, response_time_ms=elapsed_ms, source=source)
+        from datetime import datetime as _dt, timezone as _tz
+        return jsonify({
+            'status': 'ok' if db_ok else 'db_error',
+            'status_code': status_code,
+            'response_time_ms': elapsed_ms,
+            'timestamp': _dt.now(_tz.utc).isoformat(),
+        }), status_code
 
     @app.errorhandler(500)
     def handle_500(e):
