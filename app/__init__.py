@@ -225,6 +225,21 @@ def create_app(config_overrides=None):
                 info['settings_count'] = StoreSettings.query.count()
                 info['admin_count'] = AdminUser.query.count()
                 info['media_count'] = MediaAsset.query.count()
+                # Show listing download debug info
+                info['listings_debug'] = []
+                for l in AppListing.query.all():
+                    apk_asset = db.session.get(MediaAsset, l.apk_asset_id) if l.apk_asset_id else None
+                    info['listings_debug'].append({
+                        'id': l.id,
+                        'slug': l.slug,
+                        'use_uploaded_file': l.use_uploaded_file,
+                        'apk_asset_id': l.apk_asset_id,
+                        'download_filename': l.download_filename,
+                        'apk_asset_filename': apk_asset.filename if apk_asset else None,
+                        'apk_asset_original_filename': apk_asset.original_filename if apk_asset else None,
+                        'apk_asset_mime_type': apk_asset.mime_type if apk_asset else None,
+                        'apk_asset_cloudinary_url': apk_asset.cloudinary_url if apk_asset else None,
+                    })
         except Exception as e:
             info['query_error'] = str(e)
 
