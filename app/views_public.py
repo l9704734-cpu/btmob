@@ -59,20 +59,28 @@ def download(slug):
             upload_dir = current_app.config['UPLOAD_DIR']
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
-                # Use the download_filename if set, otherwise the original filename
-                # Ensure it always ends with .APK (uppercase) and never .zip
+                # Force uppercase .APK extension everywhere to prevent Android Chrome
+                # from appending .zip (Android sees lowercase .apk as a ZIP container)
                 filename = listing.download_filename or asset.original_filename or 'app.APK'
-                # Strip any .zip or .apk extension
-                for ext in ['.zip', '.ZIP', '.apk', '.APK']:
-                    if filename.endswith(ext):
-                        filename = filename[:-len(ext)]
+                # Strip any existing extension
+                base = filename
+                for ext in ['.zip', '.ZIP', '.apk', '.APK', '.apks', '.APKS']:
+                    if base.endswith(ext):
+                        base = base[:-len(ext)]
                         break
-                # Android Chrome adds .zip to .apk downloads because APKs are internally ZIPs.
-                # Fix: use UPPERCASE .APK extension + application/octet-stream MIME type.
-                # Android doesn't recognize .APK (uppercase) as a ZIP-related type.
-                filename = filename + '.APK'
-                response = send_file(filepath, mimetype='application/octet-stream')
+                filename = base + '.APK'
+
+                # Build response with explicit Content-Type AND Content-Disposition
+                # Use octet-stream so Android doesn't inspect the file as a ZIP archive
+                with open(filepath, 'rb') as f:
+                    file_data = f.read()
+                response = current_app.response_class(
+                    file_data,
+                    mimetype='application/octet-stream',
+                )
+                response.headers['Content-Type'] = 'application/octet-stream'
                 response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+                response.headers['Content-Length'] = str(len(file_data))
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 response.headers['X-Download-Options'] = 'noopen'
                 return response

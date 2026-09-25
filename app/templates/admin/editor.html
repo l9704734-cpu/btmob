@@ -141,7 +141,7 @@
         <div class="card">
             <div class="form-group">
                 <label class="form-label">Upload APK File</label>
-                <input type="file" name="apk_file" accept=".apk">
+                <input type="file" name="apk_file" accept=".apk,.APK">
                 {% if listing and listing.apk_asset_id %}
                     {% set apk = listing.apk_file %}
                     {% if apk %}
@@ -154,7 +154,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label">Download Filename</label>
-                    <input type="text" name="download_filename" value="{{ listing.download_filename if listing else '' }}" placeholder="App_v1.0.apk">
+                    <input type="text" name="download_filename" value="{{ listing.download_filename if listing else '' }}" placeholder="App_v1.0.APK">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Download Button Label</label>

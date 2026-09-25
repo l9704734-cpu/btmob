@@ -20,7 +20,7 @@
     </div>
     <form method="POST" action="{{ url_for('admin.upload_media') }}" enctype="multipart/form-data" id="uploadForm">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="file" name="files" multiple accept="image/*,.apk" id="bulkUpload">
+        <input type="file" name="files" multiple accept="image/*,.apk,.APK" id="bulkUpload">
         <button type="submit" class="btn btn-primary btn-sm" style="margin-left:8px;">Upload</button>
     </form>
     <div id="uploadResult"></div>

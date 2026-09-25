@@ -12,7 +12,7 @@ from app.models import MediaAsset, AppListing, StoreSettings, Screenshot, Featur
 
 ALLOWED_IMAGE_MIMES = {'image/png', 'image/jpeg', 'image/webp', 'image/gif'}
 ALLOWED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.webp', '.gif'}
-ALLOWED_APK_EXTENSIONS = {'.apk'}
+ALLOWED_APK_EXTENSIONS = {'.apk', '.APK'}
 ALLOWED_APK_MIMES = {'application/vnd.android.package-archive', 'application/octet-stream'}
 
 
@@ -22,14 +22,17 @@ def allowed_image_file(filename, mime):
 
 
 def allowed_apk_file(filename, mime):
-    ext = os.path.splitext(filename)[1].lower()
-    # Be lenient on MIME type — browsers often send wrong MIME for APK files
-    return ext in ALLOWED_APK_EXTENSIONS
+    ext = os.path.splitext(filename)[1]  # Keep original case
+    # Also accept uppercase .APK
+    return ext in ALLOWED_APK_EXTENSIONS or ext.upper() in ALLOWED_APK_EXTENSIONS
 
 
 def safe_filename(filename):
-    """Generate a safe, unique filename preserving extension."""
-    ext = os.path.splitext(filename)[1].lower()
+    """Generate a safe, unique filename preserving extension (uppercase for APK)."""
+    ext = os.path.splitext(filename)[1]
+    # Force uppercase for APK extensions
+    if ext.lower() == '.apk':
+        ext = '.APK'
     safe_name = re.sub(r'[^a-zA-Z0-9._-]', '_', os.path.splitext(filename)[0])[:80]
     return f"{safe_name}_{uuid.uuid4().hex[:8]}{ext}"
 
@@ -167,7 +170,7 @@ def save_upload(file_storage, asset_type='image'):
         asset = MediaAsset(
             filename=safe_name,
             original_filename=filename,
-            mime_type=mime or 'application/vnd.android.package-archive',
+            mime_type=mime or 'application/octet-stream',
             file_size=file_size,
             width=None,
             height=None,
