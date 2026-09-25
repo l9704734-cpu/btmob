@@ -60,12 +60,16 @@ def download(slug):
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
                 # Use the download_filename if set, otherwise the original filename
-                # Ensure it always ends with .apk
+                # Ensure it always ends with .apk and never .zip
                 filename = listing.download_filename or asset.original_filename or 'app.apk'
+                # Strip any .zip extension
+                if filename.lower().endswith('.zip'):
+                    filename = filename[:-4]
                 if not filename.lower().endswith('.apk'):
                     filename = filename + '.apk'
-                response = send_file(filepath, as_attachment=True, download_name=filename,
-                                     mimetype='application/vnd.android.package-archive')
+                # Send without download_name to avoid Flask adding extension
+                response = send_file(filepath, mimetype='application/vnd.android.package-archive')
+                response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 response.headers['X-Download-Options'] = 'noopen'
                 return response
