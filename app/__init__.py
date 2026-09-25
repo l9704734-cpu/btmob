@@ -25,8 +25,10 @@ def create_app(config_overrides=None):
     # 1. Add sslmode=require if it's a Postgres URL and missing
     # 2. Handle legacy postgres:// scheme -> postgresql://
     if db_url.startswith('postgres://'):
-        db_url = db_url.replace('postgres://', 'postgresql://', 1)
-    if db_url.startswith('postgresql://') and 'sslmode' not in db_url:
+        db_url = db_url.replace('postgres://', 'postgresql+psycopg2://', 1)
+    elif db_url.startswith('postgresql://'):
+        db_url = db_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
+    if 'psycopg2' in db_url and 'sslmode' not in db_url:
         sep = '&' if '?' in db_url else '?'
         db_url = db_url + sep + 'sslmode=require'
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
