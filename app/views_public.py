@@ -59,26 +59,28 @@ def download(slug):
             upload_dir = current_app.config['UPLOAD_DIR']
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
-                # Force uppercase .APK extension everywhere to prevent Android Chrome
-                # from appending .zip (Android sees lowercase .apk as a ZIP container)
-                filename = listing.download_filename or asset.original_filename or 'app.APK'
-                # Strip any existing extension
-                base = filename
-                for ext in ['.zip', '.ZIP', '.apk', '.APK', '.apks', '.APKS']:
-                    if base.endswith(ext):
-                        base = base[:-len(ext)]
-                        break
-                filename = base + '.APK'
+                # Android Chrome adds .zip to APK downloads when it can't identify
+                # the file type. The fix is to use the correct MIME type
+                # (application/vnd.android.package-archive) so Android recognizes
+                # it as an APK, NOT as a generic binary (octet-stream makes Android
+                # inspect the ZIP bytes inside the APK and add .zip).
+                filename = listing.download_filename or asset.original_filename or 'app.apk'
+                # Strip any .zip extension that may have been saved
+                if filename.lower().endswith('.zip'):
+                    filename = filename[:-4]
+                if not filename.lower().endswith('.apk'):
+                    filename = filename + '.apk'
 
-                # Build response with explicit Content-Type AND Content-Disposition
-                # Use octet-stream so Android doesn't inspect the file as a ZIP archive
+                # Read file into a raw response so we have full control over headers
+                # (no duplicate Content-Disposition from send_file)
                 with open(filepath, 'rb') as f:
                     file_data = f.read()
+
                 response = current_app.response_class(
                     file_data,
-                    mimetype='application/octet-stream',
+                    mimetype='application/vnd.android.package-archive',
                 )
-                response.headers['Content-Type'] = 'application/octet-stream'
+                response.headers['Content-Type'] = 'application/vnd.android.package-archive'
                 response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
                 response.headers['Content-Length'] = str(len(file_data))
                 response.headers['X-Content-Type-Options'] = 'nosniff'
