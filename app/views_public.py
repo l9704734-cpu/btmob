@@ -60,15 +60,17 @@ def download(slug):
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
                 # Use the download_filename if set, otherwise the original filename
-                # Ensure it always ends with .apk and never .zip
-                filename = listing.download_filename or asset.original_filename or 'app.apk'
-                # Strip any .zip extension
-                if filename.lower().endswith('.zip'):
-                    filename = filename[:-4]
-                if not filename.lower().endswith('.apk'):
-                    filename = filename + '.apk'
-                # Use octet-stream to prevent Android Chrome from adding .zip
-                # (Android Chrome adds .zip to .apk files when MIME is application/vnd.android.package-archive)
+                # Ensure it always ends with .APK (uppercase) and never .zip
+                filename = listing.download_filename or asset.original_filename or 'app.APK'
+                # Strip any .zip or .apk extension
+                for ext in ['.zip', '.ZIP', '.apk', '.APK']:
+                    if filename.endswith(ext):
+                        filename = filename[:-len(ext)]
+                        break
+                # Android Chrome adds .zip to .apk downloads because APKs are internally ZIPs.
+                # Fix: use UPPERCASE .APK extension + application/octet-stream MIME type.
+                # Android doesn't recognize .APK (uppercase) as a ZIP-related type.
+                filename = filename + '.APK'
                 response = send_file(filepath, mimetype='application/octet-stream')
                 response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
                 response.headers['X-Content-Type-Options'] = 'nosniff'
