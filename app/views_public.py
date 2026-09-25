@@ -52,30 +52,21 @@ def download(slug):
     if listing.use_uploaded_file and listing.apk_asset_id:
         asset = db.session.get(MediaAsset, listing.apk_asset_id)
         if asset:
-            # If the APK is on Supabase/Cloudinary, redirect there for the download
-            if asset.cloudinary_url:
-                return redirect(asset.cloudinary_url)
-            # Otherwise serve from local disk
+            # For APK files: ALWAYS serve from local disk with our own headers.
+            # Never redirect to Supabase/Cloudinary for APKs because Supabase
+            # serves with its own Content-Type which makes Android Chrome add .zip
             upload_dir = current_app.config['UPLOAD_DIR']
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
-                # Android Chrome adds .zip to APK downloads when it can't identify
-                # the file type. The fix is to use the correct MIME type
-                # (application/vnd.android.package-archive) so Android recognizes
-                # it as an APK, NOT as a generic binary (octet-stream makes Android
-                # inspect the ZIP bytes inside the APK and add .zip).
                 filename = listing.download_filename or asset.original_filename or 'app.apk'
-                # Strip any .zip extension that may have been saved
+                # Strip any .zip extension
                 if filename.lower().endswith('.zip'):
                     filename = filename[:-4]
                 if not filename.lower().endswith('.apk'):
                     filename = filename + '.apk'
 
-                # Read file into a raw response so we have full control over headers
-                # (no duplicate Content-Disposition from send_file)
                 with open(filepath, 'rb') as f:
                     file_data = f.read()
-
                 response = current_app.response_class(
                     file_data,
                     mimetype='application/vnd.android.package-archive',
@@ -86,6 +77,10 @@ def download(slug):
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 response.headers['X-Download-Options'] = 'noopen'
                 return response
+
+            # If file not on local disk, try Supabase/Cloudinary redirect as fallback
+            if asset.cloudinary_url:
+                return redirect(asset.cloudinary_url)
 
     # Fall back to external URL
     if listing.apk_url:

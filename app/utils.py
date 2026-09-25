@@ -175,7 +175,10 @@ def save_upload(file_storage, asset_type='image'):
             width=None,
             height=None,
             asset_type=asset_type,
-            cloudinary_url=public_url,
+            # For APK files: don't set cloudinary_url so the download route
+            # always serves from local disk with correct Content-Type headers.
+            # (Redirecting to Supabase causes Android Chrome to add .zip)
+            cloudinary_url=None,
         )
         db.session.add(asset)
         db.session.commit()
