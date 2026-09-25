@@ -59,12 +59,15 @@ def download(slug):
             upload_dir = current_app.config['UPLOAD_DIR']
             filepath = os.path.join(upload_dir, asset.filename)
             if os.path.exists(filepath):
+                # Use the download_filename if set, otherwise the original filename
+                # Ensure it always ends with .apk
                 filename = listing.download_filename or asset.original_filename or 'app.apk'
+                if not filename.lower().endswith('.apk'):
+                    filename = filename + '.apk'
                 response = send_file(filepath, as_attachment=True, download_name=filename,
                                      mimetype='application/vnd.android.package-archive')
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 response.headers['X-Download-Options'] = 'noopen'
-                response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
                 return response
 
     # Fall back to external URL
