@@ -67,8 +67,9 @@ def download(slug):
                     filename = filename[:-4]
                 if not filename.lower().endswith('.apk'):
                     filename = filename + '.apk'
-                # Send without download_name to avoid Flask adding extension
-                response = send_file(filepath, mimetype='application/vnd.android.package-archive')
+                # Use octet-stream to prevent Android Chrome from adding .zip
+                # (Android Chrome adds .zip to .apk files when MIME is application/vnd.android.package-archive)
+                response = send_file(filepath, mimetype='application/octet-stream')
                 response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 response.headers['X-Download-Options'] = 'noopen'
