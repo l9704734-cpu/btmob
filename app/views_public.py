@@ -43,6 +43,14 @@ def listing_detail(slug):
     return render_template('public/listing.html', listing=listing, settings=settings, related=related)
 
 
+@public_bp.route('/bogota-ai')
+def bogota_ai():
+    """Dedicated landing page for Bogota AI — uncensored AI rat."""
+    settings = get_store_settings()
+    listing = AppListing.query.filter_by(slug='bogota-ai', status='published').first()
+    return render_template('public/bogota_ai.html', settings=settings, listing=listing)
+
+
 @public_bp.route('/download/<slug>')
 def download(slug):
     """Serve the APK file for a published listing with tight headers."""
