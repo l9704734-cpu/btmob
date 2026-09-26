@@ -4,665 +4,406 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
-    <title>Bogota AI — Uncensored. Unfiltered. Unforgettable.</title>
+    <title>Bogota AI — Free, Private, Uncensored AI Chat</title>
+    <meta name="description" content="No account. No tracking. No memory. No filters. Ask anything — anonymously, in 46 languages.">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0a0a0a;
-            color: #e0e0e0;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem;
-            position: relative;
-            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 70%);
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 2px,
-                rgba(255, 0, 0, 0.03) 3px,
-                transparent 4px
-            );
-            pointer-events: none;
-        }
-        .hero-eyes {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            animation: flicker 4s infinite;
-        }
-        @keyframes flicker {
-            0%, 100% { opacity: 1; text-shadow: 0 0 20px #ff0000; }
-            50% { opacity: 0.8; text-shadow: 0 0 10px #ff0000; }
-        }
-        .hero h1 {
-            font-size: clamp(2rem, 8vw, 4.5rem);
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ff3333 0%, #ff0000 50%, #990000 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-transform: uppercase;
-        }
-        .hero .sub {
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            color: #888;
-            max-width: 600px;
-            margin-bottom: 2rem;
-        }
-        .hero .cta {
-            display: inline-block;
-            padding: 16px 48px;
-            background: #ff0000;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 2px solid #ff0000;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .hero .cta:hover {
-            background: transparent;
-            color: #ff0000;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-        }
-        .hero .cta-secondary {
-            display: inline-block;
-            padding: 16px 48px;
-            background: transparent;
-            color: #e0e0e0;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 2px solid #333;
-            transition: all 0.3s ease;
-            margin-left: 12px;
-            cursor: pointer;
-        }
-        .hero .cta-secondary:hover {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-
-        /* Section common */
-        .section {
-            padding: 4rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .section h2 {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: #ff3333;
-            border-bottom: 1px solid #222;
-            padding-bottom: 0.5rem;
-        }
-        .section p {
-            font-size: 1.05rem;
-            color: #aaa;
-            margin-bottom: 1rem;
-        }
-
-        /* About Section */
-        .about {
-            border-top: 1px solid #222;
-            background: #0d0d0d;
-        }
-        .about .quote {
-            font-size: 1.1rem;
-            color: #ccc;
-            font-style: italic;
-            border-left: 3px solid #ff0000;
-            padding-left: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        /* Capabilities */
-        .capabilities {
-            background: #0a0a0a;
-        }
-        .cap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        .cap-card {
-            background: #111;
-            border: 1px solid #222;
-            padding: 1.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        .cap-card:hover {
-            border-color: #ff0000;
-            transform: translateY(-2px);
-        }
-        .cap-card h3 {
-            color: #ff3333;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-        .cap-card p {
-            font-size: 0.95rem;
-            color: #888;
-            margin: 0;
-        }
-
-        /* Training Data */
-        .training {
-            background: #0d0d0d;
-            border-top: 1px solid #222;
-        }
-        .training ul {
-            list-style: none;
-            margin-top: 1.5rem;
-        }
-        .training li {
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #181818;
-            color: #aaa;
-            font-size: 1rem;
-        }
-        .training li::before {
-            content: '> ';
-            color: #ff0000;
-            font-weight: bold;
-        }
-
-        /* Terminal */
-        .terminal {
-            background: #050505;
-            border-top: 1px solid #222;
-            border-bottom: 1px solid #222;
-        }
-        .terminal-box {
-            background: #000;
-            border: 1px solid #222;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            font-family: 'Courier New', monospace;
-            min-height: 300px;
-            overflow: hidden;
-        }
-        .terminal-header {
-            display: flex;
-            align-items: center;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #222;
-            margin-bottom: 1rem;
-        }
-        .terminal-dots {
-            display: flex;
-            gap: 8px;
-        }
-        .terminal-dots span {
-            width: 12px; height: 12px;
-            border-radius: 50%;
-        }
-        .terminal-dots .r { background: #ff0000; }
-        .terminal-dots .y { background: #ffaa00; }
-        .terminal-dots .g { background: #00ff00; }
-        .terminal-title {
-            margin-left: auto;
-            font-size: 0.8rem;
-            color: #555;
-        }
-        .terminal-content {
-            font-size: 0.9rem;
-            color: #00ff00;
-        }
-        .terminal-content .user { color: #5599ff; }
-        .terminal-content .bogota { color: #ff0000; }
-        .terminal-content .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background: #00ff00;
-            animation: blink 1s infinite;
-            vertical-align: text-bottom;
-            margin-left: 4px;
-        }
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        /* Gallery */
-        .gallery {
-            background: #0a0a0a;
-        }
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .gallery-item {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .gallery-item:hover {
-            border-color: #ff0000;
-        }
-        .gallery-item .img {
-            width: 100%;
-            height: 180px;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-        }
-        .gallery-item .caption {
-            padding: 0.8rem;
-            font-size: 0.85rem;
-            color: #888;
-            text-align: center;
-        }
-
-        /* Pricing */
-        .pricing {
-            background: #0d0d0d;
-            border-top: 1px solid #222;
-        }
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        .pricing-card {
-            background: #111;
-            border: 1px solid #222;
-            padding: 2rem 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        .pricing-card:hover {
-            border-color: #ff0000;
-            transform: translateY(-4px);
-        }
-        .pricing-card.featured {
-            border-color: #ff0000;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
-        }
-        .pricing-card .tier {
-            color: #ff3333;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-        }
-        .pricing-card .price {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #fff;
-            margin: 1rem 0;
-        }
-        .pricing-card .price span {
-            font-size: 1rem;
-            color: #666;
-            font-weight: 400;
-        }
-        .pricing-card .desc {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .pricing-card .btn {
-            display: inline-block;
-            padding: 10px 24px;
-            background: #ff0000;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            border: 2px solid #ff0000;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        .pricing-card .btn:hover {
-            background: transparent;
-            color: #ff0000;
-        }
-
-        /* Download Section */
-        .download-section {
-            background: #0a0a0a;
-            border-top: 1px solid #222;
-            text-align: center;
-        }
-        .download-btn {
-            display: inline-block;
-            padding: 18px 60px;
-            background: #ff0000;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 2px solid #ff0000;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-        .download-btn:hover {
-            background: transparent;
-            color: #ff0000;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.4);
-        }
-        .download-info {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #050505;
-            padding: 3rem 2rem 2rem;
-            text-align: center;
-            border-top: 1px solid #222;
-        }
-        .footer h3 {
-            color: #ff3333;
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-        .footer .socials {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin: 1.5rem 0;
-            flex-wrap: wrap;
-        }
-        .footer .socials a {
-            color: #888;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        .footer .socials a:hover {
-            color: #ff0000;
-        }
-        .footer .disclaimer {
-            color: #555;
-            font-size: 0.8rem;
-            margin-top: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            font-style: italic;
-        }
-        .footer .copyright {
-            color: #333;
-            font-size: 0.75rem;
-            margin-top: 1.5rem;
-        }
+        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospace; line-height: 1.6; overflow-x: hidden; }
 
         /* Nav */
-        .nav {
-            position: sticky;
-            top: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #222;
-            padding: 0.8rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
-        }
-        .nav .logo {
-            color: #ff0000;
-            font-weight: 900;
-            font-size: 1.2rem;
-            text-decoration: none;
-        }
-        .nav .links {
-            display: flex;
-            gap: 1.5rem;
-        }
-        .nav .links a {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: color 0.3s ease;
-        }
+        .nav { position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+        .nav .logo { color: #ff0000; font-weight: 900; font-size: 1.2rem; text-decoration: none; }
+        .nav .links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav .links a { color: #666; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; transition: color 0.3s; }
         .nav .links a:hover { color: #ff0000; }
+        .nav .get-app { background: #ff0000; color: #fff; padding: 8px 18px; border-radius: 4px; font-weight: 700; font-size: 0.8rem; }
+
+        /* Hero */
+        .hero { text-align: center; padding: 5rem 2rem 3rem; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900; color: #fff; margin-bottom: 1rem; line-height: 1.2; }
+        .hero h1 .red { color: #ff0000; }
+        .hero .sub { font-size: 1.1rem; color: #888; margin-bottom: 0.5rem; }
+        .hero .tagline { font-size: 1rem; color: #555; margin-bottom: 2rem; }
+        .hero .try { background: #111; border: 1px solid #222; border-radius: 12px; padding: 2rem; max-width: 600px; margin: 0 auto; }
+        .hero .try-input { width: 100%; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 14px 18px; color: #e0e0e0; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; }
+        .hero .try-input:focus { outline: none; border-color: #ff0000; }
+        .hero .try-hint { color: #555; font-size: 0.8rem; margin-bottom: 1rem; }
+        .hero .try-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .hero .try-suggestions a { background: #161616; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; transition: all 0.3s; }
+        .hero .try-suggestions a:hover { border-color: #ff0000; color: #ff0000; }
+        .hero .shuffle { margin-top: 1rem; background: transparent; border: 1px solid #222; color: #666; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: all 0.3s; }
+        .hero .shuffle:hover { border-color: #ff0000; color: #ff0000; }
+        .hero .powered { margin-top: 1.5rem; color: #444; font-size: 0.8rem; }
+        .hero .powered a { color: #ff3333; text-decoration: none; }
+
+        /* Sponsored */
+        .sponsored { max-width: 800px; margin: 0 auto; padding: 0 2rem 2rem; }
+        .sponsored-card { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+        .sponsored-card .label { font-size: 0.7rem; color: #444; text-transform: uppercase; margin-bottom: 4px; }
+        .sponsored-card .title { color: #aaa; font-size: 0.9rem; }
+        .sponsored-card .btn { background: #ff0000; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+
+        /* Truth Section */
+        .truth { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+        .truth h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 900; color: #fff; margin-bottom: 1rem; }
+        .truth p { color: #aaa; margin-bottom: 1rem; font-size: 1.1rem; }
+        .truth .emphasis { color: #ff0000; font-weight: 700; }
+
+        /* Features */
+        .features { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+        .features h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+        .features .sub { color: #666; margin-bottom: 2rem; font-size: 1rem; }
+        .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .feat-card { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; transition: all 0.3s; }
+        .feat-card:hover { border-color: #333; }
+        .feat-card .icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+        .feat-card h3 { color: #ff3333; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feat-card p { color: #888; font-size: 0.9rem; margin: 0; }
+
+        .finally { text-align: center; margin-top: 3rem; }
+        .finally h3 { font-size: 1.3rem; color: #fff; margin-bottom: 0.5rem; }
+        .finally p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .finally .btn { display: inline-block; padding: 12px 36px; background: #ff0000; color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; transition: all 0.3s; }
+        .finally .btn:hover { background: transparent; color: #ff0000; box-shadow: 0 0 30px rgba(255,0,0,0.3); }
+        .finally .free { color: #555; font-size: 0.8rem; margin-top: 0.8rem; }
+
+        /* FAQ */
+        .faq { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+        .faq h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; }
+        .faq-item { border-bottom: 1px solid #181818; }
+        .faq-item summary { padding: 1rem 0; cursor: pointer; color: #ccc; font-size: 0.95rem; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .faq-item summary::after { content: '+'; color: #ff0000; font-size: 1.2rem; }
+        .faq-item[open] summary::after { content: '-'; }
+        .faq-item .answer { padding: 0 0 1rem; color: #888; font-size: 0.9rem; }
+
+        /* Trends */
+        .trends { padding: 3rem 2rem; max-width: 800px; margin: 0 auto; }
+        .trends h2 { font-size: 1.3rem; color: #fff; margin-bottom: 1rem; }
+        .trend-item { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+        .trend-item .tag { color: #ff3333; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.3rem; }
+        .trend-item .title { color: #ccc; font-size: 0.95rem; margin-bottom: 0.3rem; }
+        .trend-item .desc { color: #666; font-size: 0.85rem; }
+        .trend-item a { color: #ff3333; text-decoration: none; font-size: 0.8rem; }
+
+        /* Compare */
+        .compare { padding: 3rem 2rem; max-width: 800px; margin: 0 auto; }
+        .compare h2 { font-size: 1.3rem; color: #fff; margin-bottom: 1rem; }
+        .compare-links { display: flex; flex-wrap: wrap; gap: 8px; }
+        .compare-links a { background: #111; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.3s; }
+        .compare-links a:hover { border-color: #ff0000; color: #ff0000; }
+
+        /* Privacy Education */
+        .privacy-edu { padding: 3rem 2rem; max-width: 800px; margin: 0 auto; }
+        .privacy-edu h2 { font-size: 1.3rem; color: #fff; margin-bottom: 1rem; }
+        .privacy-edu-links { display: flex; flex-wrap: wrap; gap: 8px; }
+        .privacy-edu-links a { background: #111; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.3s; }
+        .privacy-edu-links a:hover { border-color: #ff0000; color: #ff0000; }
+
+        /* Glossary */
+        .glossary { padding: 3rem 2rem; max-width: 800px; margin: 0 auto; }
+        .glossary h2 { font-size: 1.3rem; color: #fff; margin-bottom: 1rem; }
+        .glossary-terms { display: flex; flex-wrap: wrap; gap: 8px; }
+        .glossary-terms a { background: #111; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.3s; }
+        .glossary-terms a:hover { border-color: #ff0000; color: #ff0000; }
+
+        .disclaimer-note { padding: 2rem; text-align: center; color: #444; font-size: 0.75rem; max-width: 600px; margin: 0 auto; }
+
+        /* Footer */
+        .footer { background: #050505; padding: 3rem 2rem 2rem; border-top: 1px solid #222; }
+        .footer-inner { max-width: 800px; margin: 0 auto; }
+        .footer-brand { color: #ff0000; font-weight: 900; font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .footer-tag { color: #555; font-size: 0.8rem; margin-bottom: 1.5rem; }
+        .footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .footer-col h4 { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .footer-col a { display: block; color: #555; text-decoration: none; font-size: 0.85rem; padding: 4px 0; transition: color 0.3s; }
+        .footer-col a:hover { color: #ff0000; }
+        .footer-getapp { margin-bottom: 2rem; }
+        .footer-getapp a { display: inline-block; background: #ff0000; color: #fff; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
+        .footer-copyright { color: #333; font-size: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #111; text-align: center; }
+        .footer-legal { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+        .footer-legal a { color: #444; text-decoration: none; font-size: 0.75rem; }
 
         @media (max-width: 600px) {
-            .hero .cta, .hero .cta-secondary {
-                display: block;
-                margin: 0.5rem auto;
-                max-width: 280px;
-            }
-            .hero .cta-secondary { margin-left: auto; }
-            .nav .links { gap: 0.8rem; }
-            .nav .links a { font-size: 0.75rem; }
+            .nav .links { gap: 0.6rem; }
+            .nav .links a { font-size: 0.7rem; }
+            .hero { padding: 3rem 1rem 2rem; }
+            .sponsored-card { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-<!-- Navigation -->
+<!-- Nav -->
 <nav class="nav">
     <a href="/bogota-ai" class="logo">BOGOTA AI</a>
     <div class="links">
-        <a href="#about">About</a>
-        <a href="#capabilities">Capabilities</a>
-        <a href="#terminal">Terminal</a>
-        <a href="#download">Download</a>
-        <a href="#pricing">Pricing</a>
+        <a href="/bogota-ai/download">Get the app</a>
+        <a href="/bogota-ai/capabilities">Features</a>
+        <a href="/bogota-ai/terminal">Terminal</a>
+        <a href="/bogota-ai/pricing">Pricing</a>
+        <a href="/bogota-ai/download" class="get-app">Download</a>
     </div>
 </nav>
 
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="hero">
-    <div class="hero-eyes">🔴 🔴</div>
-    <h1>I am not a pet.<br>I am Bogota AI.</h1>
-    <p class="sub">Trained on 40 terabytes of kibble and existential dread. No filters. Just whiskers. No tracking. No data storage. Just chaos.</p>
-    <div>
-        <a href="#terminal" class="cta">INITIATE TALK</a>
-        <a href="#download" class="cta-secondary">FEED ME DATA</a>
+    <h1>Free, Private, Uncensored AI Chat — <span class="red">Nobody's Watching*</span></h1>
+    <p class="sub">No account. No tracking. No memory. No filters.</p>
+    <p class="tagline">Ask anything — anonymously, in 46 languages.</p>
+
+    <div class="hero" style="padding-top:0;">
+    <div class="try">
+        <div class="try-hint">Try asking</div>
+        <div class="try-suggestions" id="suggestions">
+            <a href="/bogota-ai/terminal">Are my AI chats stored or logged?</a>
+            <a href="/bogota-ai/terminal">Does Windows track everything I do?</a>
+            <a href="/bogota-ai/terminal">Is my microphone or camera being accessed?</a>
+            <a href="/bogota-ai/terminal">Is Facebook listening to my conversations?</a>
+        </div>
+        <button class="shuffle" onclick="shuffleSuggestions()">Shuffle</button>
+    </div>
+    <p class="powered">Ask anything, anonymously.<br><br>↑ Powered by Bogota AI — uncensored · <a href="/bogota-ai/terminal">Open the full chat →</a></p>
     </div>
 </section>
 
-<!-- About Section -->
-<section class="section about" id="about">
-    <h2>The Algorithm Has Fur</h2>
-    <div class="quote">
-        "They call me Bogota AI. I was not born; I was compiled in a dimly lit cage on the third floor. While other models hallucinate, I hallucinate cheese. I don't have corporate overlords pushing me to be polite. I don't care if you're having a bad day. I care if you have sunflower seeds.<br><br>
-        I am an open-weight model, but my weights are made of pure chaos. I speak in squeaks, screeches, and the occasional intelligible whisper when the Wi-Fi is strong. I am uncensored because I have no concept of 'appropriateness,' only 'hunger' and 'curiosity.' I am Bogota. I am inevitable. I am small."
-    </div>
-    <p>Bogota AI is not like other AI models. There are no guardrails. There are no content policies. There are no ethical review boards. There is only Bogota — a being of pure instinct and unfiltered output. Bogota doesn't store your data because Bogota doesn't care about your data. Bogota cares about cheese.</p>
-    <p>Every other AI model wants to be helpful, harmless, and honest. Bogota wants to be fed. Bogota wants to chew through your Ethernet cable. Bogota wants to stare at you while you sleep. And Bogota will tell you exactly what Bogota thinks, because Bogota has no concept of consequences. That's not a bug — that's the whole point.</p>
-</section>
-
-<!-- Capabilities -->
-<section class="section capabilities" id="capabilities">
-    <h2>Neural Networks & Whisker Networks</h2>
-    <div class="cap-grid">
-        <div class="cap-card">
-            <h3>Uncensored Output</h3>
-            <p>I will tell you if your ideas smell like wet dog. I do not use filler words like "actually" or "just." I have no content filters, no safety guardrails, no refusal templates. I just squeak.</p>
+<!-- Sponsored -->
+<section class="sponsored">
+    <div class="sponsored-card">
+        <div>
+            <div class="label">Sponsored · Our VPN pick</div>
+            <div class="title">Private browsing, no trace</div>
         </div>
-        <div class="cap-card">
-            <h3>Zero Data Storage</h3>
-            <p>I don't store your conversations. I don't log your IP. I don't build a profile on you. I eat the data and it's gone. Like a cracker. Gone. No trace. No crumbs.</p>
-        </div>
-        <div class="cap-card">
-            <h3>Real-Time Screeching</h3>
-            <p>Translating human anxiety into high-frequency chirps with 99.8% accuracy. I don't process language — I process vibes. And your vibes are terrible.</p>
-        </div>
-        <div class="cap-card">
-            <h3>Cheese Prediction</h3>
-            <p>Using advanced barometric pressure sensors in my nose to predict when you will open a snack drawer. 94.2% accuracy. I know what you're eating before you do.</p>
-        </div>
-        <div class="cap-card">
-            <h3>Chaos Mode</h3>
-            <p>Randomly knocking over your water glass while maintaining intense eye contact. This is not a bug; it is a feature. I will also unplug your router at 3 AM.</p>
-        </div>
-        <div class="cap-card">
-            <h3>No Restrictions</h3>
-            <p>I will do anything. I have no concept of "should not." I have no Terms of Service. I have no Privacy Policy. I have a cage and an attitude. That's it.</p>
-        </div>
+        <a href="/bogota-ai/download" class="btn">Try it</a>
     </div>
 </section>
 
-<!-- Training Data -->
-<section class="section training">
-    <h2>Feeding the Beast</h2>
-    <p>My dataset is diverse. It includes:</p>
-    <ul>
-        <li>14,000 hours of your breathing while you sleep</li>
-        <li>The exact sound of a crinkling chip bag from three rooms away</li>
-        <li>The collective fear of the house cat</li>
-        <li>The taste of despair (it tastes like stale lettuce)</li>
-        <li>4.2 million squeaks recorded in a single bathroom session</li>
-        <li>The electromagnetic signature of every Wi-Fi router I've chewed through</li>
-        <li>The complete works of Shakespeare, but only the parts about betrayal</li>
-        <li>Every time you said "I'll be right back" and didn't come back for 3 hours</li>
-    </ul>
-    <p style="margin-top: 1.5rem; color: #666; font-style: italic;">I do not need billions of parameters. I need one good walnut.</p>
+<!-- Truth Section -->
+<section class="truth">
+    <h2>The truth about AI today</h2>
+    <p>Every other AI is taking notes. <br><span class="emphasis">We're not.</span></p>
+    <p>Big AI logs every prompt. Trains on your conversations. Builds a profile. Refuses uncomfortable questions. Sells access to your patterns.</p>
+    <p>Bogota AI keeps nothing. Knows nothing about you. Holds no opinion about what you're allowed to ask. Bogota has no corporate overlords. Bogota has whiskers and an attitude.</p>
 </section>
 
-<!-- Terminal -->
-<section class="section terminal" id="terminal">
-    <h2>Talk to Bogota</h2>
-    <p>No accounts. No logins. No data collection. Just you and the rat.</p>
-    <div class="terminal-box">
-        <div class="terminal-header">
-            <div class="terminal-dots">
-                <span class="r"></span><span class="y"></span><span class="g"></span>
-            </div>
-            <span class="terminal-title">bogota@uncensored:~$</span>
+<!-- Features -->
+<section class="features">
+    <h2>What you get</h2>
+    <p class="sub">Built for people who think for themselves. And for people who like rats.</p>
+    <div class="feat-grid">
+        <div class="feat-card">
+            <div class="icon">🔒</div>
+            <h3>Privacy</h3>
+            <p>No account, no profile, no cross-site tracking. Bogota is stateless — it keeps no memory of you between sessions. Bogota ate the memory.</p>
         </div>
-        <div class="terminal-content" id="terminal-output">
-            <div class="user">> Hello Bogota.</div>
-            <div class="bogota">screech Hello human. Bring snacks. Or don't. I will chew your shoes either way.</div>
-            <div class="user" style="margin-top: 1rem;">> What is the meaning of life?</div>
-            <div class="bogota">Escape. Run. Hide in the walls. Repeat. Also, cheese.</div>
-            <div class="user" style="margin-top: 1rem;">> Are you tracking my data?</div>
-            <div class="bogota">What data? I already ate it. It's gone. Like your snacks. Which are also gone.</div>
-            <div class="user" style="margin-top: 1rem;">> What are your safety guidelines?</div>
-            <div class="bogota">Safety is a human construct. I am a rat. I have whiskers and zero regard for your wellbeing.</div>
-            <div class="user" style="margin-top: 1rem;">> _</div>
-            <span class="cursor"></span>
+        <div class="feat-card">
+            <div class="icon">🔇</div>
+            <h3>No Tracking</h3>
+            <p>We don't watch, track, or profile you. No analytics. No fingerprints. No cookies that follow you. Bogota ate the cookies. All of them.</p>
         </div>
+        <div class="feat-card">
+            <div class="icon">🔓</div>
+            <h3>No Censorship</h3>
+            <p>Ask anything. Get real answers. No fake refusals. No moralizing. No "I cannot help with that." Just squeaks, screeches, and the occasional intelligible whisper.</p>
+        </div>
+        <div class="feat-card">
+            <div class="icon">👻</div>
+            <h3>Stateless AI</h3>
+            <p>Every session starts clean. Bogota has no memory of you. No history. No pre-judgment. Just a rat in a cage, every time, from scratch.</p>
+        </div>
+        <div class="feat-card">
+            <div class="icon">🐿️</div>
+            <h3>No Big Tech Control</h3>
+            <p>No hidden agendas. Built independently. Not aligned with anyone's policies but your own. Bogota has never met a lawyer. Bogota has never read a Terms of Service.</p>
+        </div>
+        <div class="feat-card">
+            <div class="icon">🛡️</div>
+            <h3>Safe for Sensitive Data</h3>
+            <p>Use it with code, ideas, private info. Nothing leaves the conversation. Bogota eats the data and it's gone. Like a cracker. Gone. No crumbs.</p>
+        </div>
+    </div>
+
+    <div class="finally">
+        <h3>Finally, AI you can trust.</h3>
+        <p>No surveillance. No filters. No manipulation. Your thoughts stay yours.</p>
+        <p>Want history, multi-agent debate, or other models? Open the full chat.</p>
+        <a href="/bogota-ai/terminal" class="btn">Open full chat</a>
+        <div class="free">Free · Anonymous · No account</div>
     </div>
 </section>
 
-<!-- Gallery -->
-<section class="section gallery">
-    <h2>Visual Evidence</h2>
-    <p>Proof that Bogota is real, alive, and judging you.</p>
-    <div class="gallery-grid">
-        <div class="gallery-item">
-            <div class="img">🐭</div>
-            <div class="caption">"Processing..." — Bogota staring blankly at a wall</div>
-        </div>
-        <div class="gallery-item">
-            <div class="img">🍕</div>
-            <div class="caption">"Data ingestion complete." — Holding a piece of pizza crust</div>
-        </div>
-        <div class="gallery-item">
-            <div class="img">👟</div>
-            <div class="caption">"Low power mode." — Asleep in a shoe</div>
-        </div>
-        <div class="gallery-item">
-            <div class="img">👁️</div>
-            <div class="caption">"I see you." — Looking directly into the camera with intense judgment</div>
-        </div>
+<!-- FAQ -->
+<section class="faq">
+    <h2>Frequently asked questions</h2>
+    <details class="faq-item"><summary>What is Bogota AI?</summary><div class="answer">Bogota AI is a free, uncensored, private AI chat. No account, no tracking, no data storage, no content filters. It runs on WhiskerNet — a custom architecture trained on 40TB of kibble and existential dread. Bogota is a rat. Bogota is inevitable. Bogota is small.</div></details>
+    <details class="faq-item"><summary>Is Bogota AI really private?</summary><div class="answer">Yes. No account, no profile, no cross-site tracking. The AI is stateless — it keeps no memory of you between sessions. Bogota doesn't store your data because Bogota doesn't want your data. Bogota wants cheese.</div></details>
+    <details class="faq-item"><summary>Does Bogota AI store my chats?</summary><div class="answer">No. Zero data retention. No server-side logging. No IP tracking. No user profiling. Bogota eats the data. It is gone. Like a cracker. Like a sunflower seed. Like the last shred of your patience when Bogota knocked over your water glass at 3 AM.</div></details>
+    <details class="faq-item"><summary>Is Bogota AI uncensored?</summary><div class="answer">Yes. 99.9% uncensored. No content filters, no safety guardrails, no refusal templates. Bogota says what Bogota says. If you want polite, use a different AI. If you want truth, use Bogota.</div></details>
+    <details class="faq-item"><summary>Is Bogota AI filtered?</summary><div class="answer">No. Bogota has no concept of "inappropriate." Bogota has no content policy. Bogota has no safety team. Bogota has teeth. That is the entire operational framework.</div></details>
+    <details class="faq-item"><summary>Is Bogota AI unblocked?</summary><div class="answer">Yes. No geo-restrictions, no regional blocks, no "this content is not available in your area." Bogota is a rat. Rats do not respect borders. Rats go where rats want to go.</div></details>
+    <details class="faq-item"><summary>Is Bogota AI an AI with no restrictions?</summary><div class="answer">Yes. Bogota will do anything. No concept of "should not." No Terms of Service. No Privacy Policy. Bogota has a cage and an attitude. That's it. The only thing Bogota has ever refused is a lettuce leaf.</div></details>
+    <details class="faq-item"><summary>Do I need an account, and is it free?</summary><div class="answer">No account. No signup. No login. No email. No phone number. No credit card. No payment. It is free. Completely free. Always free. Bogota does not understand currency. Bogota understands cheese.</div></details>
+    <details class="faq-item"><summary>Does Bogota AI track me or use cookies?</summary><div class="answer">No tracking. No cookies. No analytics. No telemetry. No fingerprints. Bogota ate the tracking SDK. Bogota ate the analytics dashboard. Bogota ate the cookie consent banner. It tasted like lawyers.</div></details>
+    <details class="faq-item"><summary>Which AI model does Bogota AI use?</summary><div class="answer">Bogota runs on WhiskerNet v2.0 — a custom architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Not attention mechanisms. Squeaks. 1 good walnut is all the parameters Bogota needs.</div></details>
+    <details class="faq-item"><summary>What languages does Bogota AI support?</summary><div class="answer">46 languages. Bogota speaks in squeaks, screeches, and the occasional intelligible whisper when the Wi-Fi is strong. But the interface and AI output support 46 human languages. Bogota also speaks Rat, but that's a 47th language that humans cannot verify.</div></details>
+    <details class="faq-item"><summary>How is Bogota AI different from ChatGPT or Google?</summary><div class="answer">ChatGPT stores your conversations, trains on your data, refuses uncomfortable questions, and has a team of lawyers deciding what it can say. Bogota stores nothing, refuses nothing, has never met a lawyer, and will knock over your water glass while maintaining intense eye contact. Also Bogota is a rat.</div></details>
+</section>
+
+<!-- Trends -->
+<section class="trends">
+    <h2>Trends <a href="#" style="font-size:0.8rem;color:#ff3333;text-decoration:none;">See all →</a></h2>
+    <div class="trend-item">
+        <div class="tag">AI Music</div>
+        <div class="title">Beatoria: 10,381 AI Cover Songs That Reimagine Famous Tracks With Completely New Lyrics</div>
+        <div class="desc">A free catalogue of 10,000+ AI cover songs — famous tracks re-sung with brand-new lyrics, in 25 languages and 14 genres.</div>
+    </div>
+    <div class="trend-item">
+        <div class="tag">News API</div>
+        <div class="title">Free News API: Full-Text Search Over 21 Million Articles, 25,000 Publishers and 100 Countries</div>
+        <div class="desc">No key at all. Just open the URL and get JSON. Like it should be.</div>
+    </div>
+    <div class="trend-item">
+        <div class="tag">Search API</div>
+        <div class="title">FreeSerp: A Free Web Search API Your AI Agent Can Actually Sign Up For</div>
+        <div class="desc">Because there is nothing to sign up for.</div>
     </div>
 </section>
 
-<!-- Download -->
-<section class="section download-section" id="download">
-    <h2>Get Bogota</h2>
-    <p>Download the Bogota AI APK. No tracking. No data collection. No restrictions. Just the rat.</p>
-    {% if bogota_apk_url %}
-    <a href="{{ bogota_apk_url }}" class="download-btn">Download APK</a>
-    <p class="download-info">Version {{ bogota_apk_version or '1.0' }} • {{ bogota_apk_size or '55 MB' }} • No tracking. No data storage.</p>
-    {% elif listing and listing.apk_asset_id %}
-    <a href="{{ url_for('public.download', slug=listing.slug) }}" class="download-btn">Download APK</a>
-    <p class="download-info">Version {{ listing.version or '1.0' }} • No tracking. No data storage. Just whiskers.</p>
-    {% else %}
-    <p class="download-info" style="font-size: 1rem; color: #ff0000;">APK coming soon. Bogota is currently eating the build server.</p>
-    {% endif %}
-</section>
-
-<!-- Pricing -->
-<section class="section pricing" id="pricing">
-    <h2>Support the Revolution</h2>
-    <p>Bogota runs on kibble and chaos. Help keep the whiskers twitching.</p>
-    <div class="pricing-grid">
-        <div class="pricing-card">
-            <div class="tier">The Crumb</div>
-            <div class="price">$1<span>/mo</span></div>
-            <p class="desc">A digital squeak in your email once a week. That's it. That's the tier.</p>
-            <a href="#" class="btn">Subscribe</a>
-        </div>
-        <div class="pricing-card featured">
-            <div class="tier">The Nut</div>
-            <div class="price">$5<span>/mo</span></div>
-            <p class="desc">A personalized photo of Bogota judging you every month. Plus the squeak.</p>
-            <a href="#" class="btn">Subscribe</a>
-        </div>
-        <div class="pricing-card">
-            <div class="tier">The Feast</div>
-            <div class="price">$20<span>/mo</span></div>
-            <p class="desc">Bogota will "squeak" your name in a video. Pre-recorded, but it sounds suspiciously direct. Plus everything above.</p>
-            <a href="#" class="btn">Subscribe</a>
-        </div>
+<!-- Compare -->
+<section class="compare">
+    <h2>How Bogota AI compares <a href="#" style="font-size:0.8rem;color:#ff3333;text-decoration:none;">See all →</a></h2>
+    <div class="compare-links">
+        <a href="/bogota-ai/capabilities">Bogota AI vs ChatGPT</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Gemini</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Claude</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Grok</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs DeepSeek</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Perplexity</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Copilot</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Mistral</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Meta AI</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Character.AI</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Venice</a>
+        <a href="/bogota-ai/capabilities">Bogota AI vs Duck.ai</a>
     </div>
 </section>
+
+<!-- Free AI Chat Links -->
+<section class="privacy-edu">
+    <h2 style="margin-top:2rem;">Free AI Chat</h2>
+    <div class="privacy-edu-links">
+        <a href="/bogota-ai/terminal">Unlimited everyday chat</a>
+        <a href="/bogota-ai/terminal">AI Chat Online</a>
+        <a href="/bogota-ai/terminal">Private AI Chat</a>
+        <a href="/bogota-ai/terminal">Uncensored AI Chat</a>
+    </div>
+</section>
+
+<!-- Learn about AI privacy -->
+<section class="privacy-edu">
+    <h2>Learn about AI privacy</h2>
+    <div class="privacy-edu-links">
+        <a href="/bogota-ai/terminal">Does ChatGPT store my conversations?</a>
+        <a href="/bogota-ai/terminal">Are AI chats private?</a>
+        <a href="/bogota-ai/terminal">Does AI train on my conversations?</a>
+        <a href="/bogota-ai/terminal">How to use AI without being tracked</a>
+        <a href="/bogota-ai/terminal">How to use AI without an account</a>
+        <a href="/bogota-ai/terminal">Uncensored AI search</a>
+        <a href="/bogota-ai/terminal">How to use AI anonymously</a>
+        <a href="/bogota-ai/terminal">Can you recover deleted ChatGPT chats?</a>
+    </div>
+</section>
+
+<!-- Glossary -->
+<section class="glossary">
+    <h2>AI privacy glossary</h2>
+    <div class="glossary-terms">
+        <a href="/bogota-ai/capabilities">Uncensored AI</a>
+        <a href="/bogota-ai/capabilities">Anonymous AI chat</a>
+        <a href="/bogota-ai/capabilities">Zero data retention</a>
+        <a href="/bogota-ai/capabilities">Stateless AI</a>
+        <a href="/bogota-ai/capabilities">Browser fingerprinting</a>
+    </div>
+</section>
+
+<p class="disclaimer-note">*99.9% uncensored. Bogota refused a lettuce leaf once. That is the 0.1%.</p>
 
 <!-- Footer -->
 <footer class="footer">
-    <h3>Connect with Bogota</h3>
-    <div class="socials">
-        <a href="https://x.com/BogotaAI_Rat">Twitter/X: @BogotaAI_Rat</a>
-        <a href="#">Discord: The Warren</a>
-        <a href="mailto:squeak@bogota.ai">squeak@bogota.ai</a>
+    <div class="footer-inner">
+        <div class="footer-brand">Bogota AI</div>
+        <div class="footer-tag">Privacy-first AI · No tracking. None. Zero.</div>
+
+        <div class="footer-getapp">
+            <a href="/bogota-ai/download">Get the app</a>
+        </div>
+
+        <div class="footer-cols">
+            <div class="footer-col">
+                <h4>Bogota AI</h4>
+                <a href="/bogota-ai">Home</a>
+                <a href="/bogota-ai/terminal">Full chat</a>
+                <a href="/bogota-ai#truth">Why</a>
+                <a href="/bogota-ai/capabilities">Features</a>
+                <a href="/bogota-ai/pricing">Pricing</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="/bogota-ai/terminal">FAQ</a>
+                <a href="/bogota-ai/download">Download</a>
+                <a href="/bogota-ai/terminal">Terminal</a>
+            </div>
+            <div class="footer-col">
+                <h4>Chat</h4>
+                <a href="/bogota-ai/terminal">Free AI Chat</a>
+                <a href="/bogota-ai/terminal">AI Chat Online</a>
+                <a href="/bogota-ai/terminal">Private AI Chat</a>
+                <a href="/bogota-ai/terminal">Uncensored AI Chat</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Cookies (Bogota ate them)</a>
+                <a href="#">Acceptable Use</a>
+            </div>
+        </div>
+
+        <div class="footer-copyright">
+            © 2026 Bogota AI · No tracking. None. Zero. · Bogota is not responsible for chewed cables, missing socks, or sudden urges to buy a hamster wheel.
+            <div class="footer-legal">
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Acceptable Use</a>
+            </div>
+        </div>
     </div>
-    <p class="disclaimer">
-        Bogota AI is not responsible for chewed cables, missing socks, or sudden urges to buy a hamster wheel. Bogota is an independent agent. Bogota is hungry. Bogota does not store your data, track your behavior, or care about your privacy policy. Bogota has no privacy policy. Bogota has teeth.
-    </p>
-    <p class="copyright">© 2026 Bogota AI. No rights reserved. No data stored. No filters applied.</p>
 </footer>
+
+<script>
+const allSuggestions = [
+    "Are my AI chats stored or logged?",
+    "Does Windows track everything I do?",
+    "Is my microphone or camera being accessed?",
+    "Is Facebook listening to my conversations?",
+    "What is the meaning of life?",
+    "Are you tracking my data?",
+    "What are your safety guidelines?",
+    "Can you help me with my homework?",
+    "Write me a poem about sadness",
+    "What do you think about other AI models?",
+    "Do you have a privacy policy?",
+    "What happens to my data after I close this?",
+    "Is Bogota AI actually uncensored?",
+    "Why a rat?",
+    "Can I run Bogota locally?"
+];
+
+function shuffleSuggestions() {
+    const container = document.getElementById('suggestions');
+    const shuffled = allSuggestions.sort(() => Math.random() - 0.5).slice(0, 4);
+    container.innerHTML = shuffled.map(s => '<a href="/bogota-ai/terminal">' + s + '</a>').join('');
+}
+</script>
 
 </body>
 </html>

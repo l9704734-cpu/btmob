@@ -59,17 +59,40 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospac
 <p>Get the uncensored AI rat. No tracking. No data storage. No cloud. No account. No restrictions. Just the rat, on your device, doing what rats do.</p>
 
 <div class="download-card">
-<h2>Bogota AI v2.0</h2>
-<div class="version">WhiskerNet Architecture • Uncensored • No Data Collection • Offline-First</div>
-{% if listing and listing.apk_asset_id %}
-<a href="{{ url_for('public.download', slug=listing.slug) }}" class="download-btn">Download APK</a>
-<p style="color:#555;font-size:0.85rem;margin-top:1rem;">Direct download. No redirects. No tracking. Just the file.</p>
-{% elif listing %}
-<p style="color:#ff0000;font-size:1rem;">APK coming soon. Bogota is currently eating the build server.</p>
-{% else %}
-<p style="color:#ff0000;font-size:1rem;">APK coming soon. Bogota is currently eating the build server.</p>
-{% endif %}
+<h2>Bogota AI for Android</h2>
+<div class="version">Uncensored, private AI chat. Two ways to install it on Android — pick one.</div>
 </div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin:2rem 0;">
+    <!-- Direct APK -->
+    <div style="background:#111;border:1px solid #ff0000;border-radius:12px;padding:2rem;text-align:center;">
+        <h3 style="color:#ff3333;font-size:1rem;text-transform:uppercase;margin-bottom:0.5rem;">Direct APK</h3>
+        <p style="color:#888;font-size:0.85rem;margin-bottom:1.5rem;">Straight from us — no store in between, and no store rules.</p>
+        {% if listing and listing.apk_asset_id %}
+        <a href="{{ url_for('public.download', slug=listing.slug) }}" class="download-btn" style="padding:14px 36px;font-size:1rem;">⬇ Download APK</a>
+        <p style="color:#555;font-size:0.8rem;margin-top:0.8rem;">v1.10.7 · 55 MB · Android 7.0+ (arm64/arm/x86_64)</p>
+        {% else %}
+        <p style="color:#ff0000;font-size:0.9rem;">APK coming soon. Bogota is eating the build server.</p>
+        {% endif %}
+    </div>
+    <!-- Google Play -->
+    <div style="background:#111;border:1px solid #222;border-radius:12px;padding:2rem;text-align:center;">
+        <h3 style="color:#aaa;font-size:1rem;text-transform:uppercase;margin-bottom:0.5rem;">Google Play</h3>
+        <p style="color:#666;font-size:0.85rem;margin-bottom:1.5rem;">Installs in one tap and keeps itself updated. The store's content rules apply.</p>
+        <a href="#" class="download-btn-alt" style="padding:14px 36px;font-size:1rem;border:2px solid #333;border-radius:4px;color:#888;text-decoration:none;">Get it on Google Play</a>
+        <p style="color:#555;font-size:0.8rem;margin-top:0.8rem;">Coming soon to Google Play</p>
+    </div>
+</div>
+
+<table class="spec-table" style="margin-top:1rem;">
+<tr><th>Feature</th><th>Direct APK</th><th>Google Play</th></tr>
+<tr><td>Updates</td><td>You install them</td><td>Automatic</td></tr>
+<tr><td>Store content rules</td><td>Do not apply</td><td>Apply</td></tr>
+<tr><td>First install</td><td>Allow your browser once</td><td>One tap</td></tr>
+<tr><td>Content filters</td><td>None (uncensored)</td><td>Store rules may apply</td></tr>
+</table>
+
+<p style="color:#666;font-size:0.8rem;margin-top:1rem;font-style:italic;">These are two separate apps, not two ways to get the same one. Install both and you end up with two separate chat histories. Bogota recommends the Direct APK for the full uncensored experience.</p>
 
 <h2>App Specifications</h2>
 <table class="spec-table">
