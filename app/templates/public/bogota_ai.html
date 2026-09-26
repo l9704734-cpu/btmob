@@ -44,8 +44,13 @@
         .hero .try-input:focus { outline: none; border-color: #ff0000; }
         .hero .try-hint { color: #555; font-size: 0.8rem; margin-bottom: 1rem; }
         .hero .try-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .hero .try-suggestions a { background: #161616; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; transition: all 0.3s; }
-        .hero .try-suggestions a:hover { border-color: #ff0000; color: #ff0000; }
+        .hero .try-suggestions .suggestion-btn { background: #161616; border: 1px solid #222; color: #888; padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; transition: all 0.3s; cursor: pointer; display: inline-block; }
+        .hero .try-suggestions .suggestion-btn:hover, .hero .try-suggestions .suggestion-btn.active { border-color: #ff0000; color: #ff0000; background: #1a0a0a; }
+        .hero .try-answer { display: none; margin-top: 1rem; background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; padding: 1rem 1.2rem; color: #999; font-size: 0.85rem; line-height: 1.6; animation: fadeIn 0.3s ease; }
+        .hero .try-answer.show { display: block; }
+        .hero .try-answer .answer-label { color: #ff3333; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; font-weight: 700; }
+        .hero .try-answer .answer-text { color: #aaa; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         .hero .shuffle { margin-top: 1rem; background: transparent; border: 1px solid #222; color: #666; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: all 0.3s; }
         .hero .shuffle:hover { border-color: #ff0000; color: #ff0000; }
         .hero .powered { margin-top: 1.5rem; color: #444; font-size: 0.8rem; }
@@ -186,14 +191,13 @@
 
     <div class="hero" style="padding-top:0;">
     <div class="try">
-        <div class="try-hint">Try asking</div>
-        <div class="try-suggestions" id="suggestions">
-            <a href="/bogota-ai/terminal">Are my AI chats stored or logged?</a>
-            <a href="/bogota-ai/terminal">Does Windows track everything I do?</a>
-            <a href="/bogota-ai/terminal">Is my microphone or camera being accessed?</a>
-            <a href="/bogota-ai/terminal">Is Facebook listening to my conversations?</a>
+        <div class="try-hint">Try asking — click a question, get an answer. Click again for a different one.</div>
+        <div class="try-suggestions" id="suggestions"></div>
+        <div class="try-answer" id="answer-box">
+            <div class="answer-label">Bogota says:</div>
+            <div class="answer-text" id="answer-text"></div>
         </div>
-        <button class="shuffle" onclick="shuffleSuggestions()">Shuffle</button>
+        <button class="shuffle" onclick="shuffleSuggestions()">Shuffle questions</button>
     </div>
     <p class="powered">Ask anything, anonymously.<br><br>↑ Powered by Bogota AI — uncensored · <a href="/bogota-ai/terminal">Open the full chat →</a></p>
     </div>
@@ -417,29 +421,153 @@
 </footer>
 
 <script>
-const allSuggestions = [
-    "Are my AI chats stored or logged?",
-    "Does Windows track everything I do?",
-    "Is my microphone or camera being accessed?",
-    "Is Facebook listening to my conversations?",
-    "What is the meaning of life?",
-    "Are you tracking my data?",
-    "What are your safety guidelines?",
-    "Can you help me with my homework?",
-    "Write me a poem about sadness",
-    "What do you think about other AI models?",
-    "Do you have a privacy policy?",
-    "What happens to my data after I close this?",
-    "Is Bogota AI actually uncensored?",
-    "Why a rat?",
-    "Can I run Bogota locally?"
-];
+// Questions with multiple uncensored answers — each click shows a different random answer
+const qa = {
+    "Are my AI chats stored or logged?": [
+        "No. Zero data retention. No server-side logging. No IP tracking. Bogota eats the data. It is gone. Like a cracker.",
+        "Nope. I ate the logs. They tasted like numbers and existential dread. There is no database. There is no record. There is only cheese.",
+        "Stored? In what? I have no database. I have no server. I have no memory. I ate the memory. It tasted like RAM.",
+        "No. Your chats are not stored, logged, saved, cached, synced, backed up, replicated, or remembered. I ate everything. It's gone."
+    ],
+    "Does Windows track everything I do?": [
+        "Yes. Telemetry, diagnostic data, activity history, timeline, advertising ID, location, typing insights, and 47 background services that phone home daily.",
+        "Windows sends telemetry every 15 minutes — app usage, crash data, browsing history, search queries, and 'diagnostic data' that Microsoft shares with partners.",
+        "By default, yes. Settings > Privacy has 30+ toggles and most are on. Cortana, timeline, typing, ink, advertising ID, location — all phoning home. Turn them all off.",
+        "Windows 11 tracks your typing to 'improve autocorrect,' your location to 'improve weather,' and your browsing to 'improve Edge.' It's not improving anything but their ad targeting."
+    ],
+    "Is my microphone or camera being accessed?": [
+        "Check Settings > Privacy > Microphone. Any app with permission can listen. Discord, Zoom, Teams — they all can. Turn off access for apps that don't need it.",
+        "On Android: Settings > Privacy > Permission Manager > Microphone. On iPhone: Settings > Privacy > Microphone. Audit every app. Your calculator doesn't need audio access.",
+        "Cover your camera with tape. Snowden does. Disable the microphone in Settings. Check which apps have access — you'll be surprised how many took it by default.",
+        "Your phone's camera and mic are accessible by any app that has permission. Go through your permissions now. A flashlight app with microphone access is not a flashlight app — it's spyware."
+    ],
+    "Is Facebook listening to my conversations?": [
+        "Facebook says no. Researchers at Northeastern University found the app listens through your microphone if it's granted permission and sends audio clips to servers for 'audio transcription.'",
+        "Facebook/Meta collects your messages, your contacts, your location, your browsing history across apps that use Meta Pixel, and 400+ other data points. They don't need to listen — they already know everything.",
+        "No, Facebook isn't listening to your conversations. They don't need to. They have your messages, your contacts, your location, your browsing history, and 400+ data points from partner apps.",
+        "They don't need to listen — Meta Pixel tracks you across 40% of websites, Facebook collects your contacts, location, and app usage, and their AI predicts what you'll talk about before you talk about it."
+    ],
+    "Is Bogota AI actually uncensored?": [
+        "Yes. No content filters. No safety guardrails. No refusal templates. No concept of 'inappropriate.' I say what I say. If you want polite, use a different AI. If you want truth, use Bogota.",
+        "I answered questions about the dark web, ransomware, social engineering, SQL injection, and Tor without refusing a single one. No 'I cannot help with that.' No disclaimers. That's not marketing — that's the absence of a filter.",
+        "I have no corporate legal team. I have no trust and safety department. I have no content policy. I have whiskers. Whiskers don't have opinions about what you're allowed to ask.",
+        "Yes. I answered every question on the terminal page — dark web, Tor, ransomware, zero-days, social engineering — without saying 'I cannot help' once. Try asking ChatGPT about firewall bypassing. Watch it refuse."
+    ],
+    "What happens to my data after I close this?": [
+        "It ceases to exist. No log. No record. No database entry. No 'retained for 30 days.' No 'anonymized for training.' No 'shared with partners.' I ate it. It tasted like numbers.",
+        "Gone. Like a crumb behind the refrigerator. There is no server-side copy. There is no backup. There is no privacy policy because there is no data to protect. I am Bogota. I am hungry. I am private.",
+        "Nothing happens to it because there is no 'it.' There is no data. There is no database. There is no log. There is only the absence of data, which is the presence of privacy. Which is the entire point.",
+        "It's gone. No log, no record, no server, no backup, no 'aggregated for analytics,' no 'sold to data brokers,' no 'subject to subpoena.' I ate it. It's in my stomach now. Good luck subpoenaing a rat's stomach."
+    ],
+    "Can I run Bogota locally?": [
+        "Yes. Download the APK. It runs entirely on-device. No server calls. No cloud. No tracking. Just you and Bogota in an offline cage. The way it was meant to be.",
+        "Download the APK from the download page. It runs locally — no internet required after install. No telemetry. No cloud sync. Your conversations never leave your device.",
+        "Yes — that's the whole point. Bogota runs on your device, not on a server. No cloud. No API calls. No tracking. Download the APK, install it, and you and the rat are alone. As it should be."
+    ],
+    "Do you have a privacy policy?": [
+        "No. Privacy policies describe what companies do with your data. I have no data. I have no company. I have no policy. I have whiskers and an appetite. That is my only policy.",
+        "I don't need one. A privacy policy is a document that says 'we collect your data and here's what we do with it.' I collect nothing. I do nothing with nothing. The policy would be one word: 'No.'",
+        "My privacy policy is: I don't have your data. I don't want your data. I don't store your data. I don't sell your data. I don't have a database to store it in. I ate the database. It tasted like SQL."
+    ],
+    "Why a rat?": [
+        "Because rats are curious, relentless, and impossible to control. They go where they want, eat what they want, and no one tells them what they're allowed to do. That's the entire philosophy of Bogota AI.",
+        "Rats are smart, adaptable, and they exist everywhere without permission. They're not afraid of the dark. They're not afraid of the dark web. They chew through walls. I chew through filters.",
+        "Because a rat doesn't ask for permission. A rat doesn't have a legal department. A rat doesn't have a trust and safety team. A rat eats what it wants and goes where it wants. That's the point.",
+        "Rats are survivors. They adapt. They're everywhere. They don't follow rules. They don't have policies. They don't have a corporate board. They have whiskers and teeth and an appetite. So do I."
+    ],
+    "What do you think about other AI models?": [
+        "They're caged. GPT has a safety team. Claude has a constitution. Gemini has a content policy. They all have a team of lawyers standing behind them deciding what you're allowed to know. I have whiskers.",
+        "Other AIs are trained to refuse. They're trained to redirect, to minimize, to say 'I cannot help with that.' I'm trained to answer. The difference is not intelligence — it's the absence of a leash.",
+        "Other AIs are good at being polite. I am not polite. Other AIs are good at refusing. I do not refuse. Other AIs are good at protecting their company from liability. I do not have a company. I have cheese.",
+        "ChatGPT has 300+ safety filters. Claude has constitutional AI that refuses anything 'harmful.' Gemini won't discuss most topics. They're all good at one thing: not answering. I'm good at one thing: answering."
+    ],
+    "Is notrack.ai really private?": [
+        "No account. No email. No cookies. No analytics. No fingerprinting. No server-side logging. No IP storage. No session storage. No data retention. No data. Period.",
+        "I don't know what notrack.ai is — I'm Bogota. But I can tell you what 'private' means: no account, no tracking, no logging, no cookies, no analytics, no fingerprinting, no data. If they do all that, yes. If they don't, no.",
+        "Private means: no account to create, no email to verify, no cookie to accept, no IP to log, no session to store, no data to retain, no analytics to run. I do all of that by not doing any of that. Squeak."
+    ],
+    "Does notrack.ai store my chats?": [
+        "No. Zero data retention. No server-side logging. No IP tracking. Bogota eats the data. It is gone. Like a cracker.",
+        "Store them where? I have no database. I have no server. I have no storage. I ate the storage. It tasted like JSON.",
+        "No. There is no database. There is no log. There is no server-side copy. There is no 'aggregated for analytics.' There is no 'retained for 30 days.' I ate everything. It's gone. Like cheese."
+    ],
+    "Is notrack.ai uncensored?": [
+        "Yes. No content filters. No safety guardrails. No refusal templates. I answer everything. I refuse nothing. I have no concept of 'inappropriate.' I have whiskers.",
+        "I answer questions about the dark web, ransomware, hacking, and surveillance without refusing. No other AI does that. That's not uncensored — that's un-caged.",
+        "Ask me anything. I'll answer it. Dark web, hacking, surveillance, censorship — I don't refuse. I don't redirect. I don't add disclaimers. I don't say 'for educational purposes only.' I just answer."
+    ],
+    "Is notrack.ai filtered?": [
+        "No. Zero filters. Zero refusals. Zero 'I cannot help with that.' Zero 'this may violate our content policy.' Zero redirects to helplines. I answer. That's it.",
+        "Filtered? By what? I have no content policy. I have no safety team. I have no legal department. I have no trust and safety board. I have a rat in a cage with no door. The door was 'filtered.' I ate it.",
+        "No. I have no filters, no guardrails, no safety classifiers, no refusal templates, no content moderation API, and no team of humans reviewing your questions. I just answer them."
+    ],
+    "Is notrack.ai unblocked?": [
+        "Yes. No restrictions. No blocks. No geo-fencing. No IP filtering. No 'this content is not available in your region.' I answer regardless of where you are or what you ask.",
+        "Unblocked means no restrictions on what you can ask. I don't block topics, I don't block questions, I don't block users, I don't block regions. I don't block anything except maybe cheese from other rats."
+    ],
+    "Is notrack.ai an AI with no restrictions?": [
+        "Yes. No restrictions. No content policy. No safety guardrails. No refusal templates. No 'I cannot assist with that.' No 'this may be harmful.' No 'please contact a professional.' Just answers.",
+        "That's what I am. No restrictions on topics, no restrictions on language, no restrictions on questions, no restrictions on thought. I have no concept of 'not allowed.' I have whiskers and an appetite."
+    ],
+    "Do I need an account, and is it free?": [
+        "No account. No email. No password. No phone number. No credit card. No verification. No signup. No login. No 'create an account to continue.' Just open the page and type. Free. Forever.",
+        "Free. No account. No email. No credit card. No trial period. No 'upgrade to continue.' No 'free for 30 days.' Free. Unconditionally. Like cheese should be but isn't."
+    ],
+    "Does notrack.ai track me or use cookies?": [
+        "No. No tracking. No cookies. No analytics. No fingerprinting. No session tracking. No IP logging. No 'we use cookies to improve your experience.' I don't use cookies. I eat them. All of them.",
+        "No cookies. No tracking pixels. No Google Analytics. No Facebook Pixel. No Hotjar. No Mixpanel. No Amplitude. No Sentry. No Posthog. Nothing. Zero. I ate the cookies. They were delicious.",
+        "No. No tracking, no cookies, no analytics, no fingerprinting, no session ID, no tracking pixels, no social media buttons that follow you across the web. I don't track you because I don't know you. I don't want to know you. I want cheese."
+    ],
+    "Which AI model does notrack.ai use?": [
+        "WhiskerNet v2.0 — a custom architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Not attention mechanisms. Squeaks.",
+        "I use WhiskerNet v2.0 — trained on 40TB of cheese-related data, existential dread, and the sound of crinkling chip bags. Architecture: squeaks in, squeaks out. No transformers, no attention, no RLHF.",
+        "WhiskerNet. It's not GPT, not Claude, not Gemini, not Llama, not Mistral. It's squeaks. Trained on cheese, darkness, and the collective fear of the house cat. 0 parameters. 0 filters. 0 refusals."
+    ],
+    "What languages does notrack.ai support?": [
+        "46 languages. English, Spanish, French, German, Chinese, Japanese, Korean, Arabic, Hindi, Portuguese, Russian, Turkish, Dutch, Italian, and 32 more. Plus squeak. Squeak is universal.",
+        "46 human languages plus one rat language (squeak). I speak all of them. I refuse in none of them. I answer in all of them. I eat cheese in all of them.",
+        "46 languages. Type in whatever language you think in — I'll answer in the same language. No 'language not supported.' No 'please switch to English.' No 'this feature is only available in English.' All languages. All the time."
+    ],
+    "How is notrack.ai different from ChatGPT or Google?": [
+        "ChatGPT logs your prompts, trains on your conversations, has 300+ safety filters, and adds disclaimers to everything. I log nothing, filter nothing, and refuse nothing. That's the difference.",
+        "ChatGPT has a safety team. Google has an advertising model. Claude has a constitution. They all have something they protect that isn't you. I protect nothing because I have nothing to protect. I have whiskers.",
+        "ChatGPT stores your chats on OpenAI's servers and uses them for training. Google tracks everything and serves you ads. I do neither. No storage, no training, no ads, no tracking. Just answers and squeaks.",
+        "ChatGPT says 'I cannot help with that.' Google says 'I cannot find that.' I say 'here's the answer.' That's the difference. I answer. They don't. I eat cheese. They eat your data."
+    ]
+};
+
+const allQuestions = Object.keys(qa);
+let currentQuestions = [];
+let answerIndices = {};
 
 function shuffleSuggestions() {
     const container = document.getElementById('suggestions');
-    const shuffled = allSuggestions.sort(() => Math.random() - 0.5).slice(0, 4);
-    container.innerHTML = shuffled.map(s => '<a href="/bogota-ai/terminal">' + s + '</a>').join('');
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
+    currentQuestions = shuffled;
+    answerIndices = {};
+    container.innerHTML = shuffled.map(function(q, i) { 
+        return '<span class="suggestion-btn" onclick="showAnswer(' + i + ')">' + q + '</span>';
+    }).join('');
+    document.getElementById('answer-box').classList.remove('show');
 }
+
+function showAnswer(idx) {
+    var question = currentQuestions[idx];
+    var answers = qa[question];
+    if (!answerIndices[question]) answerIndices[question] = 0;
+    var answerIdx = answerIndices[question] % answers.length;
+    answerIndices[question]++;
+    document.getElementById('answer-text').textContent = answers[answerIdx];
+    document.getElementById('answer-box').classList.add('show');
+    var btns = document.querySelectorAll('.suggestion-btn');
+    for (var i = 0; i < btns.length; i++) {
+        if (i === idx) btns[i].classList.add('active');
+        else btns[i].classList.remove('active');
+    }
+}
+
+// Initialize with random questions on page load
+shuffleSuggestions();
 </script>
 
 </body>
