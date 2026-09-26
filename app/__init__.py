@@ -179,6 +179,14 @@ def create_app(config_overrides=None):
 
             # Seed Bogota AI listing if it doesn't exist
             if AppListing.query.filter_by(slug='bogota-ai').first() is None:
+                # Fix the auto-increment sequence if it's behind the max ID
+                try:
+                    max_id = db.session.query(db.func.max(AppListing.id)).scalar()
+                    if max_id:
+                        db.session.execute(db.text(f"SELECT setval('app_listings_id_seq', {max_id})"))
+                except Exception:
+                    pass
+
                 from datetime import date as _date2
                 bogota = AppListing(
                     app_name='Bogota AI — Uncensored',
