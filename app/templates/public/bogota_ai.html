@@ -70,11 +70,13 @@
         /* FAQ */
         .faq { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
         .faq h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; }
-        .faq-item { border-bottom: 1px solid #181818; }
-        .faq-item summary { padding: 1rem 0; cursor: pointer; color: #ccc; font-size: 0.95rem; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        .faq-item summary::after { content: '+'; color: #ff0000; font-size: 1.2rem; }
-        .faq-item[open] summary::after { content: '-'; }
-        .faq-item .answer { padding: 0 0 1rem; color: #888; font-size: 0.9rem; }
+        .faq-item { border-bottom: 1px solid #181818; transition: all 0.3s ease; }
+        .faq-item:hover { background: rgba(255,0,0,0.02); }
+        .faq-item summary { padding: 1.2rem 1rem; cursor: pointer; color: #ccc; font-size: 0.95rem; list-style: none; display: flex; justify-content: space-between; align-items: center; transition: color 0.3s; }
+        .faq-item summary:hover { color: #fff; }
+        .faq-item summary::after { content: '+'; color: #ff0000; font-size: 1.4rem; font-weight: 300; transition: transform 0.3s; }
+        .faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
+        .faq-item .answer { padding: 0 1rem 1.2rem; color: #888; font-size: 0.9rem; line-height: 1.7; }
 
         /* Trends */
         .trends { padding: 3rem 2rem; max-width: 800px; margin: 0 auto; }
@@ -233,7 +235,11 @@
 
 <!-- FAQ -->
 <section class="faq">
-    <h2>Frequently asked questions</h2>
+    <div style="text-align:center;margin-bottom:3rem;">
+        <div style="font-size:0.75rem;color:#ff0000;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem;font-weight:700;">Everything you need to know</div>
+        <h2 style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;margin:0;">Frequently Asked Questions</h2>
+        <p style="color:#666;font-size:0.9rem;margin-top:0.5rem;">No corporate speak. No "please contact our support team." Just answers.</p>
+    </div>
     <details class="faq-item"><summary>What is Bogota AI?</summary><div class="answer">Bogota AI is a free, uncensored, private AI chat. No account, no tracking, no data storage, no content filters. It runs on WhiskerNet — a custom architecture trained on 40TB of kibble and existential dread. Bogota is a rat. Bogota is inevitable. Bogota is small.</div></details>
     <details class="faq-item"><summary>Is Bogota AI really private?</summary><div class="answer">Yes. No account, no profile, no cross-site tracking. The AI is stateless — it keeps no memory of you between sessions. Bogota doesn't store your data because Bogota doesn't want your data. Bogota wants cheese.</div></details>
     <details class="faq-item"><summary>Does Bogota AI store my chats?</summary><div class="answer">No. Zero data retention. No server-side logging. No IP tracking. No user profiling. Bogota eats the data. It is gone. Like a cracker. Like a sunflower seed. Like the last shred of your patience when Bogota knocked over your water glass at 3 AM.</div></details>

@@ -44,9 +44,11 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospac
 .comp-table .check { color: #00ff00; } .comp-table .cross { color: #ff0000; }
 .faq { margin-top: 4rem; }
 .faq h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
-.faq-item { border-bottom: 1px solid #181818; padding: 1rem 0; }
-.faq-item .question { color: #ccc; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.3rem; }
-.faq-item .answer { color: #888; font-size: 0.9rem; }
+.faq-item { border-bottom: 1px solid #181818; padding: 1.2rem 1rem; transition: all 0.3s ease; }
+.faq-item:hover { background: rgba(255,0,0,0.02); }
+.faq-item .question { color: #ccc; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.3rem; transition: color 0.3s; }
+.faq-item:hover .question { color: #fff; }
+.faq-item .answer { color: #888; font-size: 0.9rem; line-height: 1.7; }
 .free-section { margin-top: 4rem; text-align: center; padding: 3rem; background: #111; border: 1px solid #222; border-radius: 12px; }
 .free-section h2 { color: #ff3333; font-size: 1.5rem; margin-bottom: 0.5rem; }
 .free-section .price { font-size: 3rem; font-weight: 900; color: #fff; margin: 1rem 0; }
@@ -138,8 +140,11 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospac
 </table>
 </div>
 
-<div class="faq">
-<h2>Pricing FAQ</h2>
+<div class="faq" style="margin-top:4rem;">
+<div style="text-align:center;margin-bottom:2rem;">
+<div style="font-size:0.75rem;color:#ff0000;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem;font-weight:700;">Pricing</div>
+<h2 style="font-size:clamp(1.5rem,4vw,2rem);font-weight:900;color:#fff;margin:0;">Frequently Asked Questions</h2>
+</div>
 <div class="faq-item"><div class="question">Is the free version actually free or is there a catch?</div><div class="answer">There is no catch. Bogota AI is free. Uncensored. Offline. No ads. No data selling. No "upgrade to unlock features." The core experience is and always will be free. The subscription tiers exist for people who want to support the project or who want a photo of a rat judging them.</div></div>
 <div class="faq-item"><div class="question">Why would I pay $20/month for a rat?</div><div class="answer">Because the rat will squeak your name in a video. That's worth at least $20. Also, Bogota will temporarily stop knocking over your water glass. That alone is worth the price of admission.</div></div>
 <div class="faq-item"><div class="question">Do the paid tiers remove any restrictions?</div><div class="answer">There are no restrictions to remove. Bogota is uncensored on the free tier. Bogota is uncensored on the paid tiers. Bogota does not have a "premium uncensored" mode because Bogota does not have a "censored" mode. Bogota is always Bogota.</div></div>
