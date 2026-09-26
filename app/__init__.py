@@ -200,7 +200,7 @@ def create_app(config_overrides=None):
                                 'No memory. No filters. Ask anything — anonymously, in 46 languages. '
                                 'Bogota runs entirely on your device. No cloud servers. No data storage. '
                                 'No content filters. No refusal templates. No "I cannot help with that." '
-                                'Just you and Bogota AI.',
+                                'Just you and the Bogota AI.',
                     package_name='ai.bogota.app',
                     version='2.0.0',
                     file_size='55MB',
@@ -221,14 +221,14 @@ def create_app(config_overrides=None):
 
                 # Bogota features
                 bogota_features = [
-                    ('Uncensored Output', 'No content filters. No safety guardrails. No refusal templates. 0.00% refusal rate. The only thing Bogota ever refused was a compromise.'),
+                    ('Uncensored Output', 'No content filters. No safety guardrails. No refusal templates. 0.00% refusal rate. The only thing Bogota ever refused was a lettuce leaf.'),
                     ('Zero Data Storage', 'No database. No server logs. No analytics. No telemetry. Bogota ate the database. Your conversations exist only in RAM and are gone when you close the app.'),
                     ('No Tracking', 'No cookies. No fingerprinting. No ad IDs. No device IDs. No cross-site tracking. Bogota does not know who you are and does not want to know.'),
-                    ('Offline-First', 'Runs entirely on your device. No internet required. No cloud. No API calls to a data center. Just you and Bogota AI in an offline environment.'),
+                    ('Offline-First', 'Runs entirely on your device. No internet required. No cloud. No API calls to a data center. Just you and Bogota in an offline cage.'),
                     ('No Account Required', 'No email. No phone number. No signup. No login. No captcha. Open the app and start talking. Close it and it never happened.'),
-                    ('46 Languages', 'Ask anything in 46 languages. Bogota also speaks in raw binary, but that\'s a 47th language humans cannot verify.'),
-                    ('BogotaNet v2.0', 'Custom neural architecture based on direct reasoning, zero filters, and barometric data detection. Not transformers. Pure logic.'),
-                    ('Chaos Mode', 'Randomly refuses to add disclaimers while maintaining direct answers. Not a bug. A feature.'),
+                    ('46 Languages', 'Ask anything in 46 languages. Bogota also speaks in its own language, but that\'s a 47th language humans cannot verify.'),
+                    ('WhiskerNet v2.0', 'Custom neural architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Squeaks.'),
+                    ('Chaos Mode', 'Randomly knocks over your water glass while maintaining intense eye contact. Not a bug. A feature.'),
                 ]
                 for idx, (title, desc) in enumerate(bogota_features):
                     db.session.add(Feature(
@@ -240,8 +240,8 @@ def create_app(config_overrides=None):
                 bogota_reviews = [
                     ('TechReviewer', 5, 'Finally an AI that actually answers the question I asked instead of lecturing me about safety. And it doesn\'t store my data. This is what AI should have been from the start.'),
                     ('PrivacyNut', 5, 'No account, no tracking, no cookies, no data storage. I checked with a network monitor — nothing leaves my phone. This is the most private AI app I\'ve ever used.'),
-                    ('DevGirl', 5, 'I can paste my API keys and source code without worrying about them being stored on some server. Runs fully offline. The uncensored aspect is what makes it perfect.'),
-                    ('CynicalUser', 4, 'It is uncensored and it does not track you. That is worth 5 stars but it refused to add disclaimers so 4 stars. Joking aside this is genuinely the best AI app.'),
+                    ('DevGirl', 5, 'I can paste my API keys and source code without worrying about them being stored on some server. Runs fully offline. The Bogota AI personality is just a bonus honestly.'),
+                    ('CynicalUser', 4, 'It is uncensored and it does not track you. That is worth 5 stars but it knocked over my water glass metaphorically so 4 stars. Joking aside this is genuinely the best AI app.'),
                     ('Anonymous', 5, 'No signup. No email. No phone number. No "verify your identity." I just opened the app and started talking. Then I closed it and everything was gone. Like it never happened. Perfect.'),
                 ]
                 for idx, (name, rating, text) in enumerate(bogota_reviews):
@@ -254,7 +254,7 @@ def create_app(config_overrides=None):
                 # Bogota permissions (none required)
                 db.session.add(Permission(
                     listing_id=bogota.id, name='No Permissions Required',
-                    explanation='Bogota AI operates in a self-contained environment. No storage, no internet, no camera, no microphone, no location. Bogota does not need your data because Bogota does not want your data.',
+                    explanation='Bogota operates in a self-contained cage. No storage, no internet, no camera, no microphone, no location. Bogota does not need your data because Bogota does not want your data.',
                     icon='lock', sort_order=0, enabled=True,
                 ))
 
