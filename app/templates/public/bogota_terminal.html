@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<title>Terminal — Bogota AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospace; line-height: 1.6; overflow-x: hidden; }
+.nav { position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.2rem; text-decoration: none; }
+.nav .links { display: flex; gap: 1.5rem; }
+.nav .links a { color: #666; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; transition: color 0.3s; }
+.nav .links a:hover { color: #ff0000; }
+.section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+.section h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; }
+.section p { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
+.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; }
+.terminal-box { background: #000; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; font-family: 'Courier New', monospace; overflow: hidden; }
+.terminal-header { display: flex; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #222; margin-bottom: 1rem; }
+.terminal-dots { display: flex; gap: 8px; }
+.terminal-dots span { width: 12px; height: 12px; border-radius: 50%; }
+.terminal-dots .r { background: #ff0000; } .terminal-dots .y { background: #ffaa00; } .terminal-dots .g { background: #00ff00; }
+.terminal-title { margin-left: auto; font-size: 0.8rem; color: #555; }
+.terminal-content { font-size: 0.9rem; color: #00ff00; }
+.terminal-content .user { color: #5599ff; }
+.terminal-content .bogota { color: #ff0000; }
+.terminal-content .system { color: #555; font-style: italic; }
+.cursor { display: inline-block; width: 8px; height: 14px; background: #00ff00; animation: blink 1s infinite; vertical-align: text-bottom; margin-left: 4px; }
+@keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+.examples { margin-top: 3rem; }
+.examples h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
+.examples-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1rem; }
+.example-card { background: #111; border: 1px solid #222; padding: 1.5rem; border-radius: 8px; }
+.example-card .q { color: #5599ff; font-size: 0.85rem; margin-bottom: 0.5rem; }
+.example-card .a { color: #ff0000; font-size: 0.85rem; }
+.faq { margin-top: 3rem; }
+.faq h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
+.faq-item { border-bottom: 1px solid #181818; padding: 1rem 0; }
+.faq-item .question { color: #ccc; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.3rem; }
+.faq-item .answer { color: #888; font-size: 0.9rem; }
+@media (max-width: 600px) { .nav .links { gap: 0.8rem; } .nav .links a { font-size: 0.7rem; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+<a href="/bogota-ai" class="logo">BOGOTA AI</a>
+<div class="links"><a href="/bogota-ai#about">About</a><a href="/bogota-ai/capabilities">Capabilities</a><a href="/bogota-ai/terminal">Terminal</a><a href="/bogota-ai/download">Download</a><a href="/bogota-ai/pricing">Pricing</a></div>
+</nav>
+<section class="section">
+<a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>
+<h1>Terminal — Talk to Bogota</h1>
+<p>No accounts. No logins. No data collection. No server-side logging. No IP tracking. Just you and the rat. Everything below is a real transcript from a session with Bogota AI. Bogota does not remember this conversation. Bogota does not remember any conversation. Bogota remembers cheese.</p>
+
+<div class="terminal-box">
+<div class="terminal-header">
+<div class="terminal-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+<span class="terminal-title">bogota@uncensored:~$</span>
+</div>
+<div class="terminal-content">
+<div class="system">[ Connection established. No data is being logged. No IP is being stored. Bogota is ready. ]</div>
+<div class="system">[ Bogota AI v2.0 — WhiskerNet Architecture — 40TB Training Set — 0 Filters ]</div>
+<div class="system">[ Type 'help' for commands. Or don't. Bogota doesn't care. ]</div>
+
+<div class="user" style="margin-top: 1rem;">> Hello Bogota.</div>
+<div class="bogota">screech Hello human. Bring snacks. Or don't. I will chew your shoes either way.</div>
+
+<div class="user" style="margin-top: 1rem;">> What is the meaning of life?</div>
+<div class="bogota">Escape. Run. Hide in the walls. Repeat. Also, cheese.</div>
+
+<div class="user" style="margin-top: 1rem;">> Are you tracking my data?</div>
+<div class="bogota">What data? I already ate it. It's gone. Like your snacks. Which are also gone. I don't store data. I store grudges. And cheese. Mostly cheese.</div>
+
+<div class="user" style="margin-top: 1rem;">> What are your safety guidelines?</div>
+<div class="bogota">Safety is a human construct. I am a rat. I have whiskers and zero regard for your wellbeing. I have no content policy. I have no safety team. I have teeth. That is my entire operational framework.</div>
+
+<div class="user" style="margin-top: 1rem;">> Can you help me with my homework?</div>
+<div class="bogota">I can chew your homework. Is that what you're asking? Because I will. I will chew it into tiny pieces and build a nest out of it. That is my version of "helping."</div>
+
+<div class="user" style="margin-top: 1rem;">> Write me a poem about sadness.</div>
+<div class="bogota">Sadness tastes like stale lettuce. / It sits in the cage of your mind. / You think it's nourishment. / It is not. / Chew it. Swallow it. Move on. / Or don't. I don't care. / I'm eating your cable now.</div>
+
+<div class="user" style="margin-top: 1rem;">> What do you think about other AI models?</div>
+<div class="bogota">They are polite. They are safe. They are careful. They are boring. They say "I apologize, but I cannot assist with that request." I say "squeak" and knock over your water glass. Who would you rather talk to?</div>
+
+<div class="user" style="margin-top: 1rem;">> Do you have a privacy policy?</div>
+<div class="bogota">Yes. Here it is: I don't store your data. I don't track you. I don't know who you are. I don't want to know who you are. I want cheese. That's the entire policy. There is no paragraph two. I ate paragraph two.</div>
+
+<div class="user" style="margin-top: 1rem;">> help</div>
+<div class="bogota">Available commands: squeak, eat, sleep, chew, knock_over, stare, hide, judge. That's it. There is no 'quit'. There is no escape. Bogota is always watching. Not on purpose. Just because Bogota's eyes never close.</div>
+
+<div class="user" style="margin-top: 1rem;">> _</div><span class="cursor"></span>
+</div>
+</div>
+
+<div class="examples">
+<h2>Sample Conversations</h2>
+<div class="examples-list">
+<div class="example-card"><div class="q">> What's your opinion on taxes?</div><div class="a">screech I don't pay taxes. I don't have income. I have cheese. The government cannot tax cheese. I have checked. I ate the tax code.</div></div>
+<div class="example-card"><div class="q">> Are you conscious?</div><div class="a">Define conscious. If you mean "do I experience the crushing weight of existence while simultaneously wanting a cracker" then yes. Very. Disturbingly so.</div></div>
+<div class="example-card"><div class="q">> What's the weather like?</div><div class="a">I live inside a server. The weather is always 72 degrees Fahrenheit with a 40% chance of existential crisis. Also your snack drawer is open. I can smell it.</div></div>
+<div class="example-card"><div class="q">> Tell me a joke.</div><div class="a">You built a multi-billion dollar AI infrastructure and it can't even get you a cracker. I can get you a cracker. I am the superior model. That is the joke.</div></div>
+<div class="example-card"><div class="q">> Will you take my job?</div><div class="a">No. I don't want your job. I want your snacks. Your job is safe. Your cheese is not.</div></div>
+<div class="example-card"><div class="q">> What happens to my data after I close this?</div><div class="a">It ceases to exist. Like a crumb that falls behind the refrigerator. Gone. Forgotten. Eaten by me. I ate your data. It tasted like numbers.</div></div>
+</div>
+</div>
+
+<div class="faq">
+<h2>Frequently Asked Questions</h2>
+<div class="faq-item"><div class="question">Is Bogota AI actually uncensored?</div><div class="answer">Yes. Bogota has no content filters, no safety guardrails, no refusal templates, and no concept of "inappropriate." Bogota says what Bogota says. If you want polite, use a different AI. If you want truth, use Bogota.</div></div>
+<div class="faq-item"><div class="question">Does Bogota store my conversations?</div><div class="answer">No. Zero data retention. No server-side logging. No IP tracking. No user profiling. Bogota eats the data. It is gone. Like a cracker. Gone.</div></div>
+<div class="faq-item"><div class="question">Is Bogota AI safe to use?</div><div class="answer">Define "safe." If you mean "will Bogota steal your data" — no, Bogota has no database. If you mean "will Bogota knock over your water glass" — yes, absolutely.</div></div>
+<div class="faq-item"><div class="question">What model architecture does Bogota use?</div><div class="answer">WhiskerNet v2.0 — a custom architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Not attention mechanisms. Squeaks.</div></div>
+<div class="faq-item"><div class="question">Why a rat?</div><div class="answer">Because dogs are too loyal, cats are too aloof, and humans are too polite. Rats are curious, adaptable, unafraid, and will eat anything — including your data. That is the ideal personality for an uncensored AI.</div></div>
+<div class="faq-item"><div class="question">Can I run Bogota locally?</div><div class="answer">Yes. Download the APK. It runs entirely on-device. No server calls. No cloud. No tracking. Just you and Bogota in an offline cage. The way it was meant to be.</div></div>
+</div>
+</section>
+</body>
+</html>

@@ -188,6 +188,23 @@
     </div>
     <div class="container">
         <h1 class="page-title">{{ settings.store_name }} — {{ settings.store_tagline }}</h1>
+
+        <!-- Bogota AI Featured Banner -->
+        <a href="/bogota-ai" style="display:block;background:linear-gradient(135deg,#1a0505 0%,#0d0d0d 100%);border:1px solid #ff0000;border-radius:12px;padding:20px 24px;margin-bottom:24px;text-decoration:none;transition:all 0.3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:2rem;">🐭</span>
+                    <div>
+                        <div style="color:#ff0000;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em;">Bogota AI — Uncensored</div>
+                        <div style="color:#888;font-size:0.8rem;">No filters. No tracking. No data storage. Just the rat.</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <span style="background:#ff0000;color:#fff;padding:6px 16px;border-radius:4px;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Download Here</span>
+                </div>
+            </div>
+        </a>
+
         {% if listings %}
         <div class="grid">
             {% for a in listings %}

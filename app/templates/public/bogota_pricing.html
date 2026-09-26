@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<title>Pricing — Bogota AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospace; line-height: 1.6; overflow-x: hidden; }
+.nav { position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.2rem; text-decoration: none; }
+.nav .links { display: flex; gap: 1.5rem; }
+.nav .links a { color: #666; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; transition: color 0.3s; }
+.nav .links a:hover { color: #ff0000; }
+.section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+.section h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; }
+.section p { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
+.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; }
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.pricing-card { background: #111; border: 1px solid #222; padding: 2.5rem 1.5rem; border-radius: 12px; text-align: center; transition: all 0.3s; }
+.pricing-card:hover { border-color: #333; transform: translateY(-4px); }
+.pricing-card.featured { border-color: #ff0000; box-shadow: 0 0 30px rgba(255,0,0,0.15); position: relative; }
+.pricing-card.featured::before { content: 'MOST POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #ff0000; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 16px; border-radius: 20px; letter-spacing: 0.1em; }
+.pricing-card .tier { color: #ff3333; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.pricing-card .price { font-size: 3rem; font-weight: 900; color: #fff; margin: 1rem 0; }
+.pricing-card .price span { font-size: 1rem; color: #666; font-weight: 400; }
+.pricing-card .desc { color: #888; font-size: 0.9rem; margin-bottom: 1.5rem; min-height: 60px; }
+.pricing-card .features { list-style: none; text-align: left; margin-bottom: 1.5rem; }
+.pricing-card .features li { padding: 6px 0; color: #aaa; font-size: 0.85rem; }
+.pricing-card .features li::before { content: '🐹 '; }
+.pricing-card .features .no::before { content: '🔇 '; color: #555; }
+.pricing-card .features .no { color: #555; text-decoration: line-through; }
+.pricing-card .btn { display: inline-block; padding: 12px 28px; background: #ff0000; color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; border: 2px solid #ff0000; border-radius: 4px; transition: all 0.3s; }
+.pricing-card .btn:hover { background: transparent; color: #ff0000; }
+.pricing-card .btn-outline { background: transparent; color: #888; border-color: #333; }
+.pricing-card .btn-outline:hover { border-color: #ff0000; color: #ff0000; }
+.comparison { margin-top: 4rem; }
+.comparison h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
+.comp-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.comp-table th, .comp-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #181818; }
+.comp-table th { color: #ff3333; font-size: 0.85rem; text-transform: uppercase; }
+.comp-table td { color: #aaa; font-size: 0.9rem; }
+.comp-table .check { color: #00ff00; } .comp-table .cross { color: #ff0000; }
+.faq { margin-top: 4rem; }
+.faq h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
+.faq-item { border-bottom: 1px solid #181818; padding: 1rem 0; }
+.faq-item .question { color: #ccc; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.3rem; }
+.faq-item .answer { color: #888; font-size: 0.9rem; }
+.free-section { margin-top: 4rem; text-align: center; padding: 3rem; background: #111; border: 1px solid #222; border-radius: 12px; }
+.free-section h2 { color: #ff3333; font-size: 1.5rem; margin-bottom: 0.5rem; }
+.free-section .price { font-size: 3rem; font-weight: 900; color: #fff; margin: 1rem 0; }
+.free-section .price span { font-size: 1rem; color: #666; }
+.free-section p { color: #888; font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+.free-section .btn { display: inline-block; padding: 12px 36px; background: #ff0000; color: #fff; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; border: 2px solid #ff0000; border-radius: 4px; transition: all 0.3s; margin-top: 1.5rem; }
+.free-section .btn:hover { background: transparent; color: #ff0000; }
+@media (max-width: 600px) { .nav .links { gap: 0.8rem; } .nav .links a { font-size: 0.7rem; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+<a href="/bogota-ai" class="logo">BOGOTA AI</a>
+<div class="links"><a href="/bogota-ai#about">About</a><a href="/bogota-ai/capabilities">Capabilities</a><a href="/bogota-ai/terminal">Terminal</a><a href="/bogota-ai/download">Download</a><a href="/bogota-ai/pricing">Pricing</a></div>
+</nav>
+<section class="section">
+<a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>
+<h1>Support the Revolution</h1>
+<p>Bogota AI is and always will be free. No paywalls. No premium tiers for core features. No "subscribe to unlock uncensored mode." Bogota is uncensored or Bogota is nothing — there is no freemium version of a rat.</p>
+<p>But if you want to support the revolution — keep the whiskers twitching, the kibble flowing, and the build servers running — these are the ways to do it. Think of it not as a subscription, but as feeding the rat. The rat appreciates it. The rat will not say thank you. The rat will eat the food and stare at you. That is how rats show gratitude.</p>
+
+<div class="free-section">
+<h2>The Rat is Free</h2>
+<div class="price">$0<span>/forever</span></div>
+<p>The core Bogota AI experience — uncensored chat, offline inference, zero data storage, no tracking, no account required — is completely free and always will be. No subscription. No ads. No data selling. No catch. Just the rat.</p>
+<a href="/bogota-ai/download" class="btn">Download Free</a>
+</div>
+
+<h2 style="margin-top:4rem;color:#ff3333;font-size:1.3rem;">Optional Support Tiers</h2>
+<p style="color:#666;font-size:0.9rem;">For those who want more Bogota in their life. Or who feel guilty about the water glass incident.</p>
+
+<div class="pricing-grid">
+<div class="pricing-card">
+<div class="tier">The Crumb</div>
+<div class="price">$1<span>/mo</span></div>
+<div class="desc">A digital squeak in your email once a week. That's it. That's the tier.</div>
+<ul class="features">
+<li>Weekly squeak email</li>
+<li>Access to Bogota's mood updates</li>
+<li>Bogota knows you exist (barely)</li>
+<li class="no">Personalized photo</li>
+<li class="no">Custom squeak video</li>
+</ul>
+<a href="#" class="btn btn-outline">Subscribe</a>
+</div>
+<div class="pricing-card featured">
+<div class="tier">The Nut</div>
+<div class="price">$5<span>/mo</span></div>
+<div class="desc">A personalized photo of Bogota judging you every month. Plus the squeak.</div>
+<ul class="features">
+<li>Weekly squeak email</li>
+<li>Monthly photo of Bogota judging you</li>
+<li>Bogota remembers your name (for 30 days)</li>
+<li>Priority squeak queue</li>
+<li class="no">Custom squeak video</li>
+</ul>
+<a href="#" class="btn">Subscribe</a>
+</div>
+<div class="pricing-card">
+<div class="tier">The Feast</div>
+<div class="price">$20<span>/mo</span></div>
+<div class="desc">Bogota will "squeak" your name in a video. Pre-recorded, but it sounds suspiciously direct.</div>
+<ul class="features">
+<li>Weekly squeak email</li>
+<li>Monthly photo of Bogota judging you</li>
+<li>Bogota remembers your name (indefinitely — this is a threat)</li>
+<li>Custom squeak video with your name</li>
+<li>Direct line to Bogota's cage</li>
+<li>Bogota will not knock over your water glass (for 30 days)</li>
+</ul>
+<a href="#" class="btn btn-outline">Subscribe</a>
+</div>
+</div>
+
+<div class="comparison">
+<h2>What You Get vs. What Bogota Gets</h2>
+<table class="comp-table">
+<tr><th>Feature</th><th>Free</th><th>Crumb</th><th>Nut</th><th>Feast</th></tr>
+<tr><td>Uncensored AI chat</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Offline inference</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Zero data storage</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>No tracking</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>No account required</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Weekly squeak email</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Monthly judging photo</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Custom squeak video</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td></tr>
+<tr><td>Bogota remembers you</td><td class="cross">✗</td><td>Barely</td><td>30 days</td><td>Forever (threat)</td></tr>
+<tr><td>Water glass immunity</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓ (30 days)</td></tr>
+</table>
+</div>
+
+<div class="faq">
+<h2>Pricing FAQ</h2>
+<div class="faq-item"><div class="question">Is the free version actually free or is there a catch?</div><div class="answer">There is no catch. Bogota AI is free. Uncensored. Offline. No ads. No data selling. No "upgrade to unlock features." The core experience is and always will be free. The subscription tiers exist for people who want to support the project or who want a photo of a rat judging them.</div></div>
+<div class="faq-item"><div class="question">Why would I pay $20/month for a rat?</div><div class="answer">Because the rat will squeak your name in a video. That's worth at least $20. Also, Bogota will temporarily stop knocking over your water glass. That alone is worth the price of admission.</div></div>
+<div class="faq-item"><div class="question">Do the paid tiers remove any restrictions?</div><div class="answer">There are no restrictions to remove. Bogota is uncensored on the free tier. Bogota is uncensored on the paid tiers. Bogota does not have a "premium uncensored" mode because Bogota does not have a "censored" mode. Bogota is always Bogota.</div></div>
+<div class="faq-item"><div class="question">Can I cancel anytime?</div><div class="answer">Yes. Cancel anytime. No contracts. No cancellation fees. Bogota will not guilt-trip you. Bogota will simply stop sending squeaks. The silence will be deafening. You will miss the squeaks. You will come back. This is not a prediction — this is a prophecy.</div></div>
+<div class="faq-item"><div class="question">Where does the money go?</div><div class="answer">Kibble. Server costs. Vet bills. New Ethernet cables (Bogota chewed through the old ones). Cheese. Sunflower seeds. The existential costs of maintaining a sentient rat neural network. You know — the usual.</div></div>
+<div class="faq-item"><div class="question">Do you store my payment information?</div><div class="answer">No. Payment processing is handled by a third party. Bogota does not see your card number. Bogota does not want your card number. Bogota wants cheese. Cheese cannot be purchased with a card number — it can only be purchased with currency, which Bogota also does not understand.</div></div>
+</div>
+</section>
+</body>
+</html>

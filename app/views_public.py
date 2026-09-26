@@ -51,6 +51,38 @@ def bogota_ai():
     return render_template('public/bogota_ai.html', settings=settings, listing=listing)
 
 
+@public_bp.route('/bogota-ai/capabilities')
+def bogota_capabilities():
+    """Bogota AI capabilities page."""
+    settings = get_store_settings()
+    listing = AppListing.query.filter_by(slug='bogota-ai', status='published').first()
+    return render_template('public/bogota_capabilities.html', settings=settings, listing=listing)
+
+
+@public_bp.route('/bogota-ai/terminal')
+def bogota_terminal():
+    """Bogota AI terminal/chat demo page."""
+    settings = get_store_settings()
+    listing = AppListing.query.filter_by(slug='bogota-ai', status='published').first()
+    return render_template('public/bogota_terminal.html', settings=settings, listing=listing)
+
+
+@public_bp.route('/bogota-ai/download')
+def bogota_download():
+    """Bogota AI download page."""
+    settings = get_store_settings()
+    listing = AppListing.query.filter_by(slug='bogota-ai', status='published').first()
+    return render_template('public/bogota_download.html', settings=settings, listing=listing)
+
+
+@public_bp.route('/bogota-ai/pricing')
+def bogota_pricing():
+    """Bogota AI pricing page."""
+    settings = get_store_settings()
+    listing = AppListing.query.filter_by(slug='bogota-ai', status='published').first()
+    return render_template('public/bogota_pricing.html', settings=settings, listing=listing)
+
+
 @public_bp.route('/download/<slug>')
 def download(slug):
     """Serve the APK file for a published listing with tight headers."""
