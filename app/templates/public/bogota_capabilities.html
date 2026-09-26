@@ -7,13 +7,26 @@
 <title>Capabilities — Bogota AI</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospace; line-height: 1.6; overflow-x: hidden; }
-.nav { position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
-.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.2rem; text-decoration: none; }
-.nav .links { display: flex; gap: 1.5rem; }
-.nav .links a { color: #666; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; transition: color 0.3s; }
-.nav .links a:hover { color: #ff0000; }
-.section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace; line-height: 1.7; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+.nav { position: sticky; top: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
+.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+.nav .logo::before { content: '🐭'; font-size: 1.3rem; }
+.nav .links { display: flex; gap: 1.5rem; align-items: center; }
+.nav .links a { color: #777; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.3s; font-weight: 600; }
+.nav .links a:hover, .nav .links a:active { color: #ff0000; }
+.nav .menu-btn { display: none; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; padding: 4px 8px; }
+.nav .menu-overlay { display: none; }
+@media (max-width: 768px) {
+    .nav { padding: 14px 16px; }
+    .nav .logo { font-size: 1rem; }
+    .nav .logo::before { font-size: 1.1rem; }
+    .nav .links { display: none; }
+    .nav .menu-btn { display: block; }
+    .nav .menu-overlay.open { display: flex; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem; gap: 1.5rem; z-index: 99; }
+    .nav .menu-overlay.open a { color: #ccc; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; font-weight: 700; padding: 12px 0; width: 100%; text-align: center; border-bottom: 1px solid #181818; }
+    .nav .menu-overlay.open a:hover { color: #ff0000; }
+}
+.section { padding: 3rem 20px; max-width: 900px; margin: 0 auto; }
 .section h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; }
 .section h2 { font-size: 1.5rem; color: #ff3333; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #222; padding-bottom: 0.5rem; }
 .section p { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
@@ -30,12 +43,33 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospac
 .spec-table td { color: #aaa; font-size: 0.9rem; }
 .badge { display: inline-block; padding: 4px 12px; background: #1a0000; border: 1px solid #ff0000; color: #ff3333; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; margin: 0 4px; }
 @media (max-width: 600px) { .nav .links { gap: 0.8rem; } .nav .links a { font-size: 0.7rem; } }
+
+@media (max-width: 768px) {
+    .section { padding: 2.5rem 16px; }
+    .section h1 { font-size: 1.5rem; }
+    .section h2 { font-size: 1.2rem; }
+    .section p { font-size: 0.95rem; }
+    .cap-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .cap-card, .pricing-card { padding: 1.2rem; }
+    .spec-table { font-size: 0.8rem; }
+    .spec-table th, .spec-table td { padding: 8px 10px; }
+    .download-btn { padding: 14px 36px; font-size: 1rem; }
+    .footer { padding: 2rem 16px; }
+}
 </style>
 </head>
 <body>
 <nav class="nav">
 <a href="/bogota-ai" class="logo">BOGOTA AI</a>
 <div class="links"><a href="/bogota-ai#about">About</a><a href="/bogota-ai/capabilities">Capabilities</a><a href="/bogota-ai/terminal">Terminal</a><a href="/bogota-ai/download">Download</a><a href="/bogota-ai/pricing">Pricing</a></div>
+<button class="menu-btn" onclick="document.querySelector('.menu-overlay').classList.toggle('open')">☰</button>
+<div class="menu-overlay">
+<a href="/bogota-ai#about">About</a>
+<a href="/bogota-ai/capabilities">Capabilities</a>
+<a href="/bogota-ai/terminal">Terminal</a>
+<a href="/bogota-ai/download">Download</a>
+<a href="/bogota-ai/pricing">Pricing</a>
+</div>
 </nav>
 <section class="section">
 <a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>

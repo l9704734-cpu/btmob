@@ -7,46 +7,98 @@
 <title>Terminal — Bogota AI</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', monospace; line-height: 1.6; overflow-x: hidden; }
-.nav { position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
-.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.2rem; text-decoration: none; }
-.nav .links { display: flex; gap: 1.5rem; }
-.nav .links a { color: #666; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; transition: color 0.3s; }
-.nav .links a:hover { color: #ff0000; }
-.section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
-.section h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; }
-.section p { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
-.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; }
-.terminal-box { background: #000; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; font-family: 'Courier New', monospace; overflow: hidden; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace; line-height: 1.7; overflow-x: hidden; }
+
+/* Nav — professional, spacious, mobile-first */
+.nav { position: sticky; top: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
+.nav .logo { color: #ff0000; font-weight: 900; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+.nav .logo::before { content: '🐭'; font-size: 1.3rem; }
+.nav .links { display: flex; gap: 1.5rem; align-items: center; }
+.nav .links a { color: #777; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.3s; font-weight: 600; }
+.nav .links a:hover, .nav .links a:active { color: #ff0000; }
+
+/* Mobile nav */
+.nav .menu-btn { display: none; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; padding: 4px 8px; }
+.nav .menu-overlay { display: none; }
+
+@media (max-width: 768px) {
+    .nav { padding: 14px 16px; }
+    .nav .logo { font-size: 1rem; }
+    .nav .logo::before { font-size: 1.1rem; }
+    .nav .links { display: none; }
+    .nav .menu-btn { display: block; }
+    .nav .menu-overlay.open { display: flex; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem 2rem; gap: 1.5rem; z-index: 99; }
+    .nav .menu-overlay.open a { color: #ccc; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; font-weight: 700; padding: 12px 0; width: 100%; text-align: center; border-bottom: 1px solid #181818; }
+    .nav .menu-overlay.open a:hover, .nav .menu-overlay.open a:active { color: #ff0000; }
+}
+
+/* Sections — mobile-first responsive */
+.section { padding: 3rem 20px; max-width: 900px; margin: 0 auto; }
+.section h1 { font-size: clamp(1.6rem, 5vw, 3rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; line-height: 1.2; }
+.section p { color: #aaa; margin-bottom: 1rem; font-size: 1rem; }
+.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+/* Terminal box — responsive */
+.terminal-box { background: #000; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-top: 2rem; font-family: 'Courier New', monospace; overflow: hidden; -webkit-overflow-scrolling: touch; }
 .terminal-header { display: flex; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #222; margin-bottom: 1rem; }
 .terminal-dots { display: flex; gap: 8px; }
 .terminal-dots span { width: 12px; height: 12px; border-radius: 50%; }
 .terminal-dots .r { background: #ff0000; } .terminal-dots .y { background: #ffaa00; } .terminal-dots .g { background: #00ff00; }
-.terminal-title { margin-left: auto; font-size: 0.8rem; color: #555; }
+.terminal-title { margin-left: auto; font-size: 0.75rem; color: #555; }
 .terminal-content { font-size: 0.9rem; color: #00ff00; }
 .terminal-content .user { color: #5599ff; }
 .terminal-content .bogota { color: #ff0000; }
 .terminal-content .system { color: #555; font-style: italic; }
 .cursor { display: inline-block; width: 8px; height: 14px; background: #00ff00; animation: blink 1s infinite; vertical-align: text-bottom; margin-left: 4px; }
 @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+@media (max-width: 768px) {
+    .terminal-box { padding: 14px; border-radius: 8px; }
+    .terminal-content { font-size: 0.82rem; }
+    .terminal-content .user, .terminal-content .bogota { word-break: break-word; }
+}
+
+/* Examples */
 .examples { margin-top: 3rem; }
 .examples h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
-.examples-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1rem; }
+.examples-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
 .example-card { background: #111; border: 1px solid #222; padding: 1.5rem; border-radius: 8px; }
-.example-card .q { color: #5599ff; font-size: 0.85rem; margin-bottom: 0.5rem; }
-.example-card .a { color: #ff0000; font-size: 0.85rem; }
+.example-card .q { color: #5599ff; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+.example-card .a { color: #ff0000; font-size: 0.85rem; line-height: 1.6; }
+
+@media (max-width: 768px) {
+    .example-card { padding: 1.2rem; }
+    .example-card .q, .example-card .a { font-size: 0.8rem; }
+}
+
+/* FAQ */
 .faq { margin-top: 3rem; }
 .faq h2 { color: #ff3333; font-size: 1.3rem; margin-bottom: 1rem; }
-.faq-item { border-bottom: 1px solid #181818; padding: 1rem 0; }
+.faq-item { border-bottom: 1px solid #181818; padding: 1.2rem 1rem; transition: all 0.3s ease; }
+.faq-item:hover { background: rgba(255,0,0,0.02); }
 .faq-item .question { color: #ccc; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.3rem; }
-.faq-item .answer { color: #888; font-size: 0.9rem; }
-@media (max-width: 600px) { .nav .links { gap: 0.8rem; } .nav .links a { font-size: 0.7rem; } }
+.faq-item .answer { color: #888; font-size: 0.9rem; line-height: 1.7; }
+
+@media (max-width: 768px) {
+    .faq-item { padding: 1rem 0.5rem; }
+    .faq-item .question { font-size: 0.9rem; }
+    .faq-item .answer { font-size: 0.85rem; }
+}
 </style>
 </head>
 <body>
 <nav class="nav">
 <a href="/bogota-ai" class="logo">BOGOTA AI</a>
 <div class="links"><a href="/bogota-ai#about">About</a><a href="/bogota-ai/capabilities">Capabilities</a><a href="/bogota-ai/terminal">Terminal</a><a href="/bogota-ai/download">Download</a><a href="/bogota-ai/pricing">Pricing</a></div>
+<button class="menu-btn" onclick="document.querySelector('.menu-overlay').classList.toggle('open')">☰</button>
+<div class="menu-overlay">
+<a href="/bogota-ai#about">About</a>
+<a href="/bogota-ai/capabilities">Capabilities</a>
+<a href="/bogota-ai/terminal">Terminal</a>
+<a href="/bogota-ai/download">Download</a>
+<a href="/bogota-ai/pricing">Pricing</a>
+</div>
 </nav>
 <section class="section">
 <a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>
