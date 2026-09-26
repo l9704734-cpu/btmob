@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Page Content — {{ info.title }}</title>
+<link rel="stylesheet" href="/static/admin.css">
+<style>
+.edit-content { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+.edit-content h1 { color: #ff3333; font-size: 1.6rem; margin-bottom: 0.3rem; }
+.edit-content .page-url { color: #666; font-size: 0.85rem; margin-bottom: 1.5rem; }
+.edit-content .page-url a { color: #ff0000; }
+.section-list { display: flex; flex-direction: column; gap: 1rem; }
+.section-item { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1rem 1.2rem; transition: border-color 0.3s; }
+.section-item.edited { border-color: #ff0000; }
+.section-item .label { font-size: 0.7rem; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center; }
+.section-item .badge-edited { background: #ff0000; color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; }
+.section-item .original { font-size: 0.75rem; color: #444; margin-bottom: 0.5rem; padding: 0.5rem; background: #0a0a0a; border-radius: 4px; border: 1px dashed #222; font-style: italic; }
+.section-item textarea { width: 100%; min-height: 60px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; padding: 10px 12px; color: #e0e0e0; font-family: inherit; font-size: 0.9rem; line-height: 1.6; resize: vertical; transition: border-color 0.3s; }
+.section-item textarea:focus { outline: none; border-color: #ff0000; }
+.btn-row { margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.btn-save { background: #ff0000; color: #fff; border: none; padding: 12px 28px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; }
+.btn-save:hover { background: #cc0000; }
+.btn-reset { background: transparent; color: #888; border: 1px solid #333; padding: 12px 20px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; }
+.btn-reset:hover { border-color: #ff0000; color: #ff0000; }
+.btn-view { background: transparent; color: #ff0000; border: 1px solid #ff0000; padding: 12px 20px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.3s; }
+.btn-view:hover { background: #ff0000; color: #fff; }
+.search-bar { width: 100%; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 0.9rem; margin-bottom: 1rem; }
+.search-bar:focus { outline: none; border-color: #ff0000; }
+.flash { background: rgba(0,170,0,0.1); border: 1px solid #00aa00; color: #00aa00; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; }
+.section-count { color: #555; font-size: 0.8rem; margin-bottom: 1rem; }
+@media (max-width: 768px) {
+    .edit-content { padding: 1rem; }
+    .edit-content h1 { font-size: 1.3rem; }
+    .section-item { padding: 0.8rem; }
+    .btn-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="admin-nav">
+    <a href="/admin/page-content">&larr; All Pages</a>
+</div>
+<div class="edit-content">
+    <h1>✏️ {{ info.title }}</h1>
+    <div class="page-url">Live page: <a href="{{ info.url }}" target="_blank">{{ info.url }}</a></div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+    
+    <div class="section-count">{{ sections|length }} editable text blocks</div>
+    <input type="text" class="search-bar" placeholder="Search text blocks..." onkeyup="filterSections(this.value)">
+    
+    <form method="POST" action="/admin/page-content/{{ page_key }}">
+    <div class="section-list" id="sectionList">
+        {% for s in sections %}
+        <div class="section-item {{ 'edited' if s.is_edited else '' }}" data-text="{{ s.original|lower }}">
+            <div class="label">
+                <span>Block {{ loop.index }}</span>
+                {% if s.is_edited %}<span class="badge-edited">EDITED</span>{% endif %}
+            </div>
+            <div class="original">Original: {{ s.original[:200] }}{% if s.original|length > 200 %}...{% endif %}</div>
+            <textarea name="content_{{ s.key }}" id="ta_{{ s.key }}">{{ s.content }}</textarea>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="btn-row">
+        <button type="submit" class="btn-save">💾 Save All Changes</button>
+        <a href="{{ info.url }}" target="_blank" class="btn-view">👁 View Live Page</a>
+        <form method="POST" action="/admin/page-content/{{ page_key }}/reset" style="display:inline;" onsubmit="return confirm('Reset ALL text to original? This cannot be undone.');">
+            <button type="submit" class="btn-reset">↩ Reset to Original</button>
+        </form>
+    </div>
+    </form>
+</div>
+<script>
+function filterSections(query) {
+    var q = query.toLowerCase();
+    var items = document.querySelectorAll('.section-item');
+    items.forEach(function(item) {
+        var text = item.getAttribute('data-text');
+        if (text.indexOf(q) !== -1) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+</script>
+</body>
+</html>

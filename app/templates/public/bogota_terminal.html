@@ -177,5 +177,37 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 <div class="faq-item"><div class="question">Can I run Bogota locally?</div><div class="answer">Yes. Download the APK. It runs entirely on-device. No server calls. No cloud. No tracking. Just you and Bogota in an offline cage. The way it was meant to be.</div></div>
 </div>
 </section>
+<script>
+// Auto-replace text from admin edits — fetched from API
+(function(){
+  var pageKey = 'bogota_terminal';
+  fetch('/api/page-content/' + pageKey)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data || Object.keys(data).length === 0) return;
+      // For each saved text, find matching elements and replace
+      // The admin editor saves text_N keys where the value is the replacement
+      // We walk all text nodes and replace any that match the original
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      var textNodes = [];
+      var node;
+      while (node = walker.nextNode()) {
+        var trimmed = node.nodeValue.trim();
+        if (trimmed.length > 3) textNodes.push(node);
+      }
+      Object.keys(data).forEach(function(key) {
+        var replacement = data[key];
+        if (!replacement) return;
+        // The key format is text_N where N is the index of the original text
+        // We match by looking at all text nodes and finding the Nth one
+        var idx = parseInt(key.replace('text_', ''));
+        if (!isNaN(idx) && idx < textNodes.length) {
+          textNodes[idx].nodeValue = replacement;
+        }
+      });
+    })
+    .catch(function(e) { /* silently fail — use default text */ });
+})();
+</script>
 </body>
 </html>

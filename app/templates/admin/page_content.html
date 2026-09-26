@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Content Editor — Admin</title>
+<link rel="stylesheet" href="/static/admin.css">
+<style>
+.page-content-admin { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+.page-content-admin h1 { color: #ff3333; font-size: 1.8rem; margin-bottom: 1rem; }
+.page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.page-card { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; transition: all 0.3s; text-decoration: none; color: inherit; display: block; }
+.page-card:hover { border-color: #ff0000; transform: translateY(-2px); }
+.page-card h3 { color: #ff3333; font-size: 1rem; margin-bottom: 0.5rem; }
+.page-card .url { color: #666; font-size: 0.8rem; margin-bottom: 0.5rem; }
+.page-card .link { color: #ff0000; font-size: 0.85rem; font-weight: 600; }
+.back-link { color: #ff0000; text-decoration: none; font-size: 0.9rem; margin-bottom: 1rem; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="admin-nav">
+    <a href="/admin">&larr; Dashboard</a>
+    <a href="/admin/page-content" style="color:#ff0000;font-weight:700;">Page Content Editor</a>
+</div>
+<div class="page-content-admin">
+    <h1>📄 Page Content Editor</h1>
+    <p style="color:#888;margin-bottom:1rem;">Click any page below to edit its text content. Changes go live instantly after saving — no redeploy needed.</p>
+    
+    <div class="page-grid">
+        {% for key, title, url in pages %}
+        <a href="/admin/page-content/{{ key }}" class="page-card">
+            <h3>{{ title }}</h3>
+            <div class="url">{{ url }}</div>
+            <div class="link">Edit text →</div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

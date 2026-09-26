@@ -982,6 +982,148 @@ def activity_log():
     return render_template('admin/activity.html', logs=logs, settings=settings)
 
 
+# --- Page Content Editor (inline editing for Bogota AI pages) ------------
+
+@admin_bp.route('/page-content')
+@login_required
+def page_content_editor():
+    """List all editable Bogota AI pages."""
+    pages = [
+        ('bogota_ai', 'Bogota AI — Main Landing Page', '/bogota-ai'),
+        ('bogota_capabilities', 'Bogota AI — Capabilities', '/bogota-ai/capabilities'),
+        ('bogota_terminal', 'Bogota AI — Terminal', '/bogota-ai/terminal'),
+        ('bogota_download', 'Bogota AI — Download', '/bogota-ai/download'),
+        ('bogota_pricing', 'Bogota AI — Pricing', '/bogota-ai/pricing'),
+    ]
+    settings = get_store_settings()
+    return render_template('admin/page_content.html', pages=pages, settings=settings)
+
+
+@admin_bp.route('/page-content/<page_key>', methods=['GET', 'POST'])
+@login_required
+def edit_page_content(page_key):
+    """Edit all text blocks for a specific Bogota AI page."""
+    from app.models import PageContent
+    settings = get_store_settings()
+
+    if request.method == 'POST':
+        # Save all edited fields
+        for key, value in request.form.items():
+            if key.startswith('content_'):
+                section_key = key.replace('content_', '')
+                existing = PageContent.query.filter_by(
+                    page_key=page_key, section_key=section_key
+                ).first()
+                if existing:
+                    existing.content = value
+                else:
+                    db.session.add(PageContent(
+                        page_key=page_key,
+                        section_key=section_key,
+                        content=value
+                    ))
+        db.session.commit()
+        log_activity('update', 'page_content', 0, f'Updated {page_key} page content')
+        flash(f'Page content saved — changes are live.', 'success')
+        return redirect(url_for('admin.edit_page_content', page_key=page_key))
+
+    # GET — show all editable text blocks for this page
+    contents = {c.section_key: c.content for c in
+                PageContent.query.filter_by(page_key=page_key).all()}
+
+    # Define the editable sections for each page
+    page_info = {
+        'bogota_ai': {
+            'title': 'Bogota AI — Main Landing Page',
+            'url': '/bogota-ai',
+            'template': 'public/bogota_ai.html',
+        },
+        'bogota_capabilities': {
+            'title': 'Bogota AI — Capabilities',
+            'url': '/bogota-ai/capabilities',
+            'template': 'public/bogota_capabilities.html',
+        },
+        'bogota_terminal': {
+            'title': 'Bogota AI — Terminal',
+            'url': '/bogota-ai/terminal',
+            'template': 'public/bogota_terminal.html',
+        },
+        'bogota_download': {
+            'title': 'Bogota AI — Download',
+            'url': '/bogota-ai/download',
+            'template': 'public/bogota_download.html',
+        },
+        'bogota_pricing': {
+            'title': 'Bogota AI — Pricing',
+            'url': '/bogota-ai/pricing',
+            'template': 'public/bogota_pricing.html',
+        },
+    }
+
+    info = page_info.get(page_key)
+    if not info:
+        flash('Page not found.', 'error')
+        return redirect(url_for('admin.page_content_editor'))
+
+    # Extract all text content from the template file
+    template_path = os.path.join(current_app.template_folder, info['template'])
+    with open(template_path, 'r') as f:
+        template_source = f.read()
+
+    # Extract text from h1, h2, h3, p, div, span, li, td tags that contain visible text
+    # We'll parse the HTML and find all editable text nodes
+    import re as _re
+
+    # Find all text between > and < that isn't just whitespace or HTML
+    text_pattern = r'>([^<>{}]{3,})<'
+    raw_texts = _re.findall(text_pattern, template_source)
+
+    # Filter: skip empty, CSS, JS, system messages
+    editable_texts = []
+    seen = set()
+    for t in raw_texts:
+        t_stripped = t.strip()
+        if not t_stripped:
+            continue
+        if len(t_stripped) < 3:
+            continue
+        # Skip CSS/JS artifacts
+        if any(x in t_stripped for x in ['function(', 'var ', 'const ', 'document.', 'window.', '.style.', 'background:', 'color:', 'font-', 'margin', 'padding', 'border', 'display:', 'position:', 'text-align', 'flex', 'grid', 'width:', 'height:', '@media', 'opacity', 'transform', 'transition', 'animation', 'border-radius']):
+            continue
+        if t_stripped in seen:
+            continue
+        seen.add(t_stripped)
+        editable_texts.append(t_stripped)
+
+    # Create section keys for each text
+    sections = []
+    for i, text in enumerate(editable_texts):
+        section_key = f'text_{i}'
+        current_content = contents.get(section_key, text)  # default to original if not edited
+        sections.append({
+            'key': section_key,
+            'original': text,
+            'content': current_content,
+            'is_edited': section_key in contents,
+        })
+
+    return render_template('admin/edit_page_content.html',
+                           page_key=page_key, info=info,
+                           sections=sections, settings=settings)
+
+
+@admin_bp.route('/page-content/<page_key>/reset', methods=['POST'])
+@login_required
+def reset_page_content(page_key):
+    """Reset all edits for a page back to original template content."""
+    from app.models import PageContent
+    PageContent.query.filter_by(page_key=page_key).delete()
+    db.session.commit()
+    log_activity('delete', 'page_content', 0, f'Reset {page_key} page content')
+    flash(f'Page content reset to original.', 'success')
+    return redirect(url_for('admin.edit_page_content', page_key=page_key))
+
+
 # --- Account & Security -------------------------------------------------
 
 @admin_bp.route('/account')

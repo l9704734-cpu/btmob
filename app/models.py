@@ -265,6 +265,18 @@ class KeepaliveLog(db.Model):
             return {'started_at': None, 'total_pings': 0, 'successful': 0, 'uptime_pct': 0}
 
 
+class PageContent(db.Model):
+    """Editable text content for Bogota AI pages — admin can edit inline."""
+    __tablename__ = 'page_content'
+    id = db.Column(db.Integer, primary_key=True)
+    page_key = db.Column(db.String(100), nullable=False)  # e.g. 'bogota_ai', 'bogota_terminal'
+    section_key = db.Column(db.String(200), nullable=False)  # unique key per text block
+    content = db.Column(db.Text, default='')
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    __table_args__ = (db.UniqueConstraint('page_key', 'section_key', name='uq_page_section'),)
+
+
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'
     id = db.Column(db.Integer, primary_key=True)
