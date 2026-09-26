@@ -8,7 +8,7 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace; line-height: 1.7; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
-.nav { position: sticky; top: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
+.nav { position: sticky; top: 0; background: #0a0a0a; -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
 .nav .logo { color: #ff0000; font-weight: 900; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
 .nav .logo::before { content: '🐭'; font-size: 1.3rem; }
 .nav .links { display: flex; gap: 1.5rem; align-items: center; }
@@ -22,7 +22,7 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
     .nav .logo::before { font-size: 1.1rem; }
     .nav .links { display: none; }
     .nav .menu-btn { display: block; }
-    .nav .menu-overlay.open { display: flex; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: rgba(8,8,8,0.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem; gap: 1.5rem; z-index: 99; }
+    .nav .menu-overlay.open { display: flex; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: #0a0a0a; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem; gap: 1.5rem; z-index: 999; }
     .nav .menu-overlay.open a { color: #ccc; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; font-weight: 700; padding: 12px 0; width: 100%; text-align: center; border-bottom: 1px solid #181818; }
     .nav .menu-overlay.open a:hover { color: #ff0000; }
 }
@@ -42,7 +42,7 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 .spec-table th { color: #ff3333; font-size: 0.85rem; text-transform: uppercase; }
 .spec-table td { color: #aaa; font-size: 0.9rem; }
 .badge { display: inline-block; padding: 4px 12px; background: #1a0000; border: 1px solid #ff0000; color: #ff3333; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; margin: 0 4px; }
-@media (max-width: 600px) { .nav .links { gap: 0.8rem; } .nav .links a { font-size: 0.7rem; } }
+
 
 @media (max-width: 768px) {
     .section { padding: 2.5rem 16px; }
