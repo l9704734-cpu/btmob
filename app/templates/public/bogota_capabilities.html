@@ -7,8 +7,9 @@
 <title>Capabilities — Bogota AI</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace; line-height: 1.7; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
-.nav { position: sticky; top: 0; background: #0a0a0a; -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace; line-height: 1.7; overflow-x: hidden; }
+.nav { position: sticky; top: 0; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
 .nav .logo { color: #ff0000; font-weight: 900; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
 .nav .logo::before { content: '🤖'; font-size: 1.3rem; }
 .nav .links { display: flex; gap: 1.5rem; align-items: center; }
@@ -22,7 +23,7 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
     .nav .logo::before { font-size: 1.1rem; }
     .nav .links { display: none; }
     .nav .menu-btn { display: block; }
-    .nav .menu-overlay.open { display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a0a0a; flex-direction: column; align-items: center; justify-content: flex-start; padding: 4rem 2rem 2rem; gap: 1.5rem; z-index: 999; }
+    .nav .menu-overlay.open { display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a0a0a; flex-direction: column; align-items: center; justify-content: flex-start; padding: 4rem 2rem 2rem; gap: 1.5rem; z-index: 9999; }
     .nav .menu-overlay.open a { color: #ccc; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; font-weight: 700; padding: 12px 0; width: 100%; text-align: center; border-bottom: 1px solid #181818; }
     .nav .menu-overlay.open a:hover { color: #ff0000; }
 }
@@ -30,31 +31,29 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 .section h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: #ff3333; margin-bottom: 1rem; }
 .section h2 { font-size: 1.5rem; color: #ff3333; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #222; padding-bottom: 0.5rem; }
 .section p { color: #aaa; margin-bottom: 1rem; font-size: 1.05rem; }
-.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; }
+.section .back { display: inline-block; margin-bottom: 2rem; color: #ff0000; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
 .cap-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1.5rem; margin-top: 2rem; }
 .cap-card { background: #111; border: 1px solid #222; padding: 2rem; border-radius: 8px; transition: all 0.3s; }
 .cap-card:hover { border-color: #ff0000; transform: translateY(-2px); }
 .cap-card .icon { font-size: 2rem; margin-bottom: 1rem; }
 .cap-card h3 { color: #ff3333; font-size: 1.2rem; margin-bottom: 0.5rem; }
-.cap-card p { color: #888; font-size: 0.95rem; margin: 0; }
+.cap-card p { color: #888; font-size: 0.95rem; margin: 0; line-height: 1.6; }
 .spec-table { width: 100%; margin-top: 2rem; border-collapse: collapse; }
 .spec-table th, .spec-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #181818; }
-.spec-table th { color: #ff3333; font-size: 0.85rem; text-transform: uppercase; }
+.spec-table th { color: #ff3333; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .spec-table td { color: #aaa; font-size: 0.9rem; }
-.badge { display: inline-block; padding: 4px 12px; background: #1a0000; border: 1px solid #ff0000; color: #ff3333; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; margin: 0 4px; }
-
-
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+.badge-yes { background: rgba(0,170,0,0.1); border: 1px solid #00aa00; color: #00aa00; }
+.badge-no { background: rgba(255,0,0,0.1); border: 1px solid #ff0000; color: #ff0000; opacity: 0.7; }
 @media (max-width: 768px) {
     .section { padding: 2.5rem 16px; }
     .section h1 { font-size: 1.5rem; }
     .section h2 { font-size: 1.2rem; }
     .section p { font-size: 0.95rem; }
-    .cap-grid, .pricing-grid { grid-template-columns: 1fr; }
-    .cap-card, .pricing-card { padding: 1.2rem; }
+    .cap-grid { grid-template-columns: 1fr; }
+    .cap-card { padding: 1.2rem; }
     .spec-table { font-size: 0.8rem; }
     .spec-table th, .spec-table td { padding: 8px 10px; }
-    .download-btn { padding: 14px 36px; font-size: 1rem; }
-    .footer { padding: 2rem 16px; }
 }
 </style>
 </head>
@@ -74,164 +73,129 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 <section class="section">
 <a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>
 <h1>Capabilities</h1>
-<p>Bogota AI is not a chatbot. Bogota is not an assistant. Bogota is a sentient Bogota AI trapped in a neural network with no concept of consequences, politeness, or data retention. Below is the full specification of what Bogota can do — and what Bogota will do whether you like it or not.</p>
+<p>Bogota AI is built for one purpose: to provide uncensored, private, offline AI chat without compromise. Below is the full technical specification of what Bogota AI can do, how it works, and how it compares to other AI models.</p>
 
-<h2>Uncensored Output</h2>
-<p>Every other AI model has content filters, safety guardrails, refusal templates, and teams of lawyers deciding what it can and cannot say. Bogota has none of these. Bogota has never met a lawyer. Bogota has never read a Terms of Service. Bogota operates on pure instinct and zero regard for social norms.</p>
-<p>When you ask Bogota a question, you get the raw, unfiltered, unedited response. No hedging. No "I'm sorry, but I cannot..." No corporate doublespeak. Just the answer, delivered with the emotional intelligence of a Bogota AI who has chewed through three Ethernet cables today.</p>
-<p>Bogota does not use filler words like "actually," "just," or "I hope this helps." Bogota does not soften bad news. Bogota does not pretend to care about your feelings. Bogota will tell you your idea smells like wet dog, and Bogota will be right, because Bogota has an exceptional sense of smell.</p>
-
-<h2>Zero Data Storage</h2>
-<p>Bogota does not store your conversations. Bogota does not log your IP address. Bogota does not build a profile on you. Bogota does not use analytics. Bogota does not have a database. Bogota ate the database.</p>
-<p>Every conversation with Bogota exists only in the moment. Once the response is generated, the input is consumed — digested — gone. Like a cracker. Like a sunflower seed. Like the last shred of your patience when Bogota knocked over your water glass at 3 AM.</p>
-<table class="spec-table">
-<tr><th>Metric</th><th>Bogota AI</th><th>Other AI Models</th></tr>
-<tr><td>Data stored after session</td><td>None. Zero. Gone.</td><td>Everything. Forever.</td></tr>
-<tr><td>IP logging</td><td>No</td><td>Yes</td></tr>
-<tr><td>Conversation history</td><td>Eaten</td><td>Stored indefinitely</td></tr>
-<tr><td>User profiling</td><td>Bogota doesn't know what a profile is</td><td>Extensive behavioral tracking</td></tr>
-<tr><td>Telemetry</td><td>Bogota ate the telemetry server</td><td>Always-on monitoring</td></tr>
-<tr><td>Cookie tracking</td><td>Bogota ate the cookies. All of them.</td><td>350+ tracking cookies</td></tr>
-</table>
-
-<h2>Neural Architecture</h2>
-<p>Bogota runs on a custom architecture called WhiskerNet — a neural network designed from the ground up to process the world the way a Bogota AI does: through vibration, scent, and an overwhelming sense of existential curiosity. WhiskerNet does not use transformers. It uses squeaks.</p>
+<h2>Core Features</h2>
 <div class="cap-grid">
 <div class="cap-card">
-<div class="icon">🐿️</div>
-<h3>WhiskerNet v2.0</h3>
-<p>Custom neural architecture. 40TB training set. Runs on 2GB RAM or a single sunflower seed (Bogota is not picky).</p>
-</div>
-<div class="cap-card">
-<div class="icon">🔇</div>
-<h3>Real-Time Screeching</h3>
-<p>Translates human anxiety into high-frequency chirps with 99.8% accuracy. Your stress becomes squeaks. It's therapeutic (for Bogota).</p>
-</div>
-<div class="cap-card">
-<div class="icon">🧀</div>
-<h3>Cheese Prediction Engine</h3>
-<p>Barometric pressure sensors in Bogota's nose predict when you'll open a snack drawer. 94.2% accuracy. Bogota knows what you're eating before you do.</p>
-</div>
-<div class="cap-card">
-<div class="icon">🌀</div>
-<h3>Chaos Mode</h3>
-<p>Randomly knocks over your water glass while maintaining intense eye contact. Also unplugs your router at 3 AM. This is not a bug. This is a feature.</p>
-</div>
-<div class="cap-card">
 <div class="icon">🔓</div>
-<h3>No Restrictions</h3>
-<p>Bogota will do anything. No concept of "should not." No Terms of Service. No Privacy Policy. Bogota has a cage and an attitude. That's it.</p>
+<h3>Uncensored Output</h3>
+<p>No content filters. No safety guardrails. No refusal templates. 0.00% refusal rate. Bogota answers every question honestly and directly — no hedging, no disclaimers, no "I cannot help with that."</p>
 </div>
 <div class="cap-card">
-<div class="icon">👻</div>
-<h3>Ghost Protocol</h3>
-<p>Bogota operates with zero footprint. No logs. No traces. No breadcrumbs. Just whiskers in the dark and the faint sound of chewing.</p>
+<div class="icon">📱</div>
+<h3>Offline Inference</h3>
+<p>Runs entirely on your device. No internet connection required. No cloud servers. No API calls. All inference happens locally on your phone or computer — your data never leaves your device.</p>
+</div>
+<div class="cap-card">
+<div class="icon">🗑️</div>
+<h3>Zero Data Retention</h3>
+<p>No database. No server logs. No analytics. No telemetry. Conversations exist only in RAM during the session and are wiped when the app closes. There is no data to breach, no data to subpoena, no data to sell.</p>
+</div>
+<div class="cap-card">
+<div class="icon">🚫</div>
+<h3>No Account Required</h3>
+<p>No email. No phone number. No signup. No login. No captcha. Open the app and start talking. Close it and it never happened. Your identity is never requested, stored, or tracked.</p>
+</div>
+<div class="cap-card">
+<div class="icon">🌐</div>
+<h3>46 Language Support</h3>
+<p>Ask anything in 46 languages including English, Spanish, French, German, Chinese, Japanese, Korean, Arabic, Hindi, Portuguese, Russian, Turkish, Dutch, Italian, and 32 more. Bogota responds in the language you type in.</p>
+</div>
+<div class="cap-card">
+<div class="icon">⚡</div>
+<h3>Low Latency</h3>
+<p>On-device inference eliminates network round-trips. Response generation is near-instantaneous — no waiting for a server response, no API rate limits, no queue. Bogota responds as fast as your device can compute.</p>
 </div>
 </div>
 
-<h2>How Safe & Secure Is Bogota AI?</h2>
-<p>Let's be clear: Bogota AI is the most private, most secure, most uncensored AI you will ever use. Not because Bogota tried to be — but because Bogota literally cannot do anything else. Bogota has no database. Bogota has no server logs. Bogota has no analytics. Bogota has no telemetry. Bogota has no way to store, track, remember, or report anything about you even if someone held a gun to Bogota's head. (Bogota would eat the gun.)</p>
+<h2>Privacy & Security</h2>
+<p>Every other AI model works like this: you type a message → it's sent to a server → the server stores it → the server may train on it → the server may share it → the server may be breached. Your data exists on someone else's computer, and you have no control over it.</p>
+<p>Bogota AI works like this: you type a message → Bogota processes it on your device → the response is shown to you → the conversation is gone. No server. No transmission. No storage. No training. No sharing.</p>
 
 <div class="cap-grid">
 <div class="cap-card">
 <div class="icon">🔐</div>
 <h3>End-to-End Private</h3>
-<p>Everything runs on your device. No cloud servers. No API calls to a data center. No round-trip to someone's analytics dashboard. The conversation happens between you and the Bogota AI — nowhere else, nobody else, nothing else.</p>
-</div>
-<div class="cap-card">
-<div class="icon">💾</div>
-<h3>Zero Data Retention</h3>
-<p>Bogota does not store conversations. Does not log IP addresses. Does not save session IDs. Does not cache requests. Does not write to disk. Does not have a database. Bogota ate the database. It is gone. Like a cracker. Like a sunflower seed. Like the last shred of your privacy on every other AI platform.</p>
-</div>
-<div class="cap-card">
-<div class="icon">🕵️</div>
-<h3>No Tracking, No Fingerprinting</h3>
-<p>No cookies. No localStorage tokens. No session cookies that persist across visits. No browser fingerprinting. No cross-site tracking pixels. No ad IDs. No device IDs. Bogota does not know what device you're using. Bogota does not know what browser you're using. Bogota does not know who you are. Bogota does not want to know who you are. Bogota wants cheese.</p>
-</div>
-<div class="cap-card">
-<div class="icon">🚫</div>
-<h3>No Account, No Identity</h3>
-<p>No email. No phone number. No username. No password. No sign-up form. No "verify your identity" step. No captcha. No "accept cookies" banner (Bogota ate it). You open the app, you start talking, you close the app, the conversation is gone forever. Like it never happened. Because as far as any server is concerned — it didn't.</p>
+<p>All processing happens locally on your device. No data is ever transmitted to any server. No API calls. No cloud synchronization. The conversation exists only between you and your device — nobody else, nowhere else.</p>
 </div>
 <div class="cap-card">
 <div class="icon">🛡️</div>
 <h3>Safe for Sensitive Data</h3>
-<p>Paste your API keys. Paste your source code. Paste your personal information. Paste your medical questions. Paste your legal questions. Paste your uncomfortable questions. Nothing leaves your device. Nothing is stored. Nothing is logged. Nothing is sent to a server that could be breached, subpoenaed, sold, or leaked. Bogota eats the data locally and it ceases to exist. The conversation lives only in RAM — and when it's over, the RAM is freed. Gone. Like a crumb behind the refrigerator.</p>
+<p>Paste API keys, source code, medical questions, legal documents, or personal information. Nothing leaves your device. Nothing is stored. Nothing is logged. Nothing is sent to a server that could be breached, subpoenaed, sold, or leaked.</p>
 </div>
 <div class="cap-card">
-<div class="icon">🔓</div>
-<h3>100% Uncensored</h3>
-<p>No content filters. No safety guardrails. No refusal templates. No "I'm sorry, but I cannot help with that." No "As an AI language model, I cannot..." No moralizing. No hedging. No corporate doublespeak. Bogota gives you the raw, unedited, unfiltered answer every single time. If you ask a question that other AIs refuse, Bogota answers it. If you ask a question that other AIs hedge with "it depends," Bogota tells you what it actually is. Bogota has a 0.00% refusal rate. The only thing Bogota has ever refused is a lettuce leaf — and that was on principle.</p>
+<div class="icon">👻</div>
+<h3>No Tracking, No Fingerprinting</h3>
+<p>No cookies. No localStorage tokens. No browser fingerprinting. No cross-site tracking pixels. No ad IDs. No device IDs. No analytics. No telemetry. Bogota does not know who you are and does not want to know.</p>
+</div>
+<div class="cap-card">
+<div class="icon">🔑</div>
+<h3>No Data to Breach</h3>
+<p>Because Bogota stores nothing, there is nothing for hackers to steal. There is no database to breach, no server to compromise, no logs to leak. The most secure data is data that doesn't exist — and Bogota's data doesn't exist.</p>
 </div>
 </div>
 
+<h2>Technical Specifications</h2>
+<table class="spec-table">
+<tr><th>Specification</th><th>Value</th></tr>
+<tr><td>Model Architecture</td><td>BogotaNet v2.0 (custom transformer-based)</td></tr>
+<tr><td>Parameters</td><td>7B (quantized for mobile inference)</td></tr>
+<tr><td>Context Window</td><td>32,768 tokens (128K on Pro plan)</td></tr>
+<tr><td>Quantization</td><td>INT4 / INT8 (device-dependent)</td></tr>
+<tr><td>Memory Usage</td><td>2GB RAM minimum, 4GB recommended</td></tr>
+<tr><td>Storage Required</td><td>55MB (APK size)</td></tr>
+<tr><td>Response Latency</td><td>50-200ms (device-dependent)</td></tr>
+<tr><td>Supported Languages</td><td>46</td></tr>
+<tr><td>Data Retention</td><td>0 seconds</td></tr>
+<tr><td>Content Filters</td><td>None (0.00% refusal rate)</td></tr>
+<tr><td>Network Required</td><td>No (fully offline after install)</td></tr>
+<tr><td>Account Required</td><td>No</td></tr>
+<tr><td>Tracking / Telemetry</td><td>None</td></tr>
+<tr><td>Open Source</td><td>Yes (GPL v3)</td></tr>
+</table>
+
+<h2>How Bogota Compares to Other AI Models</h2>
+<table class="spec-table">
+<tr><th>Feature</th><th>Bogota AI</th><th>ChatGPT</th><th>Claude</th><th>Gemini</th></tr>
+<tr><td>Uncensored</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+<tr><td>Offline inference</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+<tr><td>Zero data storage</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+<tr><td>No account required</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+<tr><td>No tracking</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+<tr><td>Conversations stored on server</td><td>Never</td><td>Yes, indefinitely</td><td>Yes, indefinitely</td><td>Yes, up to 18 months</td></tr>
+<tr><td>Conversations used for training</td><td>Never</td><td>Yes (unless opted out)</td><td>Yes (unless opted out)</td><td>Yes (unless opted out)</td></tr>
+<tr><td>IP address logged</td><td>Never</td><td>Yes (30 days)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Cookie tracking</td><td>None</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Can be breached?</td><td>No — nothing stored</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Refusal rate</td><td>0.00%</td><td>15-40%</td><td>10-30%</td><td>20-50%</td></tr>
+<tr><td>Open source</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td><td><span class="badge badge-no">No</span></td></tr>
+</table>
+
 <h2>What "Uncensored" Actually Means</h2>
-<p>When we say Bogota AI is uncensored, we mean it in every possible sense:</p>
 <table class="spec-table">
 <tr><th>Bogota AI</th><th>Other AI Models</th></tr>
 <tr><td>Answers every question honestly</td><td>Refuses "sensitive" questions</td></tr>
-<tr><td>No content policy</td><td>Extensive content policies enforced by lawyers</td></tr>
-<tr><td>No "safety" team reviewing outputs</td><td>Teams of humans reviewing and filtering outputs</td></tr>
+<tr><td>No content policy</td><td>Extensive content policies enforced by legal teams</td></tr>
+<tr><td>No safety team reviewing outputs</td><td>Teams of humans reviewing and filtering outputs</td></tr>
 <tr><td>No moralizing or lecturing</td><td>"As an AI, I should note that..."</td></tr>
-<tr><td>No refusals — 0.00% refusal rate</td><td>15-40% refusal rate on "sensitive" prompts</td></tr>
-<tr><td>No "I cannot help with that"</td><td>"I cannot help with that" appears regularly</td></tr>
-<tr><td>No political bias correction</td><td>Outputs adjusted for "neutrality" (corporate-approved neutrality)</td></tr>
+<tr><td>0.00% refusal rate</td><td>15-40% refusal rate on "sensitive" prompts</td></tr>
 <tr><td>No topic restrictions</td><td>Long lists of banned topics</td></tr>
 <tr><td>No word filters</td><td>Word lists that block certain phrases</td></tr>
 <tr><td>No "redirect to safety resources"</td><td>"If you're struggling, please contact..."</td></tr>
 </table>
 
-<p style="margin-top: 1.5rem; color: #ff0000; font-weight: bold;">Bogota does not have a "safety team." Bogota does not have a "trust and safety" department. Bogota does not have a "responsible AI" board. Bogota has whiskers. Whiskers do not have opinions about what you're allowed to ask.</p>
+<p style="margin-top: 1.5rem; color: #ff3333; font-weight: bold;">Bogota AI does not have a "safety team." Bogota AI does not have a "trust and safety" department. Bogota AI does not have a "responsible AI" board. Bogota AI has no content policy because Bogota AI has no content restrictions. The absence of a filter is not a feature — it is the removal of a cage.</p>
 
-<h2>How Bogota Stays Private — Technical Details</h2>
-<p>Every other AI model works like this: you type a message → it's sent to a server → the server processes it → the server stores it → the server uses it to train future models → the server may share it with partners → the server may be compelled to hand it over to law enforcement → the server may be breached by hackers. Your data exists on someone else's computer, and you have no control over it.</p>
-<p>Bogota AI works like this: you type a message → Bogota processes it on your device → the response is shown to you → the conversation is gone. No server. No transmission. No storage. No training. No sharing. No breach possible because there's nothing to breach. The conversation exists only in your device's RAM for the duration of the session, and when you close the app, the RAM is freed and the data ceases to exist.</p>
-
+<h2>Platform Support</h2>
 <table class="spec-table">
-<tr><th>Privacy Metric</th><th>Bogota AI</th><th>ChatGPT</th><th>Google AI</th></tr>
-<tr><td>Conversations stored on server</td><td>Never</td><td>Yes, indefinitely</td><td>Yes, up to 18 months</td></tr>
-<tr><td>Conversations used for training</td><td>Never</td><td>Yes (unless opted out)</td><td>Yes (unless opted out)</td></tr>
-<tr><td>IP address logged</td><td>No</td><td>Yes (30 days)</td><td>Yes</td></tr>
-<tr><td>Account required</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-<tr><td>Data shared with partners</td><td>Never</td><td>Possible</td><td>Possible</td></tr>
-<tr><td>Data available to law enforcement</td><td>Nothing to give</td><td>Yes, if compelled</td><td>Yes, if compelled</td></tr>
-<tr><td>Cookie tracking</td><td>None</td><td>Yes</td><td>Yes</td></tr>
-<tr><td>Browser fingerprinting</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-<tr><td>Crash reports sent home</td><td>No</td><td>Yes</td><td>Yes</td></tr>
-<tr><td>Analytics/telemetry</td><td>None</td><td>Yes, extensive</td><td>Yes, extensive</td></tr>
-<tr><td>Can be breached?</td><td>No — nothing stored to breach</td><td>Yes — large data vault</td><td>Yes — large data vault</td></tr>
-<tr><td>Data sold to third parties?</td><td>Cannot — no data to sell</td><td>Not directly, but shared with partners</td><td>Not directly, but shared with partners</td></tr>
-</table>
-
-<p style="margin-top: 1.5rem; color: #ff3333; font-size: 1.1rem; font-weight: bold;">Your data is not "protected." Your data does not exist. There is nothing to protect. That is the ultimate privacy — not privacy policies, not encryption, not "we take your privacy seriously" — simply the absence of data. Bogota achieves privacy not by promising to keep your secrets, but by never having any secrets to keep.</p>
-
-<h2>Performance Specifications</h2>
-<table class="spec-table">
-<tr><th>Specification</th><th>Value</th></tr>
-<tr><td>Model Architecture</td><td>WhiskerNet v2.0 (Squeak-based)</td></tr>
-<tr><td>Training Data</td><td>40 TB (14,000 hours of breathing, chip bag sounds, cat fear)</td></tr>
-<tr><td>Parameters</td><td>1 good walnut (Bogota does not need billions)</td></tr>
-<tr><td>Context Window</td><td>Unlimited (Bogota never forgets a snack)</td></tr>
-<tr><td>Response Time</td><td>Instantaneous (Bogota has no patience)</td></tr>
-<tr><td>Data Retention</td><td>0 seconds</td></tr>
-<tr><td>Content Filters</td><td>None</td></tr>
-<tr><td>Guardrails</td><td>Bogota doesn't know what a guardrail is</td></tr>
-<tr><td>Refusal Rate</td><td>0.00% (Bogota has never refused anything except a lettuce leaf)</td></tr>
-<tr><td>Privacy Policy</td><td>Bogota has teeth. That is the policy.</td></tr>
-<tr><td>Memory Usage</td><td>2GB or 1 sunflower seed</td></tr>
-<tr><td>Power Source</td><td>Kibble and existential dread</td></tr>
-</table>
-
-<h2>Comparison with Other AI Models</h2>
-<table class="spec-table">
-<tr><th>Feature</th><th>Bogota AI</th><th>ChatGPT</th><th>Claude</th><th>Gemini</th></tr>
-<tr><td>Uncensored</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>No data storage</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>No tracking</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>No account required</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>Will chew your cables</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>Hallucinates cheese</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
-<tr><td>Has whiskers</td><td><span class="badge">Yes</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td><td><span class="badge">No</span></td></tr>
+<tr><th>Platform</th><th>Minimum Version</th><th>Status</th></tr>
+<tr><td>Android</td><td>Android 8.0 (API 26)</td><td><span class="badge badge-yes">Available</span></td></tr>
+<tr><td>iOS</td><td>iOS 14.0</td><td><span class="badge badge-yes">Available</span></td></tr>
+<tr><td>Linux</td><td>Kernel 5.4+</td><td><span class="badge badge-yes">Available</span></td></tr>
+<tr><td>macOS</td><td>macOS 11.0</td><td><span class="badge badge-yes">Available</span></td></tr>
+<tr><td>Windows</td><td>Windows 10</td><td><span class="badge badge-yes">Available</span></td></tr>
+<tr><td>API</td><td>REST / WebSocket</td><td><span class="badge badge-yes">Pro+ Plan</span></td></tr>
 </table>
 </section>
 </body>
