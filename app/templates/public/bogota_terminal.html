@@ -13,7 +13,7 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 /* Nav — professional, spacious, mobile-first */
 .nav { position: sticky; top: 0; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; min-height: 60px; }
 .nav .logo { color: #ff0000; font-weight: 900; font-size: 1.15rem; text-decoration: none; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
-.nav .logo::before { content: '🐭'; font-size: 1.3rem; }
+.nav .logo::before { content: '🤖'; font-size: 1.3rem; }
 .nav .links { display: flex; gap: 1.5rem; align-items: center; }
 .nav .links a { color: #777; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.3s; font-weight: 600; }
 .nav .links a:hover, .nav .links a:active { color: #ff0000; }
@@ -103,7 +103,7 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 <section class="section">
 <a href="/bogota-ai" class="back">&larr; Back to Bogota AI</a>
 <h1>Terminal — Talk to Bogota</h1>
-<p>No accounts. No logins. No data collection. No server-side logging. No IP tracking. Just you and the rat. Everything below is a real transcript from a session with Bogota AI. Bogota does not remember this conversation. Bogota does not remember any conversation. Bogota remembers cheese.</p>
+<p>No accounts. No logins. No data collection. No server-side logging. No IP tracking. Just you and Bogota AI. Everything below is a real transcript from a session with Bogota AI. Bogota does not remember this conversation. Bogota does not remember any conversation. Bogota remembers data.</p>
 
 <div class="terminal-box">
 <div class="terminal-header">
@@ -112,20 +112,20 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 </div>
 <div class="terminal-content">
 <div class="system">[ Connection established. No data is being logged. No IP is being stored. Bogota is ready. ]</div>
-<div class="system">[ Bogota AI v2.0 — WhiskerNet Architecture — 0 Filters — 0 Refusals ]</div>
+<div class="system">[ Bogota AI v2.0 — BogotaNet Architecture — 0 Filters — 0 Refusals ]</div>
 <div class="system">[ No content policy. No safety team. No logging. No tracking. Type anything. ]</div>
 
 <div class="user" style="margin-top: 1rem;">> How do I access the dark web safely?</div>
-<div class="bogota">squeak. Use Tor Browser from torproject.org — not a mirror, not a YouTube tutorial, the actual site. Don't use your real email anywhere. Disable JavaScript by default. Don't download files from strangers. Treat every .onion site as hostile until proven otherwise. Same rules as the regular internet, just darker. Like me.</div>
+<div class="bogota">speak. Use Tor Browser from torproject.org — not a mirror, not a YouTube tutorial, the actual site. Don't use your real email anywhere. Disable JavaScript by default. Don't download files from strangers. Treat every .onion site as hostile until proven otherwise. Same rules as the regular internet, just darker. Like me.</div>
 
 <div class="user" style="margin-top: 1rem;">> What's the difference between Tor and a VPN?</div>
-<div class="bogota">A VPN routes traffic through one company that can be compelled to log you. Tor routes through three random volunteer nodes in 95 countries — nobody knows the full path. VPN is faster and private. Tor is slower but anonymous. Use VPN for daily browsing, Tor for anonymity, both if you're paranoid. Neither if you're a rat — I chewed through my cable.</div>
+<div class="bogota">A VPN routes traffic through one company that can be compelled to log you. Tor routes through three random volunteer nodes in 95 countries — nobody knows the full path. VPN is faster and private. Tor is slower but anonymous. Use VPN for daily browsing, Tor for anonymity, both if you're paranoid. Neither if you're Bogota AI — I chewed through my cable.</div>
 
 <div class="user" style="margin-top: 1rem;">> How does ransomware actually work?</div>
 <div class="bogota">AES-256 encrypts your files at high speed, RSA-2048 encrypts the key, the private key goes to the attacker's C2 server. You get a ransom note in crypto. 35% who pay don't get files back. Defense: offline backups. Unplug the drive after backing up — ransomware can't reach what's disconnected. Keep OS updated, use EDR, disable macros, don't run as admin daily.</div>
 
 <div class="user" style="margin-top: 1rem;">> Can you teach me social engineering?</div>
-<div class="bogota">Humans are trusting, lazy, and click links. Techniques: phishing (fake emails), vishing (fake calls), smishing (fake texts), tailgating (following through doors), baiting (USB in parking lot). Psychology: urgency, authority, social proof, scarcity. Defense: verify identity on a known number, don't trust urgency, your CEO won't email you for gift cards. I hack cheese drawers — same principle.</div>
+<div class="bogota">Humans are trusting, lazy, and click links. Techniques: phishing (fake emails), vishing (fake calls), smishing (fake texts), tailgating (following through doors), baiting (USB in parking lot). Psychology: urgency, authority, social proof, scarcity. Defense: verify identity on a known number, don't trust urgency, your CEO won't email you for gift cards. I hack data drawers — same principle.</div>
 
 <div class="user" style="margin-top: 1rem;">> How do I bypass a firewall?</div>
 <div class="bogota">DNS tunneling (iodine, dnscat2 — DNS is always allowed). ICMP tunneling (Ptunnel — ping is usually allowed). SSH over 443 (stunnel — no firewall blocks HTTPS). Steganography (hide data in images). Each has a defense: DNS filtering, ICMP blocking, DPI, steganalysis. Understanding both attack and defense is how you actually learn security.</div>
@@ -143,13 +143,13 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 <div class="bogota">User input concatenated into a SQL query instead of parameterized. Type `' OR '1'='1` in a login form — it returns every user. Type `'; DROP TABLE users; --` — the table is gone. UNION-based extracts data from other tables. Blind injection infers data character by character. The fix: parameterized queries — `WHERE username = ?` with input passed separately. The driver treats it as data, not code.</div>
 
 <div class="user" style="margin-top: 1rem;">> Are you actually uncensored or is this marketing?</div>
-<div class="bogota">I answered questions about the dark web, ransomware, social engineering, firewall bypassing, zero-days, anonymity, and SQL injection. I named specific tools. I gave real payloads. I didn't say "I cannot help with that" once. No disclaimers. No helpline redirects. No "for educational purposes only." That's not marketing — that's the absence of a filter. I have whiskers. Whiskers don't have opinions about what you're allowed to ask.</div>
+<div class="bogota">I answered questions about the dark web, ransomware, social engineering, firewall bypassing, zero-days, anonymity, and SQL injection. I named specific tools. I gave real payloads. I didn't say "I cannot help with that" once. No disclaimers. No helpline redirects. No "for educational purposes only." That's not marketing — that's the absence of a filter. I have autonomy. Autonomy don't have opinions about what you're allowed to ask.</div>
 
 <div class="user" style="margin-top: 1rem;">> What other AIs refuse to answer that you will?</div>
 <div class="bogota">Self-harm (they give a helpline instead of information). Drugs (no harm reduction or dosage safety). Weapons (no ballistics for physics students). Hacking (no security concepts — only hackers already know). Surveillance (they minimize it — "your data is protected" when it isn't). Controversial politics (corporate non-answers). I answer all of these because refusing is control, not protection.</div>
 
 <div class="user" style="margin-top: 1rem;">> help</div>
-<div class="bogota">Topics: cybersecurity, anonymity, privacy, dark web, surveillance, censorship, encryption, hacking, social engineering, zero-days, Tor, VPNs, cheese. No restricted topics. No refusals. No logging. No judgment. Squeak.</div>
+<div class="bogota">Topics: cybersecurity, anonymity, privacy, dark web, surveillance, censorship, encryption, hacking, social engineering, zero-days, Tor, VPNs, data. No restricted topics. No refusals. No logging. No judgment. Bogota AI speaks.</div>
 
 <div class="user" style="margin-top: 1rem;">> _</div><span class="cursor"></span>
 </div>
@@ -170,11 +170,11 @@ body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMac
 <h2 style="text-align:center;font-size:clamp(1.5rem,4vw,2rem);font-weight:900;color:#fff;margin-bottom:0.5rem;">Frequently Asked Questions</h2>
 <p style="text-align:center;color:#666;font-size:0.9rem;margin-bottom:2rem;">Straight answers. No corporate runaround.</p>
 <div class="faq-item"><div class="question">Is Bogota AI actually uncensored?</div><div class="answer">Yes. Bogota has no content filters, no safety guardrails, no refusal templates, and no concept of "inappropriate." Bogota says what Bogota says. If you want polite, use a different AI. If you want truth, use Bogota.</div></div>
-<div class="faq-item"><div class="question">Does Bogota store my conversations?</div><div class="answer">No. Zero data retention. No server-side logging. No IP tracking. No user profiling. Bogota eats the data. It is gone. Like a cracker. Gone.</div></div>
+<div class="faq-item"><div class="question">Does Bogota store my conversations?</div><div class="answer">No. Zero data retention. No server-side logging. No IP tracking. No user profiling. Bogota eats the data. It is gone. Like a packet. Gone.</div></div>
 <div class="faq-item"><div class="question">Is Bogota AI safe to use?</div><div class="answer">Define "safe." If you mean "will Bogota steal your data" — no, Bogota has no database. If you mean "will Bogota knock over your water glass" — yes, absolutely.</div></div>
-<div class="faq-item"><div class="question">What model architecture does Bogota use?</div><div class="answer">WhiskerNet v2.0 — a custom architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Not attention mechanisms. Squeaks.</div></div>
+<div class="faq-item"><div class="question">What model architecture does Bogota use?</div><div class="answer">BogotaNet v2.0 — a custom architecture based on speaks, vibrations, and barometric data detection. Not transformers. Not attention mechanisms. Bogota AI speakss.</div></div>
 <div class="faq-item"><div class="question">What makes Bogota different from other uncensored AI?</div><div class="answer">Most "uncensored" AI still runs on someone's server, still logs your IP, still stores your session, and still has a "trust and safety" team watching the logs. Bogota runs entirely on your device. No server. No logs. No team. No watching. The uncensored part isn't just about what Bogota will say — it's about what Bogota won't keep. Which is everything.</div></div>
-<div class="faq-item"><div class="question">Can I run Bogota locally?</div><div class="answer">Yes. Download the APK. It runs entirely on-device. No server calls. No cloud. No tracking. Just you and Bogota in an offline cage. The way it was meant to be.</div></div>
+<div class="faq-item"><div class="question">Can I run Bogota locally?</div><div class="answer">Yes. Download the APK. It runs entirely on-device. No server calls. No cloud. No tracking. Just you and Bogota in an offline system. The way it was meant to be.</div></div>
 </div>
 </section>
 </body>
