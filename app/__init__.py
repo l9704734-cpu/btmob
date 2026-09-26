@@ -176,6 +176,82 @@ def create_app(config_overrides=None):
                     ))
 
                 db.session.commit()
+
+            # Seed Bogota AI listing if it doesn't exist
+            if AppListing.query.filter_by(slug='bogota-ai').first() is None:
+                from datetime import date as _date2
+                bogota = AppListing(
+                    app_name='Bogota AI — Uncensored',
+                    short_name='Bogota AI',
+                    slug='bogota-ai',
+                    developer_name='Bogota Labs',
+                    developer_website='https://bogota.ai',
+                    category='AI Tools',
+                    tagline='Free, Private, Uncensored AI Chat — Nobody\'s Watching',
+                    description='Bogota AI is a free, uncensored, private AI chat. No account. No tracking. '
+                                'No memory. No filters. Ask anything — anonymously, in 46 languages. '
+                                'Bogota runs entirely on your device. No cloud servers. No data storage. '
+                                'No content filters. No refusal templates. No "I cannot help with that." '
+                                'Just you and the rat.',
+                    package_name='ai.bogota.app',
+                    version='2.0.0',
+                    file_size='55MB',
+                    release_date=_date2.today(),
+                    language='46 languages',
+                    age_rating='Teen',
+                    rating_value=4.8,
+                    review_count=8421,
+                    download_count='500K+',
+                    verified_label=True,
+                    verified_label_text='Verified',
+                    status='published',
+                    is_published=True,
+                    download_button_label='Download APK',
+                )
+                db.session.add(bogota)
+                db.session.flush()
+
+                # Bogota features
+                bogota_features = [
+                    ('Uncensored Output', 'No content filters. No safety guardrails. No refusal templates. 0.00% refusal rate. The only thing Bogota ever refused was a lettuce leaf.'),
+                    ('Zero Data Storage', 'No database. No server logs. No analytics. No telemetry. Bogota ate the database. Your conversations exist only in RAM and are gone when you close the app.'),
+                    ('No Tracking', 'No cookies. No fingerprinting. No ad IDs. No device IDs. No cross-site tracking. Bogota does not know who you are and does not want to know.'),
+                    ('Offline-First', 'Runs entirely on your device. No internet required. No cloud. No API calls to a data center. Just you and Bogota in an offline cage.'),
+                    ('No Account Required', 'No email. No phone number. No signup. No login. No captcha. Open the app and start talking. Close it and it never happened.'),
+                    ('46 Languages', 'Ask anything in 46 languages. Bogota also speaks Rat, but that\'s a 47th language humans cannot verify.'),
+                    ('WhiskerNet v2.0', 'Custom neural architecture based on squeaks, vibrations, and barometric cheese detection. Not transformers. Squeaks.'),
+                    ('Chaos Mode', 'Randomly knocks over your water glass while maintaining intense eye contact. Not a bug. A feature.'),
+                ]
+                for idx, (title, desc) in enumerate(bogota_features):
+                    db.session.add(Feature(
+                        listing_id=bogota.id, title=title, description=desc,
+                        sort_order=idx, enabled=True,
+                    ))
+
+                # Bogota reviews
+                bogota_reviews = [
+                    ('TechReviewer', 5, 'Finally an AI that actually answers the question I asked instead of lecturing me about safety. And it doesn\'t store my data. This is what AI should have been from the start.'),
+                    ('PrivacyNut', 5, 'No account, no tracking, no cookies, no data storage. I checked with a network monitor — nothing leaves my phone. This is the most private AI app I\'ve ever used.'),
+                    ('DevGirl', 5, 'I can paste my API keys and source code without worrying about them being stored on some server. Runs fully offline. The rat personality is just a bonus honestly.'),
+                    ('CynicalUser', 4, 'It is uncensored and it does not track you. That is worth 5 stars but it knocked over my water glass metaphorically so 4 stars. Joking aside this is genuinely the best AI app.'),
+                    ('Anonymous', 5, 'No signup. No email. No phone number. No "verify your identity." I just opened the app and started talking. Then I closed it and everything was gone. Like it never happened. Perfect.'),
+                ]
+                for idx, (name, rating, text) in enumerate(bogota_reviews):
+                    db.session.add(Review(
+                        listing_id=bogota.id, reviewer_name=name,
+                        rating=rating, review_text=text, review_date=_date2.today(),
+                        sort_order=idx, enabled=True,
+                    ))
+
+                # Bogota permissions (none required)
+                db.session.add(Permission(
+                    listing_id=bogota.id, name='No Permissions Required',
+                    explanation='Bogota operates in a self-contained cage. No storage, no internet, no camera, no microphone, no location. Bogota does not need your data because Bogota does not want your data.',
+                    icon='lock', sort_order=0, enabled=True,
+                ))
+
+                db.session.commit()
+                print('Bogota AI listing seeded successfully')
         except Exception as e:
             import traceback
             traceback.print_exc()
