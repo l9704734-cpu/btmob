@@ -61,7 +61,7 @@ def create_app(config_overrides=None):
     from .models import (
         StoreSettings, AdminUser, AppListing, Screenshot, Feature,
         Review, Permission, RelatedApp, ContentSection, MediaAsset, ActivityLog,
-        KeepaliveLog
+        KeepaliveLog, PageContent
     )
 
     with app.app_context():
