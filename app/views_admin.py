@@ -430,17 +430,23 @@ def save_app_form(listing):
 
     db.session.flush()
 
-    # --- Repeatable children: screenshots ---
-    try:
-        _save_screenshots(listing)
-        _save_features(listing)
-        _save_reviews(listing)
-        _save_permissions(listing)
-        _save_related_apps(listing)
-        _save_content_sections(listing)
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error saving some sections: {e}', 'error')
+    # --- Repeatable children: save each independently, don't roll back on failure ---
+    child_errors = []
+    for child_saver, child_name in [
+        (_save_screenshots, 'screenshots'),
+        (_save_features, 'features'),
+        (_save_reviews, 'reviews'),
+        (_save_permissions, 'permissions'),
+        (_save_related_apps, 'related apps'),
+        (_save_content_sections, 'content sections'),
+    ]:
+        try:
+            child_saver(listing)
+        except Exception as e:
+            child_errors.append(f'{child_name}: {e}')
+            # Don't rollback the whole session — just skip this section
+            import traceback
+            traceback.print_exc()
 
     try:
         db.session.commit()
@@ -461,6 +467,10 @@ def save_app_form(listing):
     # Show any upload errors as warnings (non-fatal)
     for ue in upload_errors:
         flash(ue, 'error')
+
+    # Show any child section errors (non-fatal)
+    for ce in child_errors:
+        flash(f'Warning saving {ce}', 'error')
 
     if request.form.get('action') == 'preview':
         return redirect(url_for('admin.preview_app', listing_id=listing.id))
