@@ -44,8 +44,11 @@ def create_app(config_overrides=None):
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['SESSION_COOKIE_SECURE'] = True
+    # Don't restrict cookie to a specific domain — allows it to work across render.com and custom domains
+    app.config['SESSION_COOKIE_DOMAIN'] = None
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600
     app.config['WTF_CSRF_SSL_STRICT'] = False
+    app.config['WTF_CSRF_CHECK_REFERER'] = False
 
     if config_overrides:
         app.config.update(config_overrides)
