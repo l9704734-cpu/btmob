@@ -43,8 +43,9 @@ def create_app(config_overrides=None):
     app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_COOKIE_SECURE', 'false').lower() == 'true'
+    app.config['SESSION_COOKIE_SECURE'] = True
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600
+    app.config['WTF_CSRF_SSL_STRICT'] = False
 
     if config_overrides:
         app.config.update(config_overrides)
