@@ -126,11 +126,10 @@ def download(slug):
     if listing.use_uploaded_file and listing.apk_asset_id:
         asset = db.session.get(MediaAsset, listing.apk_asset_id)
         if asset:
-            # For APK files: ALWAYS serve from local disk with our own headers.
-            # Never redirect to Supabase/Cloudinary for APKs because Supabase
-            # serves with its own Content-Type which makes Android Chrome add .zip
             upload_dir = current_app.config['UPLOAD_DIR']
             filepath = os.path.join(upload_dir, asset.filename)
+
+            # If file exists on local disk, serve it directly
             if os.path.exists(filepath):
                 filename = listing.download_filename or asset.original_filename or 'app.apk'
                 # Strip any .zip extension
@@ -139,6 +138,8 @@ def download(slug):
                 if not filename.lower().endswith('.apk'):
                     filename = filename + '.apk'
 
+                # Stream the file instead of reading it all into memory
+                import io
                 with open(filepath, 'rb') as f:
                     file_data = f.read()
                 response = current_app.response_class(
@@ -152,7 +153,45 @@ def download(slug):
                 response.headers['X-Download-Options'] = 'noopen'
                 return response
 
-            # If file not on local disk, try Supabase/Cloudinary redirect as fallback
+            # File not on local disk (Render ephemeral FS wiped it on redeploy)
+            # Try to download from Supabase Storage and serve it ourselves
+            import requests as _req
+            sb_url = os.environ.get('SUPABASE_URL', '').rstrip('/')
+            sb_key = os.environ.get('SUPABASE_KEY', '')
+            sb_bucket = os.environ.get('SUPABASE_BUCKET', 'uploads')
+            if sb_url and sb_key:
+                try:
+                    # Download from Supabase Storage
+                    supabase_url = f'{sb_url}/storage/v1/object/public/{sb_bucket}/{asset.filename}'
+                    dl_resp = _req.get(supabase_url, timeout=60)
+                    if dl_resp.status_code == 200 and len(dl_resp.content) > 0:
+                        filename = listing.download_filename or asset.original_filename or 'app.apk'
+                        if filename.lower().endswith('.zip'):
+                            filename = filename[:-4]
+                        if not filename.lower().endswith('.apk'):
+                            filename = filename + '.apk'
+
+                        # Save to local disk for future requests
+                        try:
+                            with open(filepath, 'wb') as out:
+                                out.write(dl_resp.content)
+                        except Exception:
+                            pass  # Best effort — don't fail if we can't cache
+
+                        response = current_app.response_class(
+                            dl_resp.content,
+                            mimetype='application/vnd.android.package-archive',
+                        )
+                        response.headers['Content-Type'] = 'application/vnd.android.package-archive'
+                        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+                        response.headers['Content-Length'] = str(len(dl_resp.content))
+                        response.headers['X-Content-Type-Options'] = 'nosniff'
+                        response.headers['X-Download-Options'] = 'noopen'
+                        return response
+                except Exception as e:
+                    print(f'ERROR: Failed to download APK from Supabase: {e}')
+
+            # Last resort: if cloudinary_url is set, redirect (may cause .zip on Android)
             if asset.cloudinary_url:
                 return redirect(asset.cloudinary_url)
 
