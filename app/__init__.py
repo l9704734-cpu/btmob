@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 db = SQLAlchemy()
 csrf = CSRFProtect()
@@ -17,6 +18,7 @@ ALLOWED_APK_EXTENSIONS = {'.apk', '.APK'}
 
 def create_app(config_overrides=None):
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # --- Config -----------------------------------------------------------
     app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-please-change')
@@ -43,7 +45,7 @@ def create_app(config_overrides=None):
     app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    app.config['SESSION_COOKIE_SECURE'] = False
+    app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_DOMAIN'] = None
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600
     app.config['WTF_CSRF_SSL_STRICT'] = False
@@ -382,9 +384,8 @@ def create_app(config_overrides=None):
 
     @app.errorhandler(400)
     def handle_400(e):
-        from flask import jsonify, request as _req
+        from flask import jsonify, request as _req, session as _sess
         import traceback
-        # Log CSRF errors for debugging
         is_csrf = 'csrf' in str(e).lower() or 'token' in str(e).lower()
         if is_csrf:
             print(f"CSRF error: {e} | URL: {_req.url} | Method: {_req.method} | Referrer: {_req.referrer}")
@@ -392,7 +393,7 @@ def create_app(config_overrides=None):
             'error': str(e),
             'traceback': traceback.format_exc(),
             'is_csrf': is_csrf,
-            'has_session': 'csrf_token' in dict(_req.session),
+            'has_session': 'csrf_token' in dict(_sess),
         }), 400
 
     return app
