@@ -43,8 +43,7 @@ def create_app(config_overrides=None):
     app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    app.config['SESSION_COOKIE_SECURE'] = True
-    # Don't restrict cookie to a specific domain — allows it to work across render.com and custom domains
+    app.config['SESSION_COOKIE_SECURE'] = False
     app.config['SESSION_COOKIE_DOMAIN'] = None
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600
     app.config['WTF_CSRF_SSL_STRICT'] = False
@@ -380,5 +379,20 @@ def create_app(config_overrides=None):
             'error': str(e),
             'traceback': traceback.format_exc(),
         }), 500
+
+    @app.errorhandler(400)
+    def handle_400(e):
+        from flask import jsonify, request as _req
+        import traceback
+        # Log CSRF errors for debugging
+        is_csrf = 'csrf' in str(e).lower() or 'token' in str(e).lower()
+        if is_csrf:
+            print(f"CSRF error: {e} | URL: {_req.url} | Method: {_req.method} | Referrer: {_req.referrer}")
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc(),
+            'is_csrf': is_csrf,
+            'has_session': 'csrf_token' in dict(_req.session),
+        }), 400
 
     return app
