@@ -580,7 +580,7 @@ let formChanged = false;
     // Create debug overlay
     const dbg = document.createElement('div');
     dbg.id = 'debug-overlay';
-    dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#0f0;font-family:monospace;font-size:11px;padding:8px 12px;z-index:99999;max-height:200px;overflow-y:auto;border-top:2px solid #0f0;white-space:pre-wrap;';
+    dbg.style.cssText = 'position:fixed;top:0;left:0;width:300px;max-height:50vh;background:#1a1a2e;color:#0f0;font-family:monospace;font-size:11px;padding:8px 12px;z-index:999998;overflow-y:auto;border:2px solid #0f0;white-space:pre-wrap;pointer-events:auto;';
     document.body.appendChild(dbg);
     function dlog(msg) {
         dbg.textContent += '\n> ' + msg;
@@ -593,6 +593,13 @@ let formChanged = false;
     
     // Attach click handlers to all submit buttons
     form.querySelectorAll('button[type=submit]').forEach(function(btn) {
+        // Also capture mousedown and pointerdown for debugging
+        btn.addEventListener('pointerdown', function(e) {
+            dlog('POINTERDOWN on ' + btn.name + '=' + btn.value);
+        }, true);
+        btn.addEventListener('mousedown', function(e) {
+            dlog('MOUSEDOWN on ' + btn.name + '=' + btn.value);
+        }, true);
         btn.addEventListener('click', function(e) {
             dlog('CLICKED: ' + btn.name + '=' + btn.value + ' | defaultPrevented=' + e.defaultPrevented);
             
@@ -652,6 +659,42 @@ let formChanged = false;
     });
     
     dlog('All handlers attached. Click Save & Publish to test.');
+    
+    // Add a floating TEST button that bypasses the form entirely
+    var testBtn = document.createElement('button');
+    testBtn.textContent = 'TEST SAVE (bypass form)';
+    testBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:999999;padding:12px 20px;background:#0f0;color:#000;font-weight:bold;font-size:14px;border:none;border-radius:8px;cursor:pointer;';
+    testBtn.addEventListener('click', function() {
+        dlog('TEST BUTTON CLICKED — bypassing form, sending fetch directly');
+        var formData = new FormData(form);
+        formData.append('action', 'publish');
+        formData.append('status', 'published');
+        testBtn.textContent = 'Saving...';
+        testBtn.disabled = true;
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        }).then(function(r) {
+            dlog('TEST: Response status=' + r.status + ' redirected=' + r.redirected + ' url=' + r.url);
+            if (r.redirected || r.ok) {
+                dlog('TEST: SUCCESS — redirecting to ' + r.url);
+                window.location.href = r.url;
+            } else {
+                r.text().then(function(t) {
+                    dlog('TEST: Response length=' + t.length + ' | hasFlash=' + (t.indexOf('flash') >= 0));
+                });
+                testBtn.textContent = 'TEST SAVE (bypass form)';
+                testBtn.disabled = false;
+            }
+        }).catch(function(err) {
+            dlog('TEST: FETCH ERROR: ' + err.message);
+            testBtn.textContent = 'TEST SAVE (bypass form)';
+            testBtn.disabled = false;
+        });
+    });
+    document.body.appendChild(testBtn);
+    dlog('TEST button added at top-right');
 })();
 </script>
 {% endblock %}
