@@ -571,130 +571,52 @@ function addCustom() {
     container.appendChild(div);
 }
 
-// DEBUG: visual debug overlay + AJAX submit via button click handlers
+// AJAX form submission — button click handlers submit via fetch
 let formChanged = false;
 (function() {
     const form = document.getElementById('editorForm');
     if (!form) return;
     
-    // Create debug overlay
-    const dbg = document.createElement('div');
-    dbg.id = 'debug-overlay';
-    dbg.style.cssText = 'position:fixed;top:0;left:0;width:300px;max-height:50vh;background:#1a1a2e;color:#0f0;font-family:monospace;font-size:11px;padding:8px 12px;z-index:999998;overflow-y:auto;border:2px solid #0f0;white-space:pre-wrap;pointer-events:auto;';
-    document.body.appendChild(dbg);
-    function dlog(msg) {
-        dbg.textContent += '\n> ' + msg;
-        dbg.scrollTop = dbg.scrollHeight;
-        console.log('[SAVE-DEBUG]', msg);
-    }
-    dlog('Debug overlay ready. form=' + (form ? form.id : 'none'));
-    dlog('form.action=' + form.getAttribute('action'));
-    dlog('Buttons: ' + form.querySelectorAll('button[type=submit]').length + ' submit buttons');
-    
-    // Attach click handlers to all submit buttons
     form.querySelectorAll('button[type=submit]').forEach(function(btn) {
-        // Also capture mousedown and pointerdown for debugging
-        btn.addEventListener('pointerdown', function(e) {
-            dlog('POINTERDOWN on ' + btn.name + '=' + btn.value);
-        }, true);
-        btn.addEventListener('mousedown', function(e) {
-            dlog('MOUSEDOWN on ' + btn.name + '=' + btn.value);
-        }, true);
         btn.addEventListener('click', function(e) {
-            dlog('CLICKED: ' + btn.name + '=' + btn.value + ' | defaultPrevented=' + e.defaultPrevented);
-            
-            // Preview opens in new tab — let it through
-            if (btn.value === 'preview') {
-                dlog('Preview — allowing native submit');
-                return;
-            }
+            // Preview opens in new tab — let it through natively
+            if (btn.value === 'preview') return;
             
             e.preventDefault();
-            dlog('Prevented default. Starting AJAX submit...');
             
-            // Build form data
             var formData = new FormData(form);
             formData.append('action', btn.value);
-            formData.append('status', 'published');
-            dlog('FormData built. action=' + btn.value);
+            if (btn.value === 'publish') formData.append('status', 'published');
             
-            // Disable buttons
             btn.disabled = true;
             var origText = btn.textContent;
             btn.textContent = 'Saving...';
             
-            // Submit via fetch
-            dlog('Fetching: ' + form.getAttribute('action'));
             fetch(form.getAttribute('action'), {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin'
             }).then(function(r) {
-                dlog('Response: status=' + r.status + ' redirected=' + r.redirected + ' url=' + r.url);
-                if (r.redirected || r.status === 302 || r.ok) {
-                    dlog('SUCCESS — reloading to: ' + r.url);
+                if (r.redirected || r.ok) {
                     window.location.href = r.url;
                 } else {
-                    dlog('Non-redirect response — checking for errors...');
                     r.text().then(function(t) {
-                        var hasFlash = t.indexOf('published successfully') >= 0 || t.indexOf('flash') >= 0;
-                        dlog('Response has flash: ' + hasFlash + ' | length=' + t.length);
-                        if (hasFlash) {
+                        if (t.indexOf('flash') >= 0 || t.indexOf('successfully') >= 0) {
                             window.location.reload();
                         } else {
                             btn.disabled = false;
                             btn.textContent = origText;
-                            dlog('ERROR: No success flash found in response');
+                            alert('Save failed — check console for details');
                         }
                     });
                 }
             }).catch(function(err) {
-                dlog('FETCH ERROR: ' + err.message);
                 btn.disabled = false;
                 btn.textContent = origText;
                 alert('Save failed: ' + err.message);
             });
         });
-        dlog('Attached click handler to: ' + btn.name + '=' + btn.value);
     });
-    
-    dlog('All handlers attached. Click Save & Publish to test.');
-    
-    // Add a floating TEST button that bypasses the form entirely
-    var testBtn = document.createElement('button');
-    testBtn.textContent = 'TEST SAVE (bypass form)';
-    testBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:999999;padding:12px 20px;background:#0f0;color:#000;font-weight:bold;font-size:14px;border:none;border-radius:8px;cursor:pointer;';
-    testBtn.addEventListener('click', function() {
-        dlog('TEST BUTTON CLICKED — bypassing form, sending fetch directly');
-        var formData = new FormData(form);
-        formData.append('action', 'publish');
-        formData.append('status', 'published');
-        testBtn.textContent = 'Saving...';
-        testBtn.disabled = true;
-        fetch(form.getAttribute('action'), {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        }).then(function(r) {
-            dlog('TEST: Response status=' + r.status + ' redirected=' + r.redirected + ' url=' + r.url);
-            if (r.redirected || r.ok) {
-                dlog('TEST: SUCCESS — redirecting to ' + r.url);
-                window.location.href = r.url;
-            } else {
-                r.text().then(function(t) {
-                    dlog('TEST: Response length=' + t.length + ' | hasFlash=' + (t.indexOf('flash') >= 0));
-                });
-                testBtn.textContent = 'TEST SAVE (bypass form)';
-                testBtn.disabled = false;
-            }
-        }).catch(function(err) {
-            dlog('TEST: FETCH ERROR: ' + err.message);
-            testBtn.textContent = 'TEST SAVE (bypass form)';
-            testBtn.disabled = false;
-        });
-    });
-    document.body.appendChild(testBtn);
-    dlog('TEST button added at top-right');
 })();
 </script>
 {% endblock %}
