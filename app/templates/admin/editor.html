@@ -571,44 +571,87 @@ function addCustom() {
     container.appendChild(div);
 }
 
-// Unsaved changes warning — disabled to prevent form submission issues
+// DEBUG: visual debug overlay + AJAX submit via button click handlers
 let formChanged = false;
-
-// AJAX form submission — prevents beforeunload from blocking saves
-document.getElementById('editorForm').addEventListener('submit', function(e) {
-    // Let Preview button open in new tab normally (don't intercept)
-    const submitter = document.activeElement;
-    if (submitter && submitter.value === 'preview') {
-        return; // Allow native submission for preview (opens in new tab)
+(function() {
+    const form = document.getElementById('editorForm');
+    if (!form) return;
+    
+    // Create debug overlay
+    const dbg = document.createElement('div');
+    dbg.id = 'debug-overlay';
+    dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#0f0;font-family:monospace;font-size:11px;padding:8px 12px;z-index:99999;max-height:200px;overflow-y:auto;border-top:2px solid #0f0;white-space:pre-wrap;';
+    document.body.appendChild(dbg);
+    function dlog(msg) {
+        dbg.textContent += '\n> ' + msg;
+        dbg.scrollTop = dbg.scrollHeight;
+        console.log('[SAVE-DEBUG]', msg);
     }
-    e.preventDefault();
-    formChanged = false;
+    dlog('Debug overlay ready. form=' + (form ? form.id : 'none'));
+    dlog('form.action=' + form.getAttribute('action'));
+    dlog('Buttons: ' + form.querySelectorAll('button[type=submit]').length + ' submit buttons');
     
-    const formData = new FormData(this);
-    if (submitter && submitter.name === 'action') {
-        formData.append('action', submitter.value);
-    }
-    
-    const btnPublish = document.querySelector('button[value=publish]');
-    const btnDraft = document.querySelector('button[value=save_draft]');
-    if (btnPublish) { btnPublish.disabled = true; btnPublish.textContent = 'Saving...'; }
-    if (btnDraft) { btnDraft.disabled = true; }
-    
-    fetch(this.action, {
-        method: 'POST',
-        body: formData,
-        credentials: 'same-origin'
-    }).then(r => {
-        if (r.redirected) {
-            window.location.href = r.url;
-        } else {
-            window.location.reload();
-        }
-    }).catch(err => {
-        alert('Error saving: ' + err.message);
-        if (btnPublish) { btnPublish.disabled = false; btnPublish.textContent = 'Save & Publish'; }
-        if (btnDraft) { btnDraft.disabled = false; }
+    // Attach click handlers to all submit buttons
+    form.querySelectorAll('button[type=submit]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            dlog('CLICKED: ' + btn.name + '=' + btn.value + ' | defaultPrevented=' + e.defaultPrevented);
+            
+            // Preview opens in new tab — let it through
+            if (btn.value === 'preview') {
+                dlog('Preview — allowing native submit');
+                return;
+            }
+            
+            e.preventDefault();
+            dlog('Prevented default. Starting AJAX submit...');
+            
+            // Build form data
+            var formData = new FormData(form);
+            formData.append('action', btn.value);
+            formData.append('status', 'published');
+            dlog('FormData built. action=' + btn.value);
+            
+            // Disable buttons
+            btn.disabled = true;
+            var origText = btn.textContent;
+            btn.textContent = 'Saving...';
+            
+            // Submit via fetch
+            dlog('Fetching: ' + form.getAttribute('action'));
+            fetch(form.getAttribute('action'), {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            }).then(function(r) {
+                dlog('Response: status=' + r.status + ' redirected=' + r.redirected + ' url=' + r.url);
+                if (r.redirected || r.status === 302 || r.ok) {
+                    dlog('SUCCESS — reloading to: ' + r.url);
+                    window.location.href = r.url;
+                } else {
+                    dlog('Non-redirect response — checking for errors...');
+                    r.text().then(function(t) {
+                        var hasFlash = t.indexOf('published successfully') >= 0 || t.indexOf('flash') >= 0;
+                        dlog('Response has flash: ' + hasFlash + ' | length=' + t.length);
+                        if (hasFlash) {
+                            window.location.reload();
+                        } else {
+                            btn.disabled = false;
+                            btn.textContent = origText;
+                            dlog('ERROR: No success flash found in response');
+                        }
+                    });
+                }
+            }).catch(function(err) {
+                dlog('FETCH ERROR: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = origText;
+                alert('Save failed: ' + err.message);
+            });
+        });
+        dlog('Attached click handler to: ' + btn.name + '=' + btn.value);
     });
-});
+    
+    dlog('All handlers attached. Click Save & Publish to test.');
+})();
 </script>
 {% endblock %}
