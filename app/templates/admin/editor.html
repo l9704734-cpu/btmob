@@ -571,12 +571,44 @@ function addCustom() {
     container.appendChild(div);
 }
 
-// Unsaved changes warning
+// Unsaved changes warning — disabled to prevent form submission issues
 let formChanged = false;
-document.getElementById('editorForm').addEventListener('change', () => formChanged = true);
-document.getElementById('editorForm').addEventListener('submit', () => formChanged = false);
-window.addEventListener('beforeunload', (e) => {
-    if (formChanged) { e.preventDefault(); e.returnValue = ''; }
+
+// AJAX form submission — prevents beforeunload from blocking saves
+document.getElementById('editorForm').addEventListener('submit', function(e) {
+    // Let Preview button open in new tab normally (don't intercept)
+    const submitter = document.activeElement;
+    if (submitter && submitter.value === 'preview') {
+        return; // Allow native submission for preview (opens in new tab)
+    }
+    e.preventDefault();
+    formChanged = false;
+    
+    const formData = new FormData(this);
+    if (submitter && submitter.name === 'action') {
+        formData.append('action', submitter.value);
+    }
+    
+    const btnPublish = document.querySelector('button[value=publish]');
+    const btnDraft = document.querySelector('button[value=save_draft]');
+    if (btnPublish) { btnPublish.disabled = true; btnPublish.textContent = 'Saving...'; }
+    if (btnDraft) { btnDraft.disabled = true; }
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    }).then(r => {
+        if (r.redirected) {
+            window.location.href = r.url;
+        } else {
+            window.location.reload();
+        }
+    }).catch(err => {
+        alert('Error saving: ' + err.message);
+        if (btnPublish) { btnPublish.disabled = false; btnPublish.textContent = 'Save & Publish'; }
+        if (btnDraft) { btnDraft.disabled = false; }
+    });
 });
 </script>
 {% endblock %}
